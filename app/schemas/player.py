@@ -2,10 +2,11 @@
 Pydantic schemas for player profiles and rankings
 """
 
-from pydantic import BaseModel
-from typing import Optional, List
+from pydantic import BaseModel, ConfigDict, Field, field_serializer
+from typing import Optional, List, ClassVar, Dict, Any
 from datetime import datetime
 from enum import Enum
+from uuid import UUID
 
 class PlayerTier(str, Enum):
     BRONZE = "bronze"
@@ -34,17 +35,16 @@ class PlayerUpdate(BaseModel):
     bio: Optional[str] = None
 
 class PlayerInDB(PlayerBase):
+    model_config = ConfigDict(from_attributes=True)
+    
     id: int
     user_id: int
-    current_rp: float
-    peak_rp: float
+    current_rp: float = Field(ge=0.0)
+    peak_rp: float = Field(ge=0.0)
     tier: PlayerTier
-    is_verified: bool
+    is_verified: bool = False
     created_at: datetime
     updated_at: Optional[datetime] = None
-    
-    class Config:
-        from_attributes = True
 
 class Player(PlayerInDB):
     pass
@@ -56,16 +56,15 @@ class PlayerProfile(Player):
     discord_id: Optional[str] = None
 
 class RPHistory(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
     id: int
     player_id: int
-    old_rp: float
-    new_rp: float
+    old_rp: float = Field(ge=0.0)
+    new_rp: float = Field(ge=0.0)
     change_reason: Optional[str] = None
     event_id: Optional[int] = None
     created_at: datetime
-    
-    class Config:
-        from_attributes = True
 
 class PlayerWithHistory(Player):
     """Player with RP history"""

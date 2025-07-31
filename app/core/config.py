@@ -1,14 +1,18 @@
 """
-Configuration settings for the NBA 2K Global Rankings backend
+Configuration settings for the NBA 2K Global Rankings backend with Supabase
 """
 
 from pydantic_settings import BaseSettings
-from typing import List
+from typing import List, Optional
 import os
 
 class Settings(BaseSettings):
-    # Database
-    DATABASE_URL: str = "postgresql://user:password@localhost/nba2k_rankings"
+    # Supabase Configuration
+    SUPABASE_URL: str = ""
+    SUPABASE_KEY: str = ""
+    
+    # Database (using Supabase connection string)
+    DATABASE_URL: str = ""
     
     # JWT
     SECRET_KEY: str = "your-super-secret-key-here-change-in-production"
@@ -24,7 +28,7 @@ class Settings(BaseSettings):
     DISCORD_BOT_TOKEN: str = ""
     DISCORD_API_KEY: str = ""
     
-    # Email
+    # Email (can be configured to use Supabase Auth email)
     SMTP_HOST: str = ""
     SMTP_PORT: int = 587
     SMTP_USER: str = ""
@@ -39,6 +43,15 @@ class Settings(BaseSettings):
     def CORS_ORIGINS_LIST(self) -> List[str]:
         """Convert CORS_ORIGINS string to list"""
         return [origin.strip() for origin in self.CORS_ORIGINS.split(",")]
+    
+    @property
+    def get_supabase_config(self) -> dict:
+        """Get Supabase configuration"""
+        return {
+            "url": self.SUPABASE_URL,
+            "key": self.SUPABASE_KEY,
+            "debug": self.DEBUG
+        }
     
     class Config:
         env_file = ".env"

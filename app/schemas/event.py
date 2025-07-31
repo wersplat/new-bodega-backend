@@ -2,8 +2,8 @@
 Pydantic schemas for events and tournaments
 """
 
-from pydantic import BaseModel, HttpUrl, Field
-from typing import Optional, List, Literal
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_serializer
+from typing import Optional, List, Literal, ClassVar, Dict, Any
 from datetime import date, datetime
 from enum import Enum
 from uuid import UUID
@@ -25,6 +25,8 @@ class EventStatus(str, Enum):
     CANCELLED = "cancelled"
 
 class EventBase(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
     name: str = Field(..., min_length=1)
     type: EventType
     description: Optional[str] = None
@@ -62,6 +64,8 @@ class EventUpdate(BaseModel):
     prize_pool: Optional[int] = Field(None, ge=0)
 
 class EventInDB(EventBase):
+    model_config = ConfigDict(from_attributes=True)
+    
     id: UUID
     status: EventStatus = EventStatus.UPCOMING
     processed: bool = False
@@ -69,12 +73,13 @@ class EventInDB(EventBase):
     updated_at: Optional[datetime] = None
     processed_at: Optional[datetime] = None
     
-    class Config:
-        from_attributes = True
-        json_encoders = {
-            UUID: str,
-            HttpUrl: str
-        }
+    @field_serializer('id')
+    def serialize_id(self, id: UUID, _info):
+        return str(id)
+        
+    @field_serializer('banner_url', 'rules_url', check_fields=False)
+    def serialize_url(self, url: Optional[HttpUrl], _info):
+        return str(url) if url else None
 
 class Event(EventInDB):
     """Public-facing event model"""

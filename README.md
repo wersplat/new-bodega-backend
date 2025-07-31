@@ -1,17 +1,19 @@
 # NBA 2K Global Rankings Backend
 
-A comprehensive FastAPI backend for managing NBA 2K Global Rankings, tournaments, and player profiles.
+A comprehensive FastAPI backend for managing NBA 2K Global Rankings, tournaments, and player profiles, powered by Supabase.
 
 ## 🚀 Features
 
+- **Supabase Backend**: Cloud-based PostgreSQL database with real-time capabilities
 - **Player Management**: Register, update, and manage player profiles
 - **Tournament System**: Create and manage events (Draft, BYOT, Tournaments)
 - **Global Rankings**: Real-time leaderboards with tier-based rankings
-- **Authentication**: JWT-based authentication with role-based access
+- **Authentication**: JWT-based authentication with role-based access (via Supabase Auth)
 - **Payment Integration**: Stripe checkout for event registrations
 - **Discord Bot Integration**: Bot-safe endpoints for Discord integration
 - **Admin Panel**: RP updates, badge assignment, and event management
 - **Badge System**: Achievement and title system for players
+- **Modern Schema Validation**: Pydantic v2 models with strict type checking and validation
 
 ## 🏗️ Project Structure
 
@@ -26,7 +28,12 @@ A comprehensive FastAPI backend for managing NBA 2K Global Rankings, tournaments
     discord.py          # Discord ID lookups, bot-safe endpoints
     payments.py         # Stripe payment integration
   /models               # SQLAlchemy models
-  /schemas              # Pydantic schemas
+  /schemas              # Pydantic v2 schemas with validation
+    __init__.py         # Schema package initialization
+    badge.py            # Badge and achievement schemas
+    event.py            # Event and tournament schemas
+    player.py           # Player profile and ranking schemas
+    user.py             # User authentication schemas
   /services             # RP calculation, email, webhook logic
   /core                 # App init, config, auth dependencies
 main.py
@@ -38,7 +45,7 @@ alembic/               # Database migrations
 ### Prerequisites
 
 - Python 3.8+
-- PostgreSQL
+- Supabase account (https://supabase.com/)
 - Stripe account (for payments)
 - Discord bot token (optional)
 
@@ -63,18 +70,28 @@ alembic/               # Database migrations
 
 4. **Environment Configuration**
    ```bash
-   cp env.example .env
-   # Edit .env with your configuration
+   cp .env.example .env
+   # Edit .env with your Supabase credentials
    ```
 
-5. **Database Setup**
+5. **Supabase Setup**
+   1. Create a new project at https://supabase.com/
+   2. Go to Project Settings > API to find your Project URL and anon/public key
+   3. Update `.env` with your Supabase credentials:
+      ```
+      SUPABASE_URL=your-project-url
+      SUPABASE_KEY=your-anon-key
+      ```
+   4. (Optional) For direct database access, use the connection string from:
+      Project Settings > Database > Connection string > URI
+      
+6. **Database Migrations**
    ```bash
-   # Create PostgreSQL database
-   createdb nba2k_rankings
-   
-   # Run migrations
+   # Apply database migrations if using SQLAlchemy
    alembic upgrade head
    ```
+   
+   Note: With Supabase, you can also use the Table Editor in the Supabase dashboard to manage your database schema.
 
 6. **Run the application**
    ```bash
@@ -85,11 +102,16 @@ alembic/               # Database migrations
 
 ### Environment Variables
 
-Create a `.env` file with the following variables:
+Create a `.env` file based on the `.env.example` file with the following required variables:
 
 ```env
-# Database
-DATABASE_URL=postgresql://user:password@localhost/nba2k_rankings
+# Supabase Configuration (Required)
+SUPABASE_URL=your-project-url
+SUPABASE_KEY=your-anon-key
+
+# Database (Optional: For direct database access)
+# Format: postgresql://postgres:your-password@db.your-project.supabase.co:5432/postgres
+DATABASE_URL=
 
 # JWT
 SECRET_KEY=your-super-secret-key-here
@@ -178,6 +200,8 @@ The system uses the following NBA 2K tiers:
 - JWT-based authentication
 - Password hashing with bcrypt
 - Role-based access control (User/Admin)
+- Input validation using Pydantic v2 models
+- Secure defaults for all configuration options
 - API key protection for Discord endpoints
 - Stripe webhook signature verification
 
@@ -241,4 +265,4 @@ This project is licensed under the MIT License.
 For support and questions:
 - Create an issue on GitHub
 - Check the API documentation at `/docs`
-- Review the code examples in the routers 
+- Review the code examples in the routers

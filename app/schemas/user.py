@@ -2,9 +2,10 @@
 Pydantic schemas for user authentication and management
 """
 
-from pydantic import BaseModel, EmailStr
-from typing import Optional
+from pydantic import BaseModel, ConfigDict, Field, EmailStr, field_serializer
+from typing import Optional, ClassVar, Dict, Any
 from datetime import datetime
+from uuid import UUID
 
 class UserBase(BaseModel):
     username: str
@@ -21,15 +22,14 @@ class UserUpdate(BaseModel):
     discord_id: Optional[str] = None
 
 class UserInDB(UserBase):
+    model_config = ConfigDict(from_attributes=True)
+    
     id: int
-    is_active: bool
-    is_admin: bool
+    is_active: bool = True
+    is_admin: bool = False
     discord_id: Optional[str] = None
     created_at: datetime
     updated_at: Optional[datetime] = None
-    
-    class Config:
-        from_attributes = True
 
 class User(UserInDB):
     pass

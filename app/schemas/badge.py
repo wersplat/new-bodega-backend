@@ -2,9 +2,10 @@
 Pydantic schemas for badges and achievements
 """
 
-from pydantic import BaseModel
-from typing import Optional, List
+from pydantic import BaseModel, ConfigDict, Field, field_serializer
+from typing import Optional, List, ClassVar, Dict, Any
 from datetime import datetime
+from uuid import UUID
 
 class BadgeBase(BaseModel):
     name: str
@@ -23,12 +24,11 @@ class BadgeUpdate(BaseModel):
     is_active: Optional[bool] = None
 
 class BadgeInDB(BadgeBase):
+    model_config = ConfigDict(from_attributes=True)
+    
     id: int
     is_active: bool
     created_at: datetime
-    
-    class Config:
-        from_attributes = True
 
 class Badge(BadgeInDB):
     pass
@@ -42,12 +42,11 @@ class PlayerBadgeCreate(PlayerBadgeBase):
     awarded_by: Optional[int] = None
 
 class PlayerBadgeInDB(PlayerBadgeBase):
+    model_config = ConfigDict(from_attributes=True)
+    
     id: int
     awarded_by: Optional[int] = None
     awarded_at: datetime
-    
-    class Config:
-        from_attributes = True
 
 class PlayerBadge(PlayerBadgeInDB):
     pass
