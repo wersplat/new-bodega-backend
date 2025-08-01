@@ -4,12 +4,12 @@ Payment service for Stripe integration
 
 import stripe
 from fastapi import HTTPException, status
-from sqlalchemy.orm import Session
 from typing import Optional
+import uuid
+from datetime import datetime
 
 from app.core.config import settings
-from app.models.event import Event, EventRegistration
-from app.models.player import Player
+from app.core.supabase import supabase
 
 # Configure Stripe
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -17,36 +17,36 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 class PaymentService:
     @staticmethod
     async def create_checkout_session(
-        event_id: int,
-        player_id: int,
-        db: Session
+        event_id: str,
+        player_id: str
     ) -> dict:
         """
         Create Stripe checkout session for event registration
         """
         # Get event details
-        event = db.query(Event).filter(Event.id == event_id).first()
-        if not event:
+        event_result = supabase.get_client().table("events").select("*").eq("id", event_id).single().execute()
+        if not event_result.data:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Event not found"
             )
         
+        event = event_result.data
+        
         # Get player details
-        player = db.query(Player).filter(Player.id == player_id).first()
-        if not player:
+        player_result = supabase.get_client().table("players").select("*").eq("id", player_id).single().execute()
+        if not player_result.data:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Player not found"
             )
         
-        # Check if already registered
-        existing_registration = db.query(EventRegistration).filter(
-            EventRegistration.event_id == event_id,
-            EventRegistration.player_id == player_id
-        ).first()
+        player = player_result.data
         
-        if existing_registration:
+        # Check if already registered
+        existing_registration_result = supabase.get_client().table("event_registrations").select("*").eq("event_id", event_id).eq("player_id", player_id).execute()
+        
+        if existing_registration_result.data and len(existing_registration_result.data) > 0:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Already registered for this event"
@@ -60,10 +60,10 @@ class PaymentService:
                     'price_data': {
                         'currency': 'usd',
                         'product_data': {
-                            'name': f"Event Registration: {event.name}",
-                            'description': f"Registration for {player.gamertag} in {event.name}",
+                            'name': f"Event Registration: {event['name']}",
+                            'description': f"Registration for {player['gamertag']} in {event['name']}",
                         },
-                        'unit_amount': int(event.entry_fee * 100),  # Convert to cents
+                        'unit_amount': int(float(event['entry_fee']) * 100),  # Convert to cents
                     },
                     'quantity': 1,
                 }],
@@ -73,32 +73,48 @@ class PaymentService:
                 metadata={
                     'event_id': str(event_id),
                     'player_id': str(player_id),
-                    'gamertag': player.gamertag,
-                    'event_name': event.name
+                    'gamertag': player['gamertag'],
+                    'event_name': event['name']
                 }
             )
             
-            # Create pending registration
-            registration = EventRegistration(
-                event_id=event_id,
-                player_id=player_id,
-                payment_status='pending',
-                stripe_session_id=checkout_session.id
-            )
+            # Create pending registration in Supabase
+            registration_data = {
+                "id": str(uuid.uuid4()),
+                "event_id": event_id,
+                "player_id": player_id,
+                "payment_status": "pending",
+                "stripe_session_id": checkout_session.id,
+                "is_confirmed": False,
+                "created_at": datetime.now().isoformat()
+            }
             
-            db.add(registration)
-            db.commit()
+            registration_result = supabase.get_client().table("event_registrations").insert(registration_data).execute()
+            
+            if not registration_result.data:
+                # If registration creation fails, we should handle this case
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Failed to create registration record"
+                )
             
             return {
                 'session_id': checkout_session.id,
                 'checkout_url': checkout_session.url,
-                'amount': event.entry_fee
+                'amount': event['entry_fee']
             }
             
         except stripe.error.StripeError as e:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Payment error: {str(e)}"
+            )
+        except Exception as e:
+            if isinstance(e, HTTPException):
+                raise e
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Error creating checkout session: {str(e)}"
             )
     
     @staticmethod
@@ -124,108 +140,159 @@ class PaymentService:
                 detail="Invalid signature"
             )
         
-        # Handle the event
-        if event['type'] == 'checkout.session.completed':
-            session = event['data']['object']
-            await PaymentService._handle_payment_success(session)
-        elif event['type'] == 'checkout.session.expired':
-            session = event['data']['object']
-            await PaymentService._handle_payment_expired(session)
-        
-        return {'status': 'success'}
+        try:
+            # Handle the event
+            if event['type'] == 'checkout.session.completed':
+                session = event['data']['object']
+                await PaymentService._handle_payment_success(session)
+            elif event['type'] == 'checkout.session.expired':
+                session = event['data']['object']
+                await PaymentService._handle_payment_expired(session)
+            
+            return {'status': 'success'}
+        except Exception as e:
+            if isinstance(e, HTTPException):
+                raise e
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Error processing webhook: {str(e)}"
+            )
     
     @staticmethod
     async def _handle_payment_success(session: dict):
         """
         Handle successful payment
         """
-        from app.core.database import SessionLocal
-        
-        db = SessionLocal()
         try:
-            # Get registration by session ID
-            registration = db.query(EventRegistration).filter(
-                EventRegistration.stripe_session_id == session['id']
-            ).first()
+            session_id = session.get('id')
+            event_id = session.get('metadata', {}).get('event_id')
+            player_id = session.get('metadata', {}).get('player_id')
             
-            if registration:
-                # Update payment status
-                registration.payment_status = 'paid'
-                registration.is_confirmed = True
-                
-                # Update event participant count
-                event = db.query(Event).filter(Event.id == registration.event_id).first()
-                if event:
-                    event.current_participants += 1
-                
-                db.commit()
-                
-        finally:
-            db.close()
+            if not session_id or not event_id or not player_id:
+                # Log error and return
+                print(f"Missing data in session: {session}")
+                return
+            
+            # Update registration status in Supabase
+            registration_result = supabase.get_client().table("event_registrations").select("*").eq("stripe_session_id", session_id).single().execute()
+            
+            if not registration_result.data:
+                # Log error and return
+                print(f"Registration not found for session: {session_id}")
+                return
+            
+            # Update the payment status
+            update_result = supabase.get_client().table("event_registrations").update({"payment_status": "paid"}).eq("stripe_session_id", session_id).execute()
+            
+            if not update_result.data:
+                print(f"Failed to update registration payment status for session: {session_id}")
+            
+            # Update event participant count
+            event_result = supabase.get_client().table("events").select("*").eq("id", event_id).single().execute()
+            if event_result.data:
+                event = event_result.data
+                update_result = supabase.get_client().table("events").update({"current_participants": event['current_participants'] + 1}).eq("id", event_id).execute()
+                if not update_result.data:
+                    print(f"Failed to update event participant count for event: {event_id}")
+        except Exception as e:
+            print(f"Error handling payment success: {str(e)}")
     
     @staticmethod
     async def _handle_payment_expired(session: dict):
         """
-        Handle expired payment
+        Handle expired payment session
         """
-        from app.core.database import SessionLocal
-        
-        db = SessionLocal()
         try:
-            # Get registration by session ID
-            registration = db.query(EventRegistration).filter(
-                EventRegistration.stripe_session_id == session['id']
-            ).first()
+            session_id = session.get('id')
             
-            if registration:
-                # Remove expired registration
-                db.delete(registration)
-                db.commit()
-                
-        finally:
-            db.close()
+            if not session_id:
+                # Log error and return
+                print(f"Missing session ID in expired session: {session}")
+                return
+            
+            # Update registration status in Supabase
+            registration_result = supabase.get_client().table("event_registrations").select("*").eq("stripe_session_id", session_id).single().execute()
+            
+            if not registration_result.data:
+                # Log error and return
+                print(f"Registration not found for expired session: {session_id}")
+                return
+            
+            # Update the payment status
+            update_result = supabase.get_client().table("event_registrations").update({"payment_status": "expired"}).eq("stripe_session_id", session_id).execute()
+            
+            if not update_result.data:
+                print(f"Failed to update registration payment status for expired session: {session_id}")
+        except Exception as e:
+            print(f"Error handling payment expiration: {str(e)}")
     
     @staticmethod
-    async def refund_payment(
-        registration_id: int,
-        db: Session
+    async def process_refund(
+        registration_id: str
     ) -> dict:
         """
-        Refund a payment (admin only)
+        Process refund for event registration
         """
-        registration = db.query(EventRegistration).filter(
-            EventRegistration.id == registration_id
-        ).first()
-        
-        if not registration:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Registration not found"
-            )
-        
-        if registration.payment_status != 'paid':
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Registration not paid"
-            )
-        
         try:
-            # Create refund in Stripe
-            refund = stripe.Refund.create(
-                payment_intent=registration.stripe_session_id
-            )
+            # Get registration from Supabase
+            registration_result = supabase.get_client().table("event_registrations").select("*").eq("id", registration_id).single().execute()
             
-            # Update registration status
-            registration.payment_status = 'refunded'
-            db.commit()
+            if not registration_result.data:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Registration not found"
+                )
             
-            return {
-                'refund_id': refund.id,
-                'status': 'refunded'
-            }
+            registration = registration_result.data
             
-        except stripe.error.StripeError as e:
+            if registration["payment_status"] != 'paid':
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Cannot refund unpaid registration"
+                )
+            
+            # Get event details
+            event_result = supabase.get_client().table("events").select("*").eq("id", registration["event_id"]).single().execute()
+            if not event_result.data:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Event not found"
+                )
+            
+            try:
+                # Get payment intent from session
+                session = stripe.checkout.Session.retrieve(registration["stripe_session_id"])
+                payment_intent = session.payment_intent
+                
+                # Process refund
+                refund = stripe.Refund.create(
+                    payment_intent=payment_intent,
+                    reason="requested_by_customer"
+                )
+                
+                # Update registration status in Supabase
+                update_result = supabase.get_client().table("event_registrations").update({"payment_status": "refunded"}).eq("id", registration_id).execute()
+                
+                if not update_result.data:
+                    raise HTTPException(
+                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        detail="Failed to update registration status"
+                    )
+                
+                return {
+                    'status': 'success',
+                    'refund_id': refund.id
+                }
+                
+            except stripe.error.StripeError as e:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Refund error: {str(e)}"
+                )
+        except Exception as e:
+            if isinstance(e, HTTPException):
+                raise e
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Refund error: {str(e)}"
-            ) 
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Error processing refund: {str(e)}"
+            )

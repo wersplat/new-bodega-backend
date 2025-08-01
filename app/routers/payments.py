@@ -3,36 +3,49 @@ Payments router for Stripe integration
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status, Request, Header
-from sqlalchemy.orm import Session
 from typing import Optional
+import uuid
+from datetime import datetime
 
-from app.core.database import get_db
-from app.core.auth import get_current_active_user
-from app.models.user import User
-from app.models.player import Player
-from app.models.event import EventRegistration
+from app.core.auth import get_current_active_user, get_current_admin_user
+from app.core.supabase import supabase
 from app.services.payments import PaymentService
+from app.schemas.payments import CreatePaymentSessionRequest
 
 router = APIRouter()
 
-@router.post("/create-session")
+@router.post("/session/create")
 async def create_payment_session(
-    event_id: int,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db)
+    request: CreatePaymentSessionRequest,
+    current_user: dict = Depends(get_current_active_user)
 ):
     """
-    Create Stripe checkout session for event registration
+    Create payment session for event registration
     """
-    # Get player profile
-    player = db.query(Player).filter(Player.user_id == current_user.id).first()
-    if not player:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Player profile required for event registration"
+    try:
+        # Get player profile
+        player_result = supabase.get_client().table("players").select("*").eq("user_id", current_user["id"]).single().execute()
+        
+        if not player_result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Player profile not found"
+            )
+        
+        player = player_result.data
+        
+        # Create payment session using service
+        return await PaymentService.create_checkout_session(
+            event_id=request.event_id,
+            player_id=player["id"]
         )
-    
-    return await PaymentService.create_checkout_session(event_id, player.id, db)
+    except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error creating payment session: {str(e)}"
+        )
 
 @router.post("/webhooks/stripe")
 async def stripe_webhook(
@@ -42,20 +55,45 @@ async def stripe_webhook(
     """
     Handle Stripe webhook events
     """
-    if not stripe_signature:
+    try:
+        if not stripe_signature:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Missing Stripe signature"
+            )
+        
+        payload = await request.body()
+        return await PaymentService.handle_webhook(payload, stripe_signature)
+    except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Missing Stripe signature"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error processing webhook: {str(e)}"
         )
-    
-    payload = await request.body()
-    return await PaymentService.handle_webhook(payload, stripe_signature)
+
+@router.post("/refund/{registration_id}")
+async def refund_payment(
+    registration_id: str,
+    current_user: dict = Depends(get_current_admin_user)
+):
+    """
+    Process refund for event registration (admin only)
+    """
+    try:
+        return await PaymentService.process_refund(registration_id)
+    except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error processing refund: {str(e)}"
+        )
 
 @router.get("/session/{session_id}/status")
 async def get_payment_status(
     session_id: str,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db)
+    current_user: dict = Depends(get_current_active_user)
 ):
     """
     Get payment session status
@@ -66,36 +104,48 @@ async def get_payment_status(
     stripe.api_key = settings.STRIPE_SECRET_KEY
     
     try:
+        # Get Stripe session
         session = stripe.checkout.Session.retrieve(session_id)
         
         # Check if user owns this session
-        player = db.query(Player).filter(Player.user_id == current_user.id).first()
-        if not player:
+        player_result = supabase.get_client().table("players").select("*").eq("user_id", current_user["id"]).single().execute()
+        
+        if not player_result.data:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Player profile not found"
             )
         
-        registration = db.query(EventRegistration).filter(
-            EventRegistration.stripe_session_id == session_id,
-            EventRegistration.player_id == player.id
-        ).first()
+        player = player_result.data
         
-        if not registration:
+        # Find registration in Supabase
+        registration_result = supabase.get_client().table("event_registrations").select("*").eq("stripe_session_id", session_id).eq("player_id", player["id"]).single().execute()
+        
+        if not registration_result.data:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Registration not found"
             )
         
+        registration = registration_result.data
+        
         return {
             'session_id': session_id,
             'status': session.status,
             'payment_status': session.payment_status,
-            'registration_status': registration.payment_status
+            'registration_status': registration["payment_status"]
         }
         
-    except stripe.error.StripeError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Stripe error: {str(e)}"
-        ) 
+    except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
+        elif isinstance(e, stripe.error.StripeError):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Stripe error: {str(e)}"
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Error retrieving payment status: {str(e)}"
+            )
