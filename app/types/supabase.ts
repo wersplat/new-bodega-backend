@@ -58,6 +58,6 @@ export interface Player {
 */
 
 // Re-export generated types for reference
-export * from '../../supabase/types';
+export * from '../../supabase_types.json.js';
 
 // Add any custom types or utility functions here

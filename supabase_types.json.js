@@ -1051,6 +1051,448 @@ export type Database = {
           },
         ]
       }
+      match_submissions: {
+        Row: {
+          created_at: string
+          event_id: string | null
+          id: string
+          match_id: string | null
+          review_status: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          team_a_id: string | null
+          team_a_name: string | null
+          team_b_id: string | null
+          team_b_name: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_id?: string | null
+          id?: string
+          match_id?: string | null
+          review_status?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          team_a_id?: string | null
+          team_a_name?: string | null
+          team_b_id?: string | null
+          team_b_name?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_id?: string | null
+          id?: string
+          match_id?: string | null
+          review_status?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          team_a_id?: string | null
+          team_a_name?: string | null
+          team_b_id?: string | null
+          team_b_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_submissions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "event_standings"
+            referencedColumns: ["event_id"]
+          },
+          {
+            foreignKeyName: "match_submissions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_submissions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "player_match_history"
+            referencedColumns: ["event_id"]
+          },
+          {
+            foreignKeyName: "match_submissions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "tournament_schedule"
+            referencedColumns: ["event_id"]
+          },
+          {
+            foreignKeyName: "match_submissions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "upcoming_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_submissions_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "match_details"
+            referencedColumns: ["match_id"]
+          },
+          {
+            foreignKeyName: "match_submissions_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_id_fkey"
+            columns: ["team_a_id"]
+            isOneToOne: false
+            referencedRelation: "group_points_standings"
+            referencedColumns: ["team_id"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_id_fkey"
+            columns: ["team_a_id"]
+            isOneToOne: false
+            referencedRelation: "match_details"
+            referencedColumns: ["team_a_id"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_id_fkey"
+            columns: ["team_a_id"]
+            isOneToOne: false
+            referencedRelation: "match_details"
+            referencedColumns: ["team_b_id"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_id_fkey"
+            columns: ["team_a_id"]
+            isOneToOne: false
+            referencedRelation: "match_details"
+            referencedColumns: ["winner_id"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_id_fkey"
+            columns: ["team_a_id"]
+            isOneToOne: false
+            referencedRelation: "regional_team_rankings"
+            referencedColumns: ["team_id"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_id_fkey"
+            columns: ["team_a_id"]
+            isOneToOne: false
+            referencedRelation: "team_performance_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_id_fkey"
+            columns: ["team_a_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_name_fkey"
+            columns: ["team_a_name"]
+            isOneToOne: false
+            referencedRelation: "event_standings"
+            referencedColumns: ["team_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_name_fkey"
+            columns: ["team_a_name"]
+            isOneToOne: false
+            referencedRelation: "group_matches_view"
+            referencedColumns: ["team_a_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_name_fkey"
+            columns: ["team_a_name"]
+            isOneToOne: false
+            referencedRelation: "group_matches_view"
+            referencedColumns: ["team_b_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_name_fkey"
+            columns: ["team_a_name"]
+            isOneToOne: false
+            referencedRelation: "group_points_standings"
+            referencedColumns: ["team_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_name_fkey"
+            columns: ["team_a_name"]
+            isOneToOne: false
+            referencedRelation: "group_standings_view"
+            referencedColumns: ["team_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_name_fkey"
+            columns: ["team_a_name"]
+            isOneToOne: false
+            referencedRelation: "match_details"
+            referencedColumns: ["team_a_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_name_fkey"
+            columns: ["team_a_name"]
+            isOneToOne: false
+            referencedRelation: "match_details"
+            referencedColumns: ["team_b_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_name_fkey"
+            columns: ["team_a_name"]
+            isOneToOne: false
+            referencedRelation: "match_details"
+            referencedColumns: ["winner_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_name_fkey"
+            columns: ["team_a_name"]
+            isOneToOne: false
+            referencedRelation: "player_match_history"
+            referencedColumns: ["team_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_name_fkey"
+            columns: ["team_a_name"]
+            isOneToOne: false
+            referencedRelation: "player_performance_summary"
+            referencedColumns: ["team_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_name_fkey"
+            columns: ["team_a_name"]
+            isOneToOne: false
+            referencedRelation: "regional_team_rankings"
+            referencedColumns: ["team_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_name_fkey"
+            columns: ["team_a_name"]
+            isOneToOne: false
+            referencedRelation: "team_performance_summary"
+            referencedColumns: ["name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_name_fkey"
+            columns: ["team_a_name"]
+            isOneToOne: false
+            referencedRelation: "team_roster_current"
+            referencedColumns: ["team_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_name_fkey"
+            columns: ["team_a_name"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_name_fkey"
+            columns: ["team_a_name"]
+            isOneToOne: false
+            referencedRelation: "tournament_schedule"
+            referencedColumns: ["team_a_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_name_fkey"
+            columns: ["team_a_name"]
+            isOneToOne: false
+            referencedRelation: "tournament_schedule"
+            referencedColumns: ["team_b_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_name_fkey"
+            columns: ["team_a_name"]
+            isOneToOne: false
+            referencedRelation: "upcoming_matches_view"
+            referencedColumns: ["team_a_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_a_name_fkey"
+            columns: ["team_a_name"]
+            isOneToOne: false
+            referencedRelation: "upcoming_matches_view"
+            referencedColumns: ["team_b_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_id_fkey"
+            columns: ["team_b_id"]
+            isOneToOne: false
+            referencedRelation: "group_points_standings"
+            referencedColumns: ["team_id"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_id_fkey"
+            columns: ["team_b_id"]
+            isOneToOne: false
+            referencedRelation: "match_details"
+            referencedColumns: ["team_a_id"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_id_fkey"
+            columns: ["team_b_id"]
+            isOneToOne: false
+            referencedRelation: "match_details"
+            referencedColumns: ["team_b_id"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_id_fkey"
+            columns: ["team_b_id"]
+            isOneToOne: false
+            referencedRelation: "match_details"
+            referencedColumns: ["winner_id"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_id_fkey"
+            columns: ["team_b_id"]
+            isOneToOne: false
+            referencedRelation: "regional_team_rankings"
+            referencedColumns: ["team_id"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_id_fkey"
+            columns: ["team_b_id"]
+            isOneToOne: false
+            referencedRelation: "team_performance_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_id_fkey"
+            columns: ["team_b_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_name_fkey"
+            columns: ["team_b_name"]
+            isOneToOne: false
+            referencedRelation: "event_standings"
+            referencedColumns: ["team_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_name_fkey"
+            columns: ["team_b_name"]
+            isOneToOne: false
+            referencedRelation: "group_matches_view"
+            referencedColumns: ["team_a_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_name_fkey"
+            columns: ["team_b_name"]
+            isOneToOne: false
+            referencedRelation: "group_matches_view"
+            referencedColumns: ["team_b_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_name_fkey"
+            columns: ["team_b_name"]
+            isOneToOne: false
+            referencedRelation: "group_points_standings"
+            referencedColumns: ["team_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_name_fkey"
+            columns: ["team_b_name"]
+            isOneToOne: false
+            referencedRelation: "group_standings_view"
+            referencedColumns: ["team_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_name_fkey"
+            columns: ["team_b_name"]
+            isOneToOne: false
+            referencedRelation: "match_details"
+            referencedColumns: ["team_a_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_name_fkey"
+            columns: ["team_b_name"]
+            isOneToOne: false
+            referencedRelation: "match_details"
+            referencedColumns: ["team_b_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_name_fkey"
+            columns: ["team_b_name"]
+            isOneToOne: false
+            referencedRelation: "match_details"
+            referencedColumns: ["winner_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_name_fkey"
+            columns: ["team_b_name"]
+            isOneToOne: false
+            referencedRelation: "player_match_history"
+            referencedColumns: ["team_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_name_fkey"
+            columns: ["team_b_name"]
+            isOneToOne: false
+            referencedRelation: "player_performance_summary"
+            referencedColumns: ["team_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_name_fkey"
+            columns: ["team_b_name"]
+            isOneToOne: false
+            referencedRelation: "regional_team_rankings"
+            referencedColumns: ["team_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_name_fkey"
+            columns: ["team_b_name"]
+            isOneToOne: false
+            referencedRelation: "team_performance_summary"
+            referencedColumns: ["name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_name_fkey"
+            columns: ["team_b_name"]
+            isOneToOne: false
+            referencedRelation: "team_roster_current"
+            referencedColumns: ["team_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_name_fkey"
+            columns: ["team_b_name"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_name_fkey"
+            columns: ["team_b_name"]
+            isOneToOne: false
+            referencedRelation: "tournament_schedule"
+            referencedColumns: ["team_a_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_name_fkey"
+            columns: ["team_b_name"]
+            isOneToOne: false
+            referencedRelation: "tournament_schedule"
+            referencedColumns: ["team_b_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_name_fkey"
+            columns: ["team_b_name"]
+            isOneToOne: false
+            referencedRelation: "upcoming_matches_view"
+            referencedColumns: ["team_a_name"]
+          },
+          {
+            foreignKeyName: "match_submissions_team_b_name_fkey"
+            columns: ["team_b_name"]
+            isOneToOne: false
+            referencedRelation: "upcoming_matches_view"
+            referencedColumns: ["team_b_name"]
+          },
+        ]
+      }
       matches: {
         Row: {
           boxscore_url: string | null
@@ -1663,6 +2105,39 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          read: boolean
+          title: string
+          type: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          read?: boolean
+          title: string
+          type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          read?: boolean
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       player_rp_transactions: {
         Row: {
           amount: number
@@ -2089,6 +2564,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          id: string
+          role: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          id: string
+          role?: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          role?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       ranking_points: {
         Row: {
