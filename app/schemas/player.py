@@ -18,14 +18,14 @@ class PlayerTier(str, Enum):
     GALAXY_OPAL = "galaxy_opal"
 
 class PlayerBase(BaseModel):
-    gamertag: str
-    platform: str
-    team_name: Optional[str] = None
-    region: Optional[str] = None
-    bio: Optional[str] = None
+    gamertag: str = Field(..., min_length=1, max_length=100)
+    platform: str = Field(..., min_length=1, max_length=50)
+    team_name: Optional[str] = Field(None, max_length=100)
+    region: Optional[str] = Field(None, max_length=50)
+    bio: Optional[str] = Field(None, max_length=500)
 
 class PlayerCreate(PlayerBase):
-    user_id: int
+    user_id: int = Field(..., gt=0, description="User ID must be a positive integer")
 
 class PlayerUpdate(BaseModel):
     gamertag: Optional[str] = None
@@ -38,11 +38,19 @@ class PlayerInDB(PlayerBase):
     model_config = ConfigDict(from_attributes=True)
     
     id: int
-    user_id: int
-    current_rp: float = Field(ge=0.0)
-    peak_rp: float = Field(ge=0.0)
-    tier: PlayerTier
-    is_verified: bool = False
+    gamertag: str
+    position: Optional[str] = None
+    region_id: Optional[int] = None
+    current_team_id: Optional[int] = None
+    performance_score: Optional[float] = Field(default=None, ge=0.0)
+    player_rp: float = Field(ge=0.0)  # Renamed from current_rp to match Supabase
+    player_rank_score: float = Field(ge=0.0)  # Using this as peak_rp equivalent
+    salary_tier: Optional[int] = None
+    monthly_value: Optional[float] = None
+    is_rookie: bool = False
+    discord_id: Optional[str] = None
+    twitter_id: Optional[str] = None
+    alternate_gamertag: Optional[str] = None
     created_at: datetime
     updated_at: Optional[datetime] = None
 
@@ -54,6 +62,15 @@ class PlayerProfile(Player):
     username: str
     full_name: Optional[str] = None
     discord_id: Optional[str] = None
+    twitter_id: Optional[str] = None
+    alternate_gamertag: Optional[str] = None
+    position: Optional[str] = None
+    region_id: Optional[int] = None
+    current_team_id: Optional[int] = None
+    performance_score: Optional[float] = None
+    salary_tier: Optional[int] = None
+    monthly_value: Optional[float] = None
+    is_rookie: bool = False
 
 class RPHistory(BaseModel):
     model_config = ConfigDict(from_attributes=True)

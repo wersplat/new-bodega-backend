@@ -12,24 +12,30 @@ from typing import Dict, Any, Optional
 load_dotenv()
 
 def create_test_event() -> Dict[str, Any]:
-    """Create a test event with valid data"""
+    """Create a test event with valid data according to schema"""
     event_id = str(uuid.uuid4())
+    now = datetime.utcnow()
+    
     return {
         "id": event_id,
         "name": "Test Tournament",
-        "event_type": "Tournament",
-        "event_tier": "T1",
-        "start_time": (datetime.utcnow() + timedelta(days=7)).isoformat(),
-        "end_time": (datetime.utcnow() + timedelta(days=8)).isoformat(),
-        "status": "Upcoming",
-        "league": "UPA",
-        "stage": "Group Play",
-        "created_at": datetime.utcnow().isoformat(),
-        "updated_at": datetime.utcnow().isoformat(),
-        "is_active": True,
-        "max_players": 32,
-        "entry_fee": 1000,  # RP
+        "type": "tournament",  # Using schema field name 'type' instead of 'event_type'
+        "is_global": False,
+        "region_id": "us-east-1",  # Assuming this is required
+        "start_date": (now + timedelta(days=7)).isoformat(),
+        "end_date": (now + timedelta(days=8)).isoformat(),
+        "max_rp": 1000,  # Using schema field name 'max_rp' instead of 'entry_fee'
+        "decay_days": 7,  # Days until RP starts decaying
+        "processed": False,
+        "description": "Test tournament description",
+        "banner_url": "https://example.com/banner.jpg",
+        "rules_url": "https://example.com/rules",
+        "status": "upcoming",  # Using lowercase to match likely enum values
+        "tier": "T1",  # Using schema field name 'tier' instead of 'event_tier'
+        "season_number": 1,
         "prize_pool": 25000,  # RP
+        "created_at": now.isoformat(),
+        "processed_at": None  # Will be set when processed
     }
 
 def test_events_crud():
@@ -43,42 +49,48 @@ def test_events_crud():
         # Test CREATE
         print("\n🆕 Testing CREATE event...")
         created_event = supabase.insert("events", test_event)
+        assert created_event is not None, "Failed to create event"
         print(f"✅ Created event: {created_event['name']} (ID: {created_event['id']})")
         
         # Test READ
         print("\n📖 Testing GET event...")
         fetched_event = supabase.fetch_by_id("events", event_id)
+        assert fetched_event is not None, "Failed to fetch event"
         print(f"✅ Fetched event: {fetched_event['name']}")
         
         # Test UPDATE
         print("\n🔄 Testing UPDATE event...")
         update_data = {
-            "status": "In Progress",
-            "max_players": 64,
-            "prize_pool": 50000
+            "status": "in_progress",
+            "max_rp": 1500,
+            "prize_pool": 50000,
+            "description": "Updated description"
         }
         updated_event = supabase.update("events", event_id, update_data)
+        assert updated_event is not None, "Failed to update event"
         print(f"✅ Updated event: Status={updated_event['status']}, "
-              f"Max Players={updated_event['max_players']}")
+              f"Max RP={updated_event['max_rp']}")
         
         # Test QUERY with filters
         print("\n🔍 Testing QUERY events...")
+        # Using the Supabase client directly for more complex queries
         client = supabase.get_client()
         response = client.table("events") \
                        .select("*") \
-                       .eq("league", "UPA") \
+                       .eq("type", "tournament") \
                        .execute()
         events = response.data if hasattr(response, 'data') else []
-        print(f"✅ Found {len(events)} events in the 'UPA' league")
+        print(f"✅ Found {len(events)} tournament events in the database")
         
-        # Test DELETE (optional - comment out if you want to keep test data)
+        # Test DELETE
         print("\n🗑️  Testing DELETE event...")
         delete_result = supabase.delete("events", event_id)
-        print(f"✅ Delete successful: {delete_result}")
+        assert delete_result is not None, "Failed to delete event"
+        print("✅ Delete successful")
         
-        # Verify delete
+        # Verify deletion
         deleted_event = supabase.fetch_by_id("events", event_id)
-        assert deleted_event is None, "Delete verification failed"
+        assert deleted_event is None, "Event was not deleted successfully"
         
         print("\n🎉 All event operations tested successfully!")
         

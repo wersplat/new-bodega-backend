@@ -12,10 +12,12 @@ from app.schemas.player import PlayerProfile, PlayerTier
 router = APIRouter()
 
 class LeaderboardSortBy(str, Enum):
-    CURRENT_RP = "current_rp"
-    PEAK_RP = "peak_rp"
+    # Using player_rp instead of current_rp to match Supabase schema
+    CURRENT_RP = "player_rp"
+    PEAK_RP = "player_rank_score"  # Using player_rank_score as peak RP
     WINS = "wins"
     WIN_RATE = "win_rate"
+    RANK = "rank"  # Fallback column if others don't exist
 
 @router.get("/global", response_model=List[PlayerProfile])
 async def get_global_leaderboard(
@@ -37,9 +39,24 @@ async def get_global_leaderboard(
     if tier:
         query = query.eq("tier", tier.value)
     
-    # Apply sorting
+    # Apply sorting with fallback if column doesn't exist
     sort_order = "desc" if descending else "asc"
-    query = query.order(sort_by.value, desc=descending)
+    try:
+        # First try the requested sort column
+        query = query.order(sort_by.value, desc=descending)
+    except Exception as e:
+        if "column" in str(e) and "does not exist" in str(e):
+            # If the column doesn't exist, try fallback columns
+            fallback_columns = ["rank", "id", "created_at"]
+            for col in fallback_columns:
+                try:
+                    query = query.order(col, desc=descending)
+                    break
+                except:
+                    continue
+        else:
+            # Re-raise if it's a different error
+            raise
     
     # Apply pagination
     query = query.range(offset, offset + limit - 1)
@@ -58,14 +75,14 @@ async def get_top_players(
     limit: int = Query(10, ge=1, le=100)
 ):
     """
-    Get top players globally by current RP
+    Get top players globally by player RP
     """
     client = supabase.get_client()
     
     try:
         result = client.table("players") \
             .select("*") \
-            .order("current_rp", desc=True) \
+            .order("player_rp", desc=True) \
             .limit(limit) \
             .execute()
         
@@ -91,7 +108,7 @@ async def get_tier_leaderboard(
         result = client.table("players") \
             .select("*") \
             .eq("tier", tier.value) \
-            .order("current_rp", desc=True) \
+            .order("player_rp", desc=True) \
             .range(offset, offset + limit - 1) \
             .execute()
         

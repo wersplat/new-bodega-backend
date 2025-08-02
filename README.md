@@ -40,6 +40,26 @@ main.py
 alembic/               # Database migrations
 ```
 
+## 🔐 Authentication
+
+For detailed authentication documentation, see [AUTHENTICATION.md](docs/AUTHENTICATION.md).
+
+### Key Features
+- **JWT-based Authentication**: Secure token-based authentication
+- **Role-Based Access Control**: Different permissions for users, players, and admins
+- **Row Level Security**: Fine-grained data access control
+- **Token Refresh**: Secure token refresh mechanism
+
+### Quick Start
+1. Configure your `.env` file with Supabase credentials
+2. Use the `/auth` endpoints to register/login
+3. Include the JWT in the `Authorization: Bearer <token>` header
+
+For testing authentication, run:
+```bash
+python scripts/check_auth.py
+```
+
 ## 🛠️ Setup
 
 ### Prerequisites

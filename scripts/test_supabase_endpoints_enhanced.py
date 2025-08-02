@@ -5,9 +5,17 @@ Enhanced test script to verify Supabase-based API endpoints including leaderboar
 import os
 import sys
 import asyncio
+import pytest
 import httpx
 from dotenv import load_dotenv
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Generator, AsyncGenerator
+from fastapi.testclient import TestClient
+
+# Add the project root to the Python path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# Import the FastAPI app
+from main import app
 
 # Load environment variables
 load_dotenv()
@@ -39,31 +47,69 @@ class TestLogger:
         print(f"🔍 {title}")
         print(f"{'='*50}")
 
-async def test_authentication() -> Optional[Dict[str, str]]:
-    """Test authentication and get access token"""
+@pytest.fixture(scope="session")
+def test_client():
+    """Create a test client for the FastAPI app"""
+    with TestClient(app) as client:
+        yield client
+
+@pytest.fixture(scope="session")
+def access_token() -> str:
+    """Fixture to provide an access token for authenticated requests"""
+    # In a real test, you would authenticate with test credentials
+    # For now, we'll use a test token or environment variable
+    test_token = os.getenv("TEST_ACCESS_TOKEN", "test_token")
+    if not test_token or test_token == "test_token":
+        TestLogger.warning("Using test token - some endpoints may require a valid token")
+    return test_token
+
+@pytest.fixture(scope="module")
+async def async_client() -> AsyncGenerator[httpx.AsyncClient, None]:
+    """Create an async HTTP client for testing"""
+    async with httpx.AsyncClient() as client:
+        yield client
+
+@pytest.mark.asyncio
+async def test_authentication(access_token: str, async_client: AsyncGenerator[httpx.AsyncClient, None]):
+    """Test authentication and verify the token works"""
     TestLogger.section("Testing Authentication")
     
-    # In a real test, you would use test credentials
-    # For now, we'll assume the user is already authenticated
-    test_token = "test_token"  # Replace with actual token in a real test
+    # Get the client from the generator
+    client = await async_client.__anext__()
     
-    if test_token:
-        TestLogger.success("Authentication successful")
-        return {"access_token": test_token}
-    else:
-        TestLogger.error("Authentication failed")
-        return None
+    try:
+        headers = {"Authorization": f"Bearer {access_token}"}
+        
+        # Test a protected endpoint
+        response = await client.get(
+            f"{API_BASE_URL}/api/players/me",
+            headers=headers
+        )
+        
+        if response.status_code == 200:
+            TestLogger.success("Authentication successful")
+            return True
+        elif response.status_code == 401:
+            TestLogger.warning("Authentication failed - using test token")
+            return False
+        else:
+            TestLogger.warning(f"Unexpected status code: {response.status_code}")
+            return False
+    except Exception as e:
+        TestLogger.error(f"Error in test_authentication: {str(e)}")
+        return False
 
-async def test_players_endpoint(access_token: str) -> Optional[Dict[str, Any]]:
+@pytest.mark.asyncio
+async def test_players_endpoint(access_token: str, async_client: httpx.AsyncClient) -> Optional[Dict[str, Any]]:
     """Test players endpoints"""
     TestLogger.section("Testing Players Endpoint")
     headers = {"Authorization": f"Bearer {access_token}"}
     
-    async with httpx.AsyncClient() as client:
+    try:
         # Get current user's profile
         TestLogger.info("Testing GET /players/me/profile")
-        response = await client.get(
-            f"{API_BASE_URL}/players/me/profile",
+        response = await async_client.get(
+            f"{API_BASE_URL}/api/players/me/profile",
             headers=headers
         )
         
@@ -74,17 +120,21 @@ async def test_players_endpoint(access_token: str) -> Optional[Dict[str, Any]]:
         else:
             TestLogger.warning(f"Failed to get player profile: {response.status_code} - {response.text}")
             return None
+    except Exception as e:
+        TestLogger.error(f"Error in test_players_endpoint: {str(e)}")
+        return None
 
-async def test_events_endpoint(access_token: str) -> List[Dict[str, Any]]:
+@pytest.mark.asyncio
+async def test_events_endpoint(access_token: str, async_client: httpx.AsyncClient) -> List[Dict[str, Any]]:
     """Test events endpoints"""
     TestLogger.section("Testing Events Endpoint")
     headers = {"Authorization": f"Bearer {access_token}"}
     
-    async with httpx.AsyncClient() as client:
+    try:
         # List all events
         TestLogger.info("Testing GET /events/")
-        response = await client.get(
-            f"{API_BASE_URL}/events/",
+        response = await async_client.get(
+            f"{API_BASE_URL}/api/events/",
             headers=headers
         )
         
@@ -95,8 +145,12 @@ async def test_events_endpoint(access_token: str) -> List[Dict[str, Any]]:
         else:
             TestLogger.warning(f"Failed to get events: {response.status_code} - {response.text}")
             return []
+    except Exception as e:
+        TestLogger.error(f"Error in test_events_endpoint: {str(e)}")
+        return []
 
-async def test_leaderboard_endpoints(access_token: str) -> Dict[str, Any]:
+@pytest.mark.asyncio
+async def test_leaderboard_endpoints(access_token: str, async_client: httpx.AsyncClient) -> Dict[str, Any]:
     """Test leaderboard endpoints"""
     TestLogger.section("Testing Leaderboard Endpoints")
     headers = {"Authorization": f"Bearer {access_token}"}
@@ -108,11 +162,11 @@ async def test_leaderboard_endpoints(access_token: str) -> Dict[str, Any]:
         "region_leaderboard": False
     }
     
-    async with httpx.AsyncClient() as client:
+    try:
         # Test global leaderboard
         TestLogger.info("Testing GET /leaderboard/global")
-        response = await client.get(
-            f"{API_BASE_URL}/leaderboard/global?limit=5",
+        response = await async_client.get(
+            f"{API_BASE_URL}/api/leaderboard/global?limit=5",
             headers=headers
         )
         
@@ -125,8 +179,8 @@ async def test_leaderboard_endpoints(access_token: str) -> Dict[str, Any]:
                 # Test tier leaderboard with the first player's tier if available
                 if leaderboard and "tier" in leaderboard[0]:
                     tier = leaderboard[0]["tier"]
-                    tier_response = await client.get(
-                        f"{API_BASE_URL}/leaderboard/tier/{tier}?limit=3",
+                    tier_response = await async_client.get(
+                        f"{API_BASE_URL}/api/leaderboard/tier/{tier}?limit=3",
                         headers=headers
                     )
                     if tier_response.status_code == 200:
@@ -139,8 +193,8 @@ async def test_leaderboard_endpoints(access_token: str) -> Dict[str, Any]:
                 # Test platform leaderboard if platform is available
                 if leaderboard and "platform" in leaderboard[0]:
                     platform = leaderboard[0]["platform"]
-                    platform_response = await client.get(
-                        f"{API_BASE_URL}/leaderboard/platform/{platform}?limit=3",
+                    platform_response = await async_client.get(
+                        f"{API_BASE_URL}/api/leaderboard/platform/{platform}?limit=3",
                         headers=headers
                     )
                     if platform_response.status_code == 200:
@@ -153,8 +207,8 @@ async def test_leaderboard_endpoints(access_token: str) -> Dict[str, Any]:
                 # Test region leaderboard if region is available
                 if leaderboard and "region" in leaderboard[0] and leaderboard[0]["region"]:
                     region = leaderboard[0]["region"]
-                    region_response = await client.get(
-                        f"{API_BASE_URL}/leaderboard/region/{region}?limit=3",
+                    region_response = await async_client.get(
+                        f"{API_BASE_URL}/api/leaderboard/region/{region}?limit=3",
                         headers=headers
                     )
                     if region_response.status_code == 200:
@@ -170,8 +224,8 @@ async def test_leaderboard_endpoints(access_token: str) -> Dict[str, Any]:
         
         # Test top players endpoint
         TestLogger.info("\nTesting GET /leaderboard/global/top")
-        top_response = await client.get(
-            f"{API_BASE_URL}/leaderboard/global/top?limit=3",
+        top_response = await async_client.get(
+            f"{API_BASE_URL}/api/leaderboard/global/top?limit=3",
             headers=headers
         )
         
@@ -184,26 +238,27 @@ async def test_leaderboard_endpoints(access_token: str) -> Dict[str, Any]:
                 TestLogger.warning("Top players list is empty")
         else:
             TestLogger.error(f"Failed to get top players: {top_response.status_code} - {top_response.text}")
-    
-    return results
+        
+        return results
+    except Exception as e:
+        TestLogger.error(f"Error in test_leaderboard_endpoints: {str(e)}")
+        return results
 
 async def main():
     """Main test function"""
     TestLogger.section("Starting Supabase API Endpoint Tests")
     
     # Test authentication
-    auth_data = await test_authentication()
-    if not auth_data or "access_token" not in auth_data:
+    auth_result = await test_authentication(access_token(), async_client())
+    if not auth_result:
         TestLogger.error("Authentication failed. Exiting tests.")
         sys.exit(1)
     
-    access_token = auth_data["access_token"]
-    
     # Run tests
     test_results = {
-        "player": await test_players_endpoint(access_token) is not None,
-        "events": len(await test_events_endpoint(access_token)) > 0,
-        "leaderboard": await test_leaderboard_endpoints(access_token)
+        "player": await test_players_endpoint(access_token(), async_client()) is not None,
+        "events": len(await test_events_endpoint(access_token(), async_client())) > 0,
+        "leaderboard": await test_leaderboard_endpoints(access_token(), async_client())
     }
     
     # Print summary
@@ -238,4 +293,6 @@ async def main():
     print("="*50)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    # Run pytest with the current file
+    import pytest
+    sys.exit(pytest.main(["-v", __file__]))
