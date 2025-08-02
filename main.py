@@ -25,15 +25,15 @@ from app.core.rate_limiter import (
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 from app.routers import (
-    players_supabase as players, 
-    events_refactored as events,  # Updated to use refactored events router
+    players,  # Consolidated players router
+    events,  # Consolidated events router
     leaderboard_supabase as leaderboard, 
     auth, 
     admin, 
     discord, 
     payments,
     teams,  # Updated to use refactored teams router
-    matches_refactored as matches,
+    matches,  # Consolidated matches router
     player_stats
 )
 
@@ -116,15 +116,15 @@ app.add_middleware(
 # Include routers with flattened RESTful structure
 # Authentication endpoints remain at root
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
-app.include_router(players.router, prefix="/v1/players", tags=["Players"])
-app.include_router(events.router, prefix="/v1/events", tags=["Events"])
-app.include_router(leaderboard.router, prefix="/v1/leaderboard", tags=["Leaderboards"])
-app.include_router(teams.router, prefix="/v1/teams", tags=["Teams"])
-app.include_router(matches.router, prefix="/v1/matches", tags=["Matches"])
-app.include_router(player_stats.router, prefix="/v1/player-stats", tags=["Player Stats"])
-app.include_router(admin.router, prefix="/v1/admin", tags=["Admin"])
-app.include_router(discord.router, prefix="/v1/discord", tags=["Discord Integration"])
-app.include_router(payments.router, prefix="/v1/payments", tags=["Payment Integration"])
+app.include_router(players.router, tags=["Players"])
+app.include_router(events.router, tags=["Events"])
+app.include_router(leaderboard.router, tags=["Leaderboards"])
+app.include_router(teams.router, tags=["Teams"])
+app.include_router(matches.router, tags=["Matches"])
+app.include_router(player_stats.router, tags=["Player Stats"])
+app.include_router(admin.router, tags=["Admin"])
+app.include_router(discord.router, tags=["Discord Integration"])
+app.include_router(payments.router, tags=["Payment Integration"])
 
 # Add backward compatibility redirects
 from fastapi.responses import RedirectResponse
@@ -140,13 +140,13 @@ async def legacy_api_redirect(path: str):
         "auth": "/auth",
         "players": "/v1/players",
         "events": "/v1/events",
-        "leaderboard": "/v1/leaderboards",
+        "leaderboard": "/v1/leaderboard",  # Updated to match actual route
         "teams": "/v1/teams",
         "matches": "/v1/matches",
         "player-stats": "/v1/player-stats",
         "admin": "/v1/admin",
-        "discord": "/v1/integrations/discord",
-        "payments": "/v1/integrations/payments"
+        "discord": "/v1/discord",  # Updated to match actual route
+        "payments": "/v1/payments"  # Updated to match actual route
     }
     
     # Extract the first part of the path (the resource)

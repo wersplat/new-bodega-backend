@@ -17,9 +17,12 @@ from app.core.auth import get_current_user, get_current_admin_user
 from app.core.rate_limiter import limiter
 from app.core.config import settings
 
-# Initialize router with rate limiting
-# Prefix is added in main.py for consistency
-router = APIRouter(tags=["events"])
+# Initialize router with rate limiting and explicit prefix
+router = APIRouter(
+    prefix="/v1/events",
+    tags=["Events"],
+    responses={404: {"description": "Not found"}},
+)
 
 # Configure logging
 logger = logging.getLogger(__name__)

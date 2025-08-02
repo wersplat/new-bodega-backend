@@ -3,16 +3,25 @@ Payments router for Stripe integration
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status, Request, Header
-from typing import Optional
+from typing import Optional, List, Dict, Any
 import uuid
 from datetime import datetime
+import logging
 
 from app.core.auth import get_current_active_user, get_current_admin_user
 from app.core.supabase import supabase
 from app.services.payments import PaymentService
 from app.schemas.payments import CreatePaymentSessionRequest
 
-router = APIRouter()
+# Configure logging
+logger = logging.getLogger(__name__)
+
+# Initialize router with explicit prefix and standardized tags
+router = APIRouter(
+    prefix="/v1/payments",
+    tags=["Payment Integration"],
+    responses={404: {"description": "Not found"}},
+)
 
 @router.post("/session/create")
 async def create_payment_session(

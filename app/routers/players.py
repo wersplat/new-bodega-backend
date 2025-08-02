@@ -5,12 +5,49 @@ This module provides a RESTful API for managing player profiles and related oper
 using Supabase as the backend storage. It handles player registration, profile management,
 and player lookups with proper authentication and rate limiting.
 
+API Version: 1.0.0
+Base URL: /v1/players
+
 Key Features:
-- Single endpoint for all player operations using HTTP methods
+- RESTful endpoints for all player operations
 - Comprehensive filtering, sorting, and pagination
 - Built-in rate limiting and request validation
 - Detailed error handling and logging
 - Optimized database queries with Supabase
+
+Endpoints:
+- POST   /                   - Create a new player profile
+- GET    /{player_id}        - Get player profile by ID
+- GET    /me                 - Get current user's player profile
+- PATCH  /me                 - Update current user's player profile
+- GET    /search             - Search players by gamertag
+
+Authentication:
+- All endpoints (except public endpoints) require a valid JWT token
+- Token should be included in the Authorization header as: 'Bearer <token>'
+
+Rate Limiting:
+- Default: 100 requests per minute per IP
+- Authenticated: 1000 requests per minute per user
+- Admin: 5000 requests per minute per user
+
+Response Format:
+All responses follow the standard JSON:API format with the following structure:
+{
+    "data": { ... },  // The primary data
+    "meta": { ... },  // Metadata (pagination, etc.)
+    "links": { ... }  // Related resources and pagination links
+}
+
+Error Responses:
+- 400: Bad Request - Invalid input data
+- 401: Unauthorized - Authentication required
+- 403: Forbidden - Insufficient permissions
+- 404: Not Found - Resource not found
+- 409: Conflict - Resource already exists
+- 422: Unprocessable Entity - Validation error
+- 429: Too Many Requests - Rate limit exceeded
+- 500: Internal Server Error - Unexpected error
 """
 
 import logging
@@ -30,9 +67,12 @@ from app.core.auth import get_current_active_user, RoleChecker
 from app.core.rate_limiter import limiter
 from app.core.config import settings
 
-# Initialize router with rate limiting
-# Prefix is handled in main.py
-router = APIRouter(tags=["Players"])
+# Initialize router with rate limiting and explicit prefix
+router = APIRouter(
+    prefix="/v1/players",
+    tags=["Players"],
+    responses={404: {"description": "Not found"}},
+)
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -146,12 +186,72 @@ async def get_player_by_gamertag(gamertag: str) -> Optional[Dict[str, Any]]:
     response_model=PlayerResponse,
     status_code=status.HTTP_201_CREATED,
     responses={
-        201: {"description": "Player created successfully"},
-        400: {"description": "Invalid input or gamertag already taken"},
-        401: {"description": "Not authenticated"},
-        429: {"description": "Rate limit exceeded"},
-        500: {"description": "Internal server error"}
-    }
+        201: {
+            "description": "Player created successfully",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "id": "550e8400-e29b-41d4-a716-446655440000",
+                        "user_id": "123e4567-e89b-12d3-a456-426614174000",
+                        "gamertag": "examplePlayer",
+                        "avatar_url": "https://example.com/avatars/example.jpg",
+                        "bio": "Professional NBA 2K player",
+                        "region": "NA",
+                        "timezone": "America/New_York",
+                        "created_at": "2023-01-01T00:00:00Z",
+                        "updated_at": "2023-01-01T00:00:00Z",
+                        "is_active": True,
+                        "last_online": "2023-01-01T12:00:00Z"
+                    }
+                }
+            }
+        },
+        400: {
+            "description": "Invalid input or gamertag already taken",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Gamertag already taken"
+                    }
+                }
+            }
+        },
+        401: {"$ref": "#/components/responses/UnauthorizedError"},
+        429: {"$ref": "#/components/responses/TooManyRequestsError"},
+        500: {"$ref": "#/components/responses/InternalServerError"}
+    },
+    summary="Create a new player profile",
+    description="""
+    Register a new player profile for the authenticated user.
+    
+    Each user can only have one player profile associated with their account.
+    The gamertag must be unique across all players.
+    
+    ### Request Body
+    - **gamertag**: (required) Unique display name for the player (3-32 chars, alphanumeric + spaces)
+    - **avatar_url**: (optional) URL to the player's avatar image
+    - **bio**: (optional) Short biography or description
+    - **region**: (optional) Player's region code (e.g., "NA", "EU")
+    - **timezone**: (optional) Player's timezone in IANA format
+    
+    ### Example Request
+    ```bash
+    curl -X POST \
+      https://api.example.com/v1/players \
+      -H 'Authorization: Bearer YOUR_TOKEN' \
+      -H 'Content-Type: application/json' \
+      -d '{
+        "gamertag": "examplePlayer",
+        "avatar_url": "https://example.com/avatar.jpg",
+        "bio": "Professional NBA 2K player",
+        "region": "NA",
+        "timezone": "America/New_York"
+      }'
+    ```
+    
+    ### Response
+    Returns the newly created player profile with all fields populated.
+    """
 )
 @limiter.limit(settings.RATE_LIMIT_AUTHENTICATED)
 async def create_player(
@@ -167,14 +267,17 @@ async def create_player(
     
     Args:
         request: The FastAPI request object (used for rate limiting)
-        player: The player data to create
-        current_user: The currently authenticated user
+        player: The player data to create (validated using PlayerCreate model)
+        current_user: The currently authenticated user (injected by FastAPI)
         
     Returns:
-        Dict[str, Any]: The created player profile
+        Dict[str, Any]: The created player profile with all fields populated
         
     Raises:
-        HTTPException: If the gamertag is already taken or there's an error creating the profile
+        HTTPException: 
+            - 400: If the gamertag is already taken or user already has a profile
+            - 401: If the request is not authenticated
+            - 500: If there's an error creating the profile in the database
     """
     try:
         logger.info(f"Creating player profile for user {current_user.id}")
@@ -238,11 +341,66 @@ async def create_player(
     "/{player_id}", 
     response_model=PlayerResponse,
     responses={
-        200: {"description": "Player profile retrieved successfully"},
-        404: {"description": "Player not found"},
-        429: {"description": "Rate limit exceeded"},
-        500: {"description": "Internal server error"}
-    }
+        200: {
+            "description": "Player profile retrieved successfully",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "id": "550e8400-e29b-41d4-a716-446655440000",
+                        "user_id": "123e4567-e89b-12d3-a456-426614174000",
+                        "gamertag": "examplePlayer",
+                        "avatar_url": "https://example.com/avatars/example.jpg",
+                        "bio": "Professional NBA 2K player",
+                        "region": "NA",
+                        "timezone": "America/New_York",
+                        "created_at": "2023-01-01T00:00:00Z",
+                        "updated_at": "2023-01-01T00:00:00Z",
+                        "is_active": True,
+                        "last_online": "2023-01-01T12:00:00Z"
+                    }
+                }
+            }
+        },
+        404: {
+            "description": "Player not found",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Player not found"
+                    }
+                }
+            }
+        },
+        429: {"$ref": "#/components/responses/TooManyRequestsError"},
+        500: {"$ref": "#/components/responses/InternalServerError"}
+    },
+    summary="Get player profile by ID",
+    description="""
+    Retrieve detailed information about a specific player by their unique ID.
+    
+    This endpoint returns comprehensive player profile data including statistics,
+    achievements, and recent activity. The response includes both basic profile
+    information and related data based on the requested parameters.
+    
+    ### Path Parameters
+    - **player_id** (required): The UUID of the player to retrieve
+    
+    ### Query Parameters
+    - **include_history** (optional): Include RP history in the response (default: false)
+    - **include_stats** (optional): Include detailed player statistics (default: false)
+    - **history_limit** (optional): Number of history entries to return (1-100, default: 50)
+    - **history_offset** (optional): Pagination offset for history (default: 0)
+    
+    ### Example Request
+    ```bash
+    curl -X GET \
+      'https://api.example.com/v1/players/550e8400-e29b-41d4-a716-446655440000?include_stats=true&include_history=true&history_limit=10' \
+      -H 'Accept: application/json'
+    ```
+    
+    ### Response
+    Returns the player profile with optional extended data based on query parameters.
+    """
 )
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_player(
@@ -329,15 +487,86 @@ async def get_player(
         )
 
 @router.get(
-    "/me", 
+    "/me",
     response_model=PlayerResponse,
     responses={
-        200: {"description": "Player profile retrieved successfully"},
-        401: {"description": "Not authenticated"},
-        404: {"description": "Player profile not found"},
-        429: {"description": "Rate limit exceeded"},
-        500: {"description": "Internal server error"}
-    }
+        200: {
+            "description": "Player profile retrieved successfully",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "id": "550e8400-e29b-41d4-a716-446655440000",
+                        "user_id": "123e4567-e89b-12d3-a456-426614174000",
+                        "gamertag": "examplePlayer",
+                        "avatar_url": "https://example.com/avatars/example.jpg",
+                        "bio": "Professional NBA 2K player",
+                        "region": "NA",
+                        "timezone": "America/New_York",
+                        "created_at": "2023-01-01T00:00:00Z",
+                        "updated_at": "2023-01-01T00:00:00Z",
+                        "is_active": True,
+                        "last_online": "2023-01-01T12:00:00Z",
+                        "stats": {
+                            "total_matches": 42,
+                            "wins": 30,
+                            "losses": 12,
+                            "win_rate": 71.4,
+                            "current_streak": 5,
+                            "highest_rank": 1,
+                            "current_rank": 3,
+                            "total_points": 1250
+                        },
+                        "achievements": [
+                            {"id": "first_win", "name": "First Win", "earned_at": "2023-01-02T00:00:00Z"},
+                            {"id": "streak_5", "name": "5-Win Streak", "earned_at": "2023-02-15T00:00:00Z"}
+                        ]
+                    }
+                }
+            }
+        },
+        401: {"$ref": "#/components/responses/UnauthorizedError"},
+        404: {
+            "description": "Player profile not found",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Player profile not found. Please create a player profile first."
+                    }
+                }
+            }
+        },
+        429: {"$ref": "#/components/responses/TooManyRequestsError"},
+        500: {"$ref": "#/components/responses/InternalServerError"}
+    },
+    summary="Get current user's player profile",
+    description="""
+    Retrieve the complete profile of the currently authenticated user.
+    
+    This endpoint provides comprehensive information about the authenticated user's
+    player profile, including statistics, achievements, and recent activity.
+    
+    ### Authentication
+    - Requires a valid JWT token in the Authorization header
+    
+    ### Query Parameters
+    - **include_stats** (optional): Include detailed player statistics (default: true)
+    
+    ### Example Request
+    ```bash
+    curl -X GET \
+      'https://api.example.com/v1/players/me?include_stats=true' \
+      -H 'Authorization: Bearer YOUR_TOKEN' \
+      -H 'Accept: application/json'
+    ```
+    
+    ### Response
+    Returns the complete player profile with all associated data including:
+    - Basic profile information
+    - Player statistics (if include_stats=true)
+    - Achievement history
+    - Match history summary
+    - Current rankings and standings
+    """
 )
 @limiter.limit(settings.RATE_LIMIT_AUTHENTICATED)
 async def get_my_profile(
@@ -389,21 +618,6 @@ async def get_my_profile(
     except Exception as e:
         logger.error(f"Error fetching profile for user {current_user.id}: {str(e)}", exc_info=True)
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="An error occurred while retrieving your player profile"
-        )
-
-@router.patch(
-    "/me", 
-    response_model=PlayerResponse,
-    responses={
-        200: {"description": "Player profile updated successfully"},
-        400: {"description": "Invalid input data"},
-        401: {"description": "Not authenticated"},
-        404: {"description": "Player profile not found"},
-        429: {"description": "Rate limit exceeded"},
-        500: {"description": "Internal server error"}
-    }
 )
 @limiter.limit(settings.RATE_LIMIT_AUTHENTICATED)
 async def update_my_profile(

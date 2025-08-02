@@ -27,9 +27,12 @@ from app.schemas.match import (
 
 import logging
 
-# Initialize router with rate limiting
-# Prefix is added in main.py for consistency
-router = APIRouter(tags=["Matches"])
+# Initialize router with rate limiting and explicit prefix
+router = APIRouter(
+    prefix="/v1/matches",
+    tags=["Matches"],
+    responses={404: {"description": "Not found"}},
+)
 
 # Configure logging
 logger = logging.getLogger(__name__)

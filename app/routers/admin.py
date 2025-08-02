@@ -35,7 +35,13 @@ def calculate_rank(rp: int) -> str:
     else:
         return "Iron"
 
-router = APIRouter()
+# Initialize router with explicit prefix and standardized tags
+router = APIRouter(
+    prefix="/v1/admin",
+    tags=["Admin"],
+    responses={404: {"description": "Not found"}},
+    dependencies=[Depends(get_current_admin_user)]
+)
 
 class RPUpdateRequest(BaseModel):
     player_id: str  # UUID as string

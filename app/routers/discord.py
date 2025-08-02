@@ -2,16 +2,20 @@
 Discord router for bot integration and Discord ID lookups using Supabase
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status, Header
-from typing import Optional, List
-from pydantic import BaseModel
-from datetime import datetime
+from fastapi import APIRouter, Depends, HTTPException, status, Header, Request
+from typing import Optional, List, Dict, Any
+from pydantic import BaseModel, Field, HttpUrl
+from datetime import datetime, timezone
 import uuid
+import logging
 
 from app.core.config import settings
 from app.core.supabase import supabase
-from app.schemas.player import PlayerProfile
+from app.schemas.player import PlayerProfile, PlayerTier
 from app.schemas.user import UserCreate, UserInDB
+
+# Configure logging
+logger = logging.getLogger(__name__)
 
 # Helper function to calculate rank based on RP
 def calculate_rank(rp: int) -> str:
@@ -34,20 +38,40 @@ def calculate_rank(rp: int) -> str:
     else:
         return "Iron"
 
-router = APIRouter()
+# API Key verification for Discord bot endpoints
+def verify_discord_api_key(x_api_key: str = Header(None, alias="X-API-Key")) -> str:
+    """Verify the Discord API key for bot endpoints"""
+    if not x_api_key or x_api_key != settings.DISCORD_API_KEY:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or missing API key"
+        )
+    return x_api_key
 
+# Initialize router with explicit prefix and standardized tags
+router = APIRouter(
+    prefix="/v1/discord",
+    tags=["Discord Integration"],
+    responses={404: {"description": "Not found"}},
+    dependencies=[Depends(verify_discord_api_key)]
+)
+
+# Models
 class DiscordPlayerCreate(BaseModel):
-    discord_id: str
-    gamertag: str
-    region: str
-    team_name: Optional[str] = None
+    discord_id: str = Field(..., description="Discord user ID")
+    gamertag: str = Field(..., min_length=3, max_length=32, description="Player's gamertag")
+    region: str = Field(..., description="Player's region code (e.g., 'NA', 'EU')")
+    team_name: Optional[str] = Field(None, description="Optional team name")
+    avatar_url: Optional[HttpUrl] = Field(None, description="URL to player's avatar")
 
 class DiscordPlayerResponse(BaseModel):
-    player_id: int
-    gamertag: str
-    current_rp: float
-    tier: str
-    team_name: Optional[str] = None
+    player_id: str = Field(..., description="Player's unique ID")
+    gamertag: str = Field(..., description="Player's gamertag")
+    current_rp: float = Field(..., description="Current reputation points")
+    tier: str = Field(..., description="Current tier based on RP")
+    team_name: Optional[str] = Field(None, description="Player's team name if any")
+    rank: Optional[int] = Field(None, description="Global rank position")
+    avatar_url: Optional[HttpUrl] = Field(None, description="URL to player's avatar")
     region: Optional[str] = None
     discord_id: str
 

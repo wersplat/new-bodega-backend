@@ -22,9 +22,12 @@ from app.core.rate_limiter import limiter
 from app.core.config import settings
 from app.schemas.player import PlayerProfile, PlayerTier
 
-# Initialize router with rate limiting
-# Prefix is added in main.py for consistency
-router = APIRouter(tags=["Leaderboard"])
+# Initialize router with rate limiting and explicit prefix
+router = APIRouter(
+    prefix="/v1/leaderboard",
+    tags=["Leaderboards"],
+    responses={404: {"description": "Not found"}},
+)
 
 # Configure logging
 logger = logging.getLogger(__name__)

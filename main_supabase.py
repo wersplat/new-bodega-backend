@@ -8,8 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.routers import auth, admin, discord, payments
-from app.routers.players_supabase import router as players_router
-from app.routers.events_supabase import router as events_router
+from app.routers.players import router as players_router
+from app.routers.events import router as events_router
 from app.routers.leaderboard_supabase import router as leaderboard_router
 
 # Initialize FastAPI app
