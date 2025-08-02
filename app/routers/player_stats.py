@@ -566,7 +566,7 @@ async def list_player_stats(
     min_blocks: Optional[int] = Query(None, ge=0, description="Minimum blocks"),
     min_three_pointers: Optional[int] = Query(None, ge=0, description="Minimum three-pointers made"),
     sort_by: str = Query("created_at", description="Field to sort by (e.g., 'points', 'assists', 'created_at')"),
-    sort_order: str = Query("desc", description="Sort order ('asc' or 'desc')", regex="^(asc|desc)$"),
+    sort_order: str = Query("desc", description="Sort order ('asc' or 'desc')", pattern="^(asc|desc)$"),
     start_date: Optional[datetime] = Query(None, description="Filter by start date"),
     end_date: Optional[datetime] = Query(None, description="Filter by end date")
 ) -> List[Dict[str, Any]]:

@@ -273,7 +273,7 @@ async def get_match(
         ...,
         description="The UUID of the match to retrieve",
         example=UUID_EXAMPLE,
-        regex=UUID_REGEX,
+        pattern=UUID_REGEX,
         openapi_examples={
             "example1": {"summary": "Sample match ID 1", "value": "123e4567-e89b-12d3-a456-426614174000"},
             "example2": {"summary": "Sample match ID 2", "value": "87654321-4321-8765-4321-876543210987"}
@@ -442,13 +442,13 @@ async def list_matches(
         "played_at",
         description="Field to sort results by",
         example="played_at",
-        regex="^(played_at|created_at|updated_at|score_a|score_b)$"
+        pattern="^(played_at|created_at|updated_at|score_a|score_b)$"
     ),
     sort_order: str = Query(
         "desc",
         description="Sort order (asc or desc)",
         example="desc",
-        regex="^(asc|desc)$"
+        pattern="^(asc|desc)$"
     ),
     current_user: Dict[str, Any] = Depends(get_current_active_user)
 ) -> List[Dict[str, Any]]:
@@ -568,7 +568,7 @@ async def update_match(
         ...,
         description="The UUID of the match to update",
         example=UUID_EXAMPLE,
-        regex=UUID_REGEX
+        pattern=UUID_REGEX
     ),
     match_update: MatchUpdate = ...,
     current_user: Dict[str, Any] = Depends(get_current_admin_user)

@@ -235,7 +235,7 @@ async def list_events(
         None,
         description=f"Filter events by specific region UUID. Takes precedence over is_global.",
         example=REGION_ID_EXAMPLE,
-        regex=REGION_ID_REGEX,
+        pattern=REGION_ID_REGEX,
         openapi_examples={
             "na": {"summary": "North America region", "value": REGION_ID_EXAMPLE},
             "eu": {"summary": "Europe region", "value": "87654321-4321-8765-4321-876543210987"}
@@ -265,12 +265,12 @@ async def list_events(
     sort_by: str = Query(
         "start_date",
         description="Field to sort results by",
-        regex="^(start_date|end_date|name|created_at|updated_at)$"
+        pattern="^(start_date|end_date|name|created_at|updated_at)$"
     ),
     sort_order: str = Query(
         "asc",
         description="Sort order (asc or desc)",
-        regex="^(asc|desc)$"
+        pattern="^(asc|desc)$"
     )
 ) -> List[Dict[str, Any]]:
     """
@@ -374,7 +374,7 @@ async def get_event(
         ...,
         description="The UUID of the event to retrieve",
         example=REGION_ID_EXAMPLE,
-        regex=REGION_ID_REGEX,
+        pattern=REGION_ID_REGEX,
         openapi_examples={
             "example1": {"summary": "Sample event ID 1", "value": "123e4567-e89b-12d3-a456-426614174000"},
             "example2": {"summary": "Sample event ID 2", "value": "87654321-4321-8765-4321-876543210987"}

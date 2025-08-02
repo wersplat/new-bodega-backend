@@ -82,7 +82,7 @@ class EventBase(BaseModel):
     region_id: Optional[str] = Field(
         None, 
         description="ID of the region this event belongs to (if not global)",
-        regex=r"^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+        pattern=r"^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
     )
     
     # Media and assets
@@ -179,10 +179,10 @@ class EventUpdate(BaseModel):
     season_number: Optional[int] = Field(None, ge=1, description="Updated season number")
     is_global: Optional[bool] = Field(None, description="Updated global status")
     region_id: Optional[str] = Field(
-        None, 
-        description="Updated region ID (if not global)",
-        regex=r"^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
-    )
+            None, 
+            description="Updated region ID (if not global)",
+            pattern=r"^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+        )
     banner_url: Optional[str] = Field(None, description="Updated banner URL")
     thumbnail_url: Optional[str] = Field(None, description="Updated thumbnail URL")
     rules: Optional[Dict[str, Any]] = Field(None, description="Updated rules")
