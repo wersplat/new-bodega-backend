@@ -9,9 +9,14 @@ from types import SimpleNamespace
 from typing import Any, Dict, Optional
 
 import pytest
+from dotenv import load_dotenv
 from fastapi.testclient import TestClient
 from fastapi import status
+from parameterized import parameterized
 from supabase import create_client
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Add the project root to the Python path
 import sys
@@ -22,7 +27,13 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 # Import the FastAPI app
-from app.main import app
+import sys
+import os
+
+# Add the parent directory to the path so we can import app
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from main import app
 from app.core.supabase import supabase as supabase_client
 from app.core.auth import get_current_active_user
 
@@ -57,7 +68,8 @@ def create_test_player_data(
     region_id: Optional[str] = None,
     include_optional: bool = True,
     include_id: bool = True,
-    id: Optional[str] = None  # Default to None, will be generated if not provided
+    id: Optional[str] = None,  # Default to None, will be generated if not provided
+    user_id: Optional[str] = None  # Required field for player creation
 ) -> Dict[str, Any]:
     """
     Create test player data that matches the actual database schema.
@@ -67,7 +79,11 @@ def create_test_player_data(
         include_optional: Whether to include optional fields
         include_id: Whether to include the id field (needed for updates/deletes)
         id: The id to associate with this player (will be generated if not provided)
+        user_id: The user ID associated with this player (required)
     """
+    if user_id is None:
+        # Use the test user ID if available, otherwise generate a random UUID
+        user_id = getattr(TestPlayersEndpoints, 'test_user_id', str(uuid.uuid4()))
     # Generate a UUID for the player if not provided
     if id is None:
         id = str(uuid.uuid4())
@@ -114,61 +130,48 @@ class TestPlayersEndpoints(unittest.TestCase):
     def setUpClass(cls):
         """Set up test fixtures before any tests are run."""
         # Initialize FastAPI test client
-        from app.main import app
+        # Import app from main since it's at the root level
+        from main import app
+        cls.app = app  # Save the app as a class attribute
         cls.client = TestClient(app)
         
         # Initialize Supabase client for test data setup/teardown
         supabase_url = os.getenv("SUPABASE_URL")
         supabase_key = os.getenv("SUPABASE_KEY")
+        supabase_service_role_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
         
-        if not supabase_url or not supabase_key:
+        if not all([supabase_url, supabase_key]):
             raise ValueError("SUPABASE_URL and SUPABASE_KEY environment variables must be set")
-            
+        
+        # Use service role key if available, otherwise use the regular key
+        supabase_key = supabase_service_role_key or supabase_key
         cls.supabase = create_client(supabase_url, supabase_key)
         
-        # Create a test region if it doesn't exist
+        # Try to get an existing region
         try:
-            region_data = {
-                "name": "Test Region",
-                "code": "test_region"
-            }
-            result = cls.supabase.table("regions").upsert(region_data).execute()
-            cls.test_region = result.data[0] if result.data else region_data
-            cls.test_region_id = cls.test_region["id"]
-            print(f"✅ Created test region: {cls.test_region}")
+            response = cls.supabase.table("regions").select("id").limit(1).execute()
+            if hasattr(response, 'data') and response.data:
+                cls.test_region_id = response.data[0]['id']
+                print(f"✅ Using existing region with ID: {cls.test_region_id}")
+            else:
+                # If no regions exist, we'll use None and the test will handle it
+                cls.test_region_id = None
+                print("⚠️  No regions found in the database. Tests will use null region_id.")
         except Exception as e:
-            print(f"❌ Error creating test region: {e}")
-            raise
+            print(f"❌ Error checking for regions: {e}")
+            cls.test_region_id = None
             
-        # Create a test user if it doesn't exist
-        try:
-            test_email = "test_user@example.com"
-            user_data = {
-                "email": test_email,
-                "password": "testpassword123"
-            }
-            # First try to sign up the user
-            try:
-                user = cls.supabase.auth.sign_up(user_data)
-                cls.test_user = user.user
-                print(f"✅ Created test user: {cls.test_user['email']}")
-            except Exception as e:
-                # If user already exists, sign in to get the user
-                if "User already registered" in str(e):
-                    user = cls.supabase.auth.sign_in_with_password({"email": test_email, "password": "testpassword123"})
-                    cls.test_user = user.user
-                    print(f"✅ Retrieved existing test user: {cls.test_user['email']}")
-                else:
-                    print(f"❌ Error creating test user: {e}")
-                    raise
-                    
-            # Store test data that needs cleanup
-            cls.test_data = {}
-            
-        except Exception as e:
-            print(f"❌ Error setting up test user: {e}")
-            raise
-    
+        # For testing with service role key, we don't need to create a test user
+        # as we'll be using the service role key for authentication
+        cls.test_user_id = str(uuid.uuid4())  # Generate a random UUID for the test user
+        print(f"✅ Using service role key for testing with user ID: {cls.test_user_id}")
+        
+        # Set up the authenticated client with the service role key
+        cls.authenticated_client = TestClient(
+            cls.app,
+            headers={"Authorization": f"Bearer {supabase_key}"}
+        )
+        
     @classmethod
     def tearDownClass(cls):
         """Clean up test data after all tests have run."""
@@ -330,6 +333,46 @@ class TestPlayersEndpoints(unittest.TestCase):
             print(f"❌ Test failed for region_id {region_id}: {str(e)}")
             raise
     
+    @pytest.mark.parametrize("salary_tier", ["S", "A", "B", "C", "D"])
+    @parameterized.expand([
+        ("S",),
+        ("A",),
+        ("B",),
+        ("C",),
+        ("D",)
+    ])
+    @pytest.mark.parametrize("salary_tier", ["S", "A", "B", "C", "D"])
+    def test_player_salary_tiers(self, salary_tier: str):
+        """Test creating players with all possible salary tier values"""
+        test_player = create_test_player_data(
+            region_id=self.test_region_id,
+            include_optional=True
+        )
+        # Override the salary tier
+        test_player["salary_tier"] = salary_tier
+        
+        try:
+            response = self.authenticated_client.post("/api/players/", json=test_player)
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED,
+                          f"Failed to create player with salary tier {salary_tier}: {response.text}")
+            
+            created_player = response.json()
+            self.test_data[f"player_tier_{salary_tier}"] = created_player
+            print(f"✅ Created player with salary tier {salary_tier}")
+            
+            # Verify the salary tier was saved correctly
+            self.assertEqual(created_player["salary_tier"], salary_tier)
+            
+            # Clean up
+            if created_player.get('id'):
+                cleanup_response = self.authenticated_client.delete(f"/api/players/{created_player['id']}")
+                if cleanup_response.status_code == 200:
+                    print(f"✅ Cleaned up test player with tier {salary_tier}")
+            
+        except Exception as e:
+            print(f"❌ Test failed for salary tier {salary_tier}: {str(e)}")
+            raise
+    
     @pytest.mark.parametrize("position", [
         "Point Guard",
         "Shooting Guard",
@@ -337,63 +380,44 @@ class TestPlayersEndpoints(unittest.TestCase):
         "Power Forward",
         "Center"
     ])
+    @parameterized.expand([
+        ("Point Guard",),
+        ("Shooting Guard",),
+        ("Small Forward",),
+        ("Power Forward",),
+        ("Center",)
+    ])
     def test_player_positions(self, position: str):
         """Test creating players with all possible position values"""
-        print(f"\n🏀 Testing position: {position}")
-            
-        # Create player with the specified position
         test_player = create_test_player_data(
             region_id=self.test_region_id,
-            include_optional=False
+            include_optional=True
         )
+        # Override the position
         test_player["position"] = position
         
         try:
-            # Create player with specific position
-            response = self.client.post("/api/players/", json=test_player)
+            response = self.authenticated_client.post("/api/players/", json=test_player)
             self.assertEqual(response.status_code, status.HTTP_201_CREATED,
                           f"Failed to create player with position {position}: {response.text}")
             
             created_player = response.json()
-            self.test_data["player"] = created_player
+            self.test_data[f"player_{position}"] = created_player
+            print(f"✅ Created player with position {position}")
             
-            # Verify the player was created with the correct position
+            # Verify the position was saved correctly
             self.assertEqual(created_player["position"], position)
-            print(f"✅ Successfully created player with position: {position}")
+            
+            # Clean up
+            if created_player.get('id'):
+                cleanup_response = self.authenticated_client.delete(f"/api/players/{created_player['id']}")
+                if cleanup_response.status_code == 200:
+                    print(f"✅ Cleaned up test player with position {position}")
             
         except Exception as e:
             print(f"❌ Test failed for position {position}: {str(e)}")
             raise
     
-    @pytest.mark.parametrize("salary_tier", ["S", "A", "B", "C", "D"])
-    def test_player_salary_tiers(self, salary_tier: str):
-        """Test creating players with all possible salary tier values"""
-        print(f"\n💰 Testing salary tier: {salary_tier}")
-            
-        # Create player with the specified salary tier
-        test_player = create_test_player_data(
-            region_id=self.test_region_id,
-            include_optional=True
-        )
-        test_player["salary_tier"] = salary_tier
-        
-        try:
-            # Create player with specific salary tier
-            response = self.client.post("/api/players/", json=test_player)
-            self.assertEqual(response.status_code, status.HTTP_201_CREATED,
-                          f"Failed to create player with salary tier {salary_tier}: {response.text}")
-            
-            created_player = response.json()
-            self.test_data["player"] = created_player
-            
-            # Verify the player was created with the correct salary tier
-            self.assertEqual(created_player["salary_tier"], salary_tier)
-            print(f"✅ Successfully created player with salary tier: {salary_tier}")
-            
-        except Exception as e:
-            print(f"❌ Test failed for salary tier {salary_tier}: {str(e)}")
-            raise
-
     def test_update_player(self):
         """Test updating a player"""
         # First create a test player
