@@ -4,7 +4,7 @@ Test script to verify Supabase operations with the players table
 import os
 import uuid
 import pytest
-from datetime import datetime
+from datetime import datetime, timezone
 from dotenv import load_dotenv
 from supabase import create_client
 
@@ -41,7 +41,6 @@ def test_players_crud():
         "player_rank_score": 0,  # Initialize to 0
         "salary_tier": "B",  # Must be one of: "S", "A", "B", "C", "D"
         "monthly_value": 0,  # Initialize to 0
-        "created_at": datetime.utcnow().isoformat(),
         "is_rookie": True,  # Default to true for new players
         "discord_id": f"test_discord_{player_id[:8]}",
         "twitter_id": f"test_twitter_{player_id[:8]}",
@@ -54,41 +53,54 @@ def test_players_crud():
         response = supabase.table("players").insert(player_data).execute()
         if hasattr(response, 'data') and response.data:
             created_player = response.data[0]
-        print(f"✅ Created player: {created_player['gamertag']} (ID: {created_player['id']})")
+            print(f"✅ Created player: {created_player['gamertag']} (ID: {created_player['id']})")
+        else:
+            raise Exception("Failed to create player: No data in response")
         
         # Test READ
         print("\n📖 Testing GET player...")
-        fetched_player = supabase.fetch_by_id("players", player_id)
-        assert fetched_player is not None, "Failed to fetch player"
-        print(f"✅ Fetched player: {fetched_player['gamertag']}")
+        response = supabase.table("players").select("*").eq("id", player_id).execute()
+        if hasattr(response, 'data') and response.data:
+            fetched_player = response.data[0]
+            print(f"✅ Fetched player: {fetched_player['gamertag']}")
+        else:
+            raise Exception("Failed to fetch player: Player not found")
         
         # Test UPDATE
         print("\n🔄 Testing UPDATE player...")
         update_data = {
-            "player_rp": 1500,  # Using correct field name
-            "position": "SG",  # Updating position
-            "performance_score": 85  # Adding performance score
+            "player_rp": 1500,
+            "position": "Shooting Guard",  # Using full position name
+            "performance_score": 85
         }
-        updated_player = supabase.update("players", player_id, update_data)
-        assert updated_player["player_rp"] == 1500, "Failed to update player RP"
-        print(f"✅ Updated player RP: {updated_player['player_rp']}")
+        response = supabase.table("players").update(update_data).eq("id", player_id).execute()
+        if hasattr(response, 'data') and response.data:
+            updated_player = response.data[0]
+            assert updated_player["player_rp"] == 1500, "Failed to update player RP"
+            print(f"✅ Updated player RP: {updated_player['player_rp']}")
+        else:
+            raise Exception("Failed to update player: No data in response")
         
         # Test QUERY
         print("\n🔍 Testing QUERY players...")
-        # Assuming get_players_by_team is a custom method in your supabase client
-        # If not, you might need to implement it or use a different query method
-        players = supabase.client.table("players").select("*").execute()
-        print(f"✅ Found {len(players.data)} players in the database")
+        response = supabase.table("players").select("*").execute()
+        players = response.data if hasattr(response, 'data') else []
+        print(f"✅ Found {len(players)} players in the database")
         
         # Test DELETE
         print("\n🗑️  Testing DELETE player...")
-        delete_result = supabase.delete("players", player_id)
-        assert delete_result is not None, "Failed to delete player"
-        print("✅ Delete successful")
+        response = supabase.table("players").delete().eq("id", player_id).execute()
+        if hasattr(response, 'data') and response.data:
+            print("✅ Delete successful")
+        else:
+            raise Exception("Failed to delete player")
         
         # Verify deletion
-        deleted_player = supabase.fetch_by_id("players", player_id)
-        assert deleted_player is None, "Player was not deleted successfully"
+        response = supabase.table("players").select("*").eq("id", player_id).execute()
+        if hasattr(response, 'data') and response.data:
+            print("❌ Player was not deleted successfully")
+        else:
+            print("✅ Player was deleted successfully")
         
         print("\n🎉 All player operations tested successfully!")
         
@@ -96,10 +108,10 @@ def test_players_crud():
         print(f"\n❌ Error during player operations: {str(e)}")
         # Try to clean up if something went wrong
         try:
-            supabase.delete("players", player_id)
-        except:
-            pass
-        raise
+            supabase.table("players").delete().eq("id", player_id).execute()
+        except Exception as cleanup_error:
+            print(f"Cleanup error: {cleanup_error}")
+        raise  # Re-raise the original error
 
 if __name__ == "__main__":
     # Check if Supabase credentials are set

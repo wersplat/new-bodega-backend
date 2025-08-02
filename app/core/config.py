@@ -3,13 +3,14 @@ Configuration settings for the NBA 2K Global Rankings backend with Supabase
 """
 
 from pydantic_settings import BaseSettings
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 import os
 
 class Settings(BaseSettings):
     # Supabase Configuration
     SUPABASE_URL: str = ""
     SUPABASE_KEY: str = ""
+    SUPABASE_ANON_KEY: str = ""
     
     # Database (using Supabase connection string)
     DATABASE_URL: str = ""
@@ -39,23 +40,25 @@ class Settings(BaseSettings):
     ALLOWED_HOSTS: str = "localhost,127.0.0.1"
     CORS_ORIGINS: str = "http://localhost:3000,http://localhost:8080"
     
+    model_config = {
+        "env_file": ".env",
+        "case_sensitive": True,
+        "extra": "ignore"
+    }
+    
     @property
     def CORS_ORIGINS_LIST(self) -> List[str]:
         """Convert CORS_ORIGINS string to list"""
         return [origin.strip() for origin in self.CORS_ORIGINS.split(",")]
     
     @property
-    def get_supabase_config(self) -> dict:
+    def get_supabase_config(self) -> Dict[str, Any]:
         """Get Supabase configuration"""
         return {
             "url": self.SUPABASE_URL,
-            "key": self.SUPABASE_KEY,
+            "key": self.SUPABASE_KEY or self.SUPABASE_ANON_KEY,
             "debug": self.DEBUG
         }
-    
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
 
 # Global settings instance
-settings = Settings() 
+settings = Settings()
