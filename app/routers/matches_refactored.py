@@ -237,12 +237,12 @@ async def list_matches(
     event_id: Optional[str] = Query(
         None,
         description="Filter matches by event ID",
-        regex=UUID_PATTERN
+        pattern=UUID_PATTERN
     ),
     team_id: Optional[str] = Query(
         None,
         description="Filter matches by team ID (returns matches where the team is either team A or team B)",
-        regex=UUID_PATTERN
+        pattern=UUID_PATTERN
     ),
     stage: Optional[MatchStage] = Query(
         None,
@@ -270,12 +270,12 @@ async def list_matches(
     sort_by: str = Query(
         "scheduled_at",
         description="Field to sort results by",
-        regex="^(scheduled_at|played_at|created_at|updated_at|score_a|score_b)$"
+        pattern="^(scheduled_at|played_at|created_at|updated_at|score_a|score_b)$"
     ),
     sort_order: str = Query(
         "desc",
         description="Sort order (asc or desc)",
-        regex="^(asc|desc)$"
+        pattern="^(asc|desc)$"
     )
 ) -> Dict[str, Any]:
     """
@@ -369,7 +369,7 @@ async def list_matches(
 async def get_match(
     request: Request,
     match_id: str = Path(..., description="The UUID of the match to retrieve", 
-                        example=UUID_EXAMPLE, regex=UUID_PATTERN),
+                        example=UUID_EXAMPLE, pattern=UUID_PATTERN),
     include_teams: bool = Query(
         True,
         description="Whether to include team details in the response"
@@ -491,7 +491,7 @@ async def get_match(
 async def update_match(
     request: Request,
     match_id: str = Path(..., description="The UUID of the match to update", 
-                        example=UUID_EXAMPLE, regex=UUID_PATTERN),
+                        example=UUID_EXAMPLE, pattern=UUID_PATTERN),
     match_update: MatchUpdate = ...,
     current_user: Dict[str, Any] = Depends(get_current_admin_user)
 ) -> Dict[str, Any]:
@@ -579,7 +579,7 @@ async def update_match(
 async def delete_match(
     request: Request,
     match_id: str = Path(..., description="The UUID of the match to delete", 
-                        example=UUID_EXAMPLE, regex=UUID_PATTERN),
+                        example=UUID_EXAMPLE, pattern=UUID_PATTERN),
     force: bool = Query(
         False,
         description="Force deletion even if the match has statistics"
@@ -658,7 +658,7 @@ async def delete_match(
 async def submit_match_stats(
     request: Request,
     match_id: str = Path(..., description="The UUID of the match", 
-                        example=UUID_EXAMPLE, regex=UUID_PATTERN),
+                        example=UUID_EXAMPLE, pattern=UUID_PATTERN),
     current_user: Dict[str, Any] = Depends(get_current_admin_user),
     stats: List[PlayerMatchStats] = Body(..., description="List of player match statistics")
 ) -> List[Dict[str, Any]]:

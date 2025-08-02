@@ -200,7 +200,7 @@ async def list_events(
     region_id: Optional[str] = Query(
         None,
         description="Filter events by region ID (takes precedence over is_global)",
-        regex=UUID_PATTERN
+        pattern=UUID_PATTERN
     ),
     start_date: Optional[datetime] = Query(
         None,
@@ -224,12 +224,12 @@ async def list_events(
     sort_by: str = Query(
         "start_date",
         description="Field to sort results by",
-        regex="^(start_date|end_date|name|created_at|updated_at)$"
+        pattern="^(start_date|end_date|name|created_at|updated_at)$"
     ),
     sort_order: str = Query(
         "asc",
         description="Sort order (asc or desc)",
-        regex="^(asc|desc)$"
+        pattern="^(asc|desc)$"
     )
 ) -> Dict[str, Any]:
     """
@@ -305,7 +305,7 @@ async def list_events(
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_event(
     request: Request,
-    event_id: str = Path(..., description=EVENT_ID_DESC, example=EVENT_ID_EXAMPLE, regex=UUID_PATTERN),
+    event_id: str = Path(..., description=EVENT_ID_DESC, example=EVENT_ID_EXAMPLE, pattern=UUID_PATTERN),
     include_participants: bool = Query(
         False,
         description="Whether to include participant details in the response"

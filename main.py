@@ -26,13 +26,13 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 from app.routers import (
     players_supabase as players, 
-    events_supabase as events, 
+    events_refactored as events,  # Updated to use refactored events router
     leaderboard_supabase as leaderboard, 
     auth, 
     admin, 
     discord, 
     payments,
-    teams,
+    teams,  # Updated to use refactored teams router
     matches_refactored as matches,
     player_stats
 )
@@ -114,23 +114,17 @@ app.add_middleware(
 )
 
 # Include routers with flattened RESTful structure
-# Authentication endpoints remain at root level
+# Authentication endpoints remain at root
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
-
-# Versioned API endpoints
 app.include_router(players.router, prefix="/v1/players", tags=["Players"])
-app.include_router(events.router, prefix="/v1/events", tags=["Events"])
-app.include_router(leaderboard.router, prefix="/v1/leaderboards", tags=["Leaderboards"])
-app.include_router(teams.router, prefix="/v1/teams", tags=["Teams"])
-app.include_router(matches.router, prefix="/v1/matches", tags=["Matches"])  # Using refactored matches router
+app.include_router(events.router, tags=["Events"])  # Prefix already included in the router
+app.include_router(leaderboard.router, prefix="/v1/leaderboard", tags=["Leaderboards"])
+app.include_router(teams.router, tags=["Teams"])  # Prefix already included in the router
+app.include_router(matches.router, tags=["Matches"])  # Prefix already included in the router
 app.include_router(player_stats.router, prefix="/v1/player-stats", tags=["Player Stats"])
-
-# Admin endpoints
 app.include_router(admin.router, prefix="/v1/admin", tags=["Admin"])
-
-# Integration endpoints
-app.include_router(discord.router, prefix="/v1/integrations/discord", tags=["Discord Integration"])
-app.include_router(payments.router, prefix="/v1/integrations/payments", tags=["Payment Integration"])
+app.include_router(discord.router, prefix="/v1/discord", tags=["Discord Integration"])
+app.include_router(payments.router, prefix="/v1/payments", tags=["Payment Integration"])
 
 # Add backward compatibility redirects
 from fastapi.responses import RedirectResponse
