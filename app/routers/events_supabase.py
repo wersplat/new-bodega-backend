@@ -8,9 +8,11 @@ related operations like event registration and participant management.
 
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
-
-from fastapi import APIRouter, Depends, HTTPException, Request, status, Query
+from fastapi import APIRouter, Depends, HTTPException, Request, status, Query, Path
 from pydantic import BaseModel, Field
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.middleware import SlowAPIMiddleware
 
 from app.core.auth import get_current_user, get_current_admin_user
 from app.core.supabase import supabase
@@ -357,20 +359,20 @@ async def list_events(
 @router.get(
     "/{event_id}",
     response_model=EventSchema,
+    summary="Get event details by ID",
+    description="Retrieves detailed information about a specific event by its ID.",
+    response_description="The event details",
     responses={
         200: {"description": "Event details retrieved successfully"},
-        400: {"description": "Invalid event ID format"},
-        401: {"description": "Not authenticated"},
-        403: {"description": "Insufficient permissions"},
         404: {"description": "Event not found"},
-        429: {"description": "Rate limit exceeded"},
         500: {"description": "Internal server error"}
-    }
+    },
+    tags=["events"]
 )
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_event(
     request: Request,
-    event_id: str = Query(
+    event_id: str = Path(
         ...,
         description="The UUID of the event to retrieve",
         example=REGION_ID_EXAMPLE,
