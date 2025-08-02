@@ -19,7 +19,7 @@ import uuid
 from enum import Enum
 from typing import Dict, List, Optional, Any
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query, Request, Path
+from fastapi import APIRouter, Depends, HTTPException, status, Request, Query, Path
 
 from app.core.supabase import supabase
 from app.core.rate_limiter import limiter
@@ -239,7 +239,7 @@ async def get_top_players(
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_tier_leaderboard(
     request: Request,
-    tier: PlayerTier = Query(..., description="Tier to get leaderboard for"),
+    tier: PlayerTier = Path(..., description="Tier to get leaderboard for"),
     limit: int = Query(100, ge=1, le=1000, description="Number of entries to return (1-1000)"),
     offset: int = Query(0, ge=0, description="Pagination offset")
 ) -> List[Dict[str, Any]]:
