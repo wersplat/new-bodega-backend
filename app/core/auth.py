@@ -7,8 +7,10 @@ from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from fastapi import Depends, HTTPException, status, Request
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends, HTTPException, status, Request, Security
+from fastapi.security import OAuth2PasswordBearer, SecurityScopes
+from typing import List, Optional
+from pydantic import BaseModel
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -124,4 +126,60 @@ async def get_current_admin_user(current_user: UserInDB = Depends(get_current_us
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin privileges required"
         )
-    return current_user 
+    return current_user
+
+
+class RoleChecker:
+    """
+    Role-based access control for API endpoints.
+    
+    Usage:
+        admin_role = RoleChecker(["admin"])
+        moderator_role = RoleChecker(["moderator"])
+        admin_or_moderator = RoleChecker(["admin", "moderator"])
+        
+        @router.get("/admin")
+        async def admin_route(current_user: UserInDB = Depends(admin_role)):
+            ...
+    """
+    
+    def __init__(self, allowed_roles: List[str]):
+        self.allowed_roles = allowed_roles
+    
+    async def __call__(
+        self, 
+        current_user: UserInDB = Depends(get_current_active_user)
+    ) -> UserInDB:
+        """
+        Check if the current user has any of the allowed roles.
+        
+        Args:
+            current_user: The authenticated user
+            
+        Returns:
+            The current user if authorized
+            
+        Raises:
+            HTTPException: 403 if user doesn't have required roles
+        """
+        # Super admins have access to everything
+        if current_user.is_admin:
+            return current_user
+            
+        # Check if user has any of the allowed roles
+        user_roles = []
+        if hasattr(current_user, 'roles') and current_user.roles:
+            user_roles = [role.lower() for role in current_user.roles]
+        
+        # Allow if user has any of the required roles
+        if not any(role.lower() in self.allowed_roles for role in user_roles):
+            logger.warning(
+                f"User {current_user.email} (ID: {current_user.id}) "
+                f"attempted to access endpoint requiring roles: {self.allowed_roles}"
+            )
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Operation not permitted. Required roles: {', '.join(self.allowed_roles)}"
+            )
+            
+        return current_user 
