@@ -20,6 +20,38 @@ class SupabaseService:
                 raise ValueError("Supabase URL and key must be set in environment variables")
             cls._client = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
         return cls._client
+        
+    @classmethod
+    def fetch_by_id(cls, table: str, id: str) -> Optional[Dict[str, Any]]:
+        """Fetch a single record by ID from the specified table"""
+        client = cls.get_client()
+        result = client.table(table).select("*").eq("id", id).execute()
+        return result.data[0] if result.data and len(result.data) > 0 else None
+        
+    @classmethod
+    def insert(cls, table: str, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Insert a new record into the specified table"""
+        client = cls.get_client()
+        result = client.table(table).insert(data).execute()
+        if hasattr(result, 'data') and result.data and len(result.data) > 0:
+            return result.data[0]
+        raise ValueError(f"Failed to insert record into {table}")
+        
+    @classmethod
+    def update(cls, table: str, id: str, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Update a record in the specified table"""
+        client = cls.get_client()
+        result = client.table(table).update(data).eq("id", id).execute()
+        if hasattr(result, 'data') and result.data and len(result.data) > 0:
+            return result.data[0]
+        raise ValueError(f"Failed to update record {id} in {table}")
+        
+    @classmethod
+    def delete(cls, table: str, id: str) -> bool:
+        """Delete a record from the specified table"""
+        client = cls.get_client()
+        result = client.table(table).delete().eq("id", id).execute()
+        return result.data is not None
 
     # Authentication Methods
     @classmethod

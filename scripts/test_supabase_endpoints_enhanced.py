@@ -295,7 +295,6 @@ async def test_leaderboard_endpoints(access_token: str, async_client: httpx.Asyn
         "global": False,
         "top_players": False,
         "tier_leaderboard": False,
-        "platform_leaderboard": False,
         "region_leaderboard": False
     }
     
@@ -327,19 +326,19 @@ async def test_leaderboard_endpoints(access_token: str, async_client: httpx.Asyn
                     else:
                         TestLogger.warning(f"Failed to get {tier} leaderboard: {tier_response.status_code}")
                 
-                # Test platform leaderboard if platform is available
-                if leaderboard and "platform" in leaderboard[0]:
-                    platform = leaderboard[0]["platform"]
-                    platform_response = await async_client.get(
-                        f"{API_BASE_URL}/api/leaderboard/platform/{platform}?limit=3",
+                # Test region leaderboard if region is available
+                if leaderboard and "region" in leaderboard[0]:
+                    region = leaderboard[0]["region"]
+                    region_response = await async_client.get(
+                        f"{API_BASE_URL}/api/leaderboard/region/{region}?limit=3",
                         headers=headers
                     )
-                    if platform_response.status_code == 200:
-                        platform_leaderboard = platform_response.json()
-                        results["platform_leaderboard"] = True
-                        TestLogger.success(f"Retrieved {platform} leaderboard with {len(platform_leaderboard)} players")
+                    if region_response.status_code == 200:
+                        region_leaderboard = region_response.json()
+                        results["region_leaderboard"] = True
+                        TestLogger.success(f"Retrieved {region} leaderboard with {len(region_leaderboard)} players")
                     else:
-                        TestLogger.warning(f"Failed to get {platform} leaderboard: {platform_response.status_code}")
+                        TestLogger.warning(f"Failed to get {region} leaderboard: {region_response.status_code}")
                 
                 # Test region leaderboard if region is available
                 if leaderboard and "region" in leaderboard[0] and leaderboard[0]["region"]:

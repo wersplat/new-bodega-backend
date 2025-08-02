@@ -43,10 +43,8 @@ async def create_player(
     db_player = Player(
         user_id=current_user.id,
         gamertag=player.gamertag,
-        platform=player.platform,
         team_name=player.team_name,
         region=player.region,
-        bio=player.bio
     )
     
     db.add(db_player)

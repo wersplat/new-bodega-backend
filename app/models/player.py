@@ -23,13 +23,11 @@ class Player(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     gamertag = Column(String(50), unique=True, index=True, nullable=False)
-    platform = Column(String(20), nullable=False)  # PS5, Xbox, PC
+    region = Column(String(20), nullable=False)  # PS5, Xbox, PC
     current_rp = Column(Float, default=0.0)
     peak_rp = Column(Float, default=0.0)
     tier = Column(Enum(PlayerTier), default=PlayerTier.BRONZE)
     team_name = Column(String(100))
-    region = Column(String(50))
-    bio = Column(Text)
     is_verified = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

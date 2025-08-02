@@ -71,6 +71,18 @@ class PlayerStatsInDB(PlayerStatsBase):
     created_at: datetime
     updated_at: Optional[datetime] = None
 
+
+class PlayerStats(PlayerStatsInDB):
+    """Player statistics schema for API responses"""
+    pass
+
+
+class PlayerStatsWithDetails(PlayerStats):
+    """Player statistics with related player, match, and team details"""
+    player: Optional[Dict[str, Any]] = None
+    match: Optional[Dict[str, Any]] = None
+    team: Optional[Dict[str, Any]] = None
+
 class PlayerGameAverages(BaseModel):
     """Schema for player's average statistics per game"""
     games_played: int = 0

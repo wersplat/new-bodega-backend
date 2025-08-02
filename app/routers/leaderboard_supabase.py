@@ -180,21 +180,21 @@ async def get_peak_rp_leaderboard(
             detail=f"Failed to fetch peak RP leaderboard: {str(e)}"
         )
 
-@router.get("/platform/{platform}", response_model=List[PlayerProfile])
-async def get_platform_leaderboard(
-    platform: str,
+@router.get("/region/{region}", response_model=List[PlayerProfile])
+async def get_region_leaderboard(
+    region: str,
     limit: int = Query(100, ge=1, le=1000),
     offset: int = Query(0, ge=0)
 ):
     """
-    Get leaderboard for a specific platform
+    Get leaderboard for a specific region
     """
     client = supabase.get_client()
     
     try:
         result = client.table("players") \
             .select("*") \
-            .eq("platform", platform.lower()) \
+            .eq("region", region.lower()) \
             .order("current_rp", desc=True) \
             .range(offset, offset + limit - 1) \
             .execute()
@@ -203,7 +203,7 @@ async def get_platform_leaderboard(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to fetch {platform} leaderboard: {str(e)}"
+            detail=f"Failed to fetch {region} leaderboard: {str(e)}"
         )
 
 @router.get("/region/{region}", response_model=List[PlayerProfile])

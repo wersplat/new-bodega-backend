@@ -106,18 +106,18 @@ async def get_peak_rp_leaderboard(
     players = db.query(Player).order_by(desc(Player.peak_rp)).offset(offset).limit(limit).all()
     return players
 
-@router.get("/platform/{platform}", response_model=List[PlayerProfile])
-async def get_platform_leaderboard(
-    platform: str,
+@router.get("/region/{region}", response_model=List[PlayerProfile])
+async def get_region_leaderboard(
+    region: str,
     limit: int = Query(100, ge=1, le=1000),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db)
 ):
     """
-    Get leaderboard for specific platform
+    Get leaderboard for specific region
     """
     players = db.query(Player).filter(
-        Player.platform.ilike(f"%{platform}%")
+        Player.region.ilike(f"%{region}%")
     ).order_by(desc(Player.current_rp)).offset(offset).limit(limit).all()
     return players
 

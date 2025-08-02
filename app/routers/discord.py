@@ -39,9 +39,8 @@ router = APIRouter()
 class DiscordPlayerCreate(BaseModel):
     discord_id: str
     gamertag: str
-    platform: str
+    region: str
     team_name: Optional[str] = None
-    region: Optional[str] = None
 
 class DiscordPlayerResponse(BaseModel):
     player_id: int
@@ -160,12 +159,11 @@ async def register_player_via_discord(
             "id": player_id,
             "user_id": user_id,
             "gamertag": player_data.gamertag,
-            "platform": player_data.platform,
-            "team_name": player_data.team_name,
             "region": player_data.region,
+            "team_name": player_data.team_name,
             "current_rp": 0,  # Start with 0 RP
             "is_active": True,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
         
         player_result = supabase.get_client().table("players").insert(new_player_data).execute()

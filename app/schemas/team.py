@@ -8,13 +8,8 @@ from datetime import datetime
 from enum import Enum
 from uuid import UUID
 
-class TeamTier(str, Enum):
-    """Team tier based on performance"""
-    AMATEUR = "amateur"
-    SEMI_PRO = "semi_pro"
-    PROFESSIONAL = "professional"
-    ELITE = "elite"
-    CHAMPION = "champion"
+# Leaderboard tier is calculated by update_team_rankings function
+# and is a string value like 'T1', 'T2', etc.
 
 class TeamBase(BaseModel):
     """Base team schema with required fields"""
@@ -34,7 +29,7 @@ class TeamUpdate(BaseModel):
     current_rp: Optional[float] = Field(None, ge=0.0)
     elo_rating: Optional[float] = Field(None, ge=0.0)
     global_rank: Optional[int] = Field(None, ge=1)
-    leaderboard_tier: Optional[TeamTier] = None
+    leaderboard_tier: Optional[str] = None
     money_won: Optional[float] = Field(None, ge=0.0)
 
 class TeamInDB(TeamBase):
@@ -45,7 +40,7 @@ class TeamInDB(TeamBase):
     current_rp: float = Field(default=0.0, ge=0.0)
     elo_rating: float = Field(default=1000.0, ge=0.0)
     global_rank: Optional[int] = Field(None, ge=1)
-    leaderboard_tier: TeamTier = TeamTier.AMATEUR
+    leaderboard_tier: str = "T1"
     created_at: datetime
     player_rank_score: float = Field(default=0.0, ge=0.0)
     money_won: float = Field(default=0.0, ge=0.0)

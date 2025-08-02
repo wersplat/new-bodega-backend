@@ -13,8 +13,7 @@ from app.schemas.team import (
     TeamInDB,
     TeamWithPlayers,
     TeamWithStats,
-    TeamStanding,
-    TeamTier
+    TeamStanding
 )
 
 # Test data
@@ -87,7 +86,7 @@ def test_team_in_db():
         "current_rp": 2500.0,
         "elo_rating": 1500.0,
         "global_rank": 5,
-        "leaderboard_tier": TeamTier.PROFESSIONAL,
+        "leaderboard_tier": "T2",
         "created_at": created_at,
         "player_rank_score": 2400.0,
         "money_won": 10000.0
@@ -105,7 +104,7 @@ def test_team_in_db():
     assert team.current_rp == 2500.0
     assert team.elo_rating == 1500.0
     assert team.global_rank == 5
-    assert team.leaderboard_tier == TeamTier.PROFESSIONAL
+    assert team.leaderboard_tier == "T2"
     assert team.created_at == created_at
     assert team.player_rank_score == 2400.0
     assert team.money_won == 10000.0
@@ -118,7 +117,7 @@ def test_team_with_players():
         "created_at": datetime.now(timezone.utc),
         "current_rp": 3000.0,
         "elo_rating": 1600.0,
-        "leaderboard_tier": TeamTier.ELITE,
+        "leaderboard_tier": "T1",
         "player_rank_score": 2900.0,
         "money_won": 15000.0,
         "players": [
@@ -143,7 +142,7 @@ def test_team_with_stats():
         "created_at": datetime.now(timezone.utc),
         "current_rp": 2800.0,
         "elo_rating": 1700.0,
-        "leaderboard_tier": TeamTier.CHAMPION,
+        "leaderboard_tier": "T1",
         "player_rank_score": 3000.0,
         "money_won": 50000.0,
         "total_wins": 25,
@@ -160,7 +159,7 @@ def test_team_with_stats():
     assert team.total_games == 30  # 25 + 5
     assert team.win_percentage == 83.33
     assert team.current_streak == 8
-    assert team.leaderboard_tier == TeamTier.CHAMPION
+    assert team.leaderboard_tier == "T1"
 
 def test_team_standing():
     """Test team standings"""
@@ -170,7 +169,7 @@ def test_team_standing():
         "created_at": datetime.now(timezone.utc),
         "current_rp": 3500.0,
         "elo_rating": 2000.0,
-        "leaderboard_tier": TeamTier.CHAMPION,
+        "leaderboard_tier": "T1",
         "player_rank_score": 3400.0,
         "money_won": 100000.0,
         "rank": 1,
@@ -191,16 +190,21 @@ def test_team_standing():
     assert standing.event_top5 == 20
     assert standing.name == "Top Team"
 
-def test_team_tier_enum():
-    """Test team tier enum values"""
-    assert TeamTier.AMATEUR == "amateur"
-    assert TeamTier.SEMI_PRO == "semi_pro"
-    assert TeamTier.PROFESSIONAL == "professional"
-    assert TeamTier.ELITE == "elite"
-    assert TeamTier.CHAMPION == "champion"
+def test_leaderboard_tier_string():
+    """Test leaderboard_tier as a string field"""
+    # Test that leaderboard_tier accepts valid string values
+    team = TeamInDB(
+        id=uuid4(),
+        name="Test Team",
+        leaderboard_tier="T3",
+        created_at=datetime.now(timezone.utc)
+    )
+    assert team.leaderboard_tier == "T3"
     
-    # Test enum iteration
-    tiers = list(TeamTier)
-    assert len(tiers) == 5
-    assert TeamTier.AMATEUR in tiers
-    assert TeamTier.CHAMPION in tiers
+    # Test default value
+    team = TeamInDB(
+        id=uuid4(),
+        name="Test Team",
+        created_at=datetime.now(timezone.utc)
+    )
+    assert team.leaderboard_tier == "T1"  # Default value

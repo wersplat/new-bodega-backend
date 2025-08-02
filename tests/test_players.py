@@ -27,10 +27,8 @@ TEST_REGION_ID = 5
 def create_base_player():
     return {
         "gamertag": "TestPlayer",
-        "platform": "PS5",
-        "team_name": "Test Team",
         "region": "NA",
-        "bio": "Test bio"
+        "team_name": "Test Team"
     }
 
 def test_player_base():
@@ -39,10 +37,8 @@ def test_player_base():
     player = PlayerBase(**player_data)
     
     assert player.gamertag == "TestPlayer"
-    assert player.platform == "PS5"
     assert player.team_name == "Test Team"
     assert player.region == "NA"
-    assert player.bio == "Test bio"
 
 def test_player_create():
     """Test creating a new player with required fields"""
@@ -59,25 +55,21 @@ def test_player_create_validation():
     """Test validation of player creation"""
     # Test missing required fields
     with pytest.raises(ValidationError):
-        PlayerCreate(gamertag="", platform="PS5", user_id=TEST_USER_ID)
+        PlayerCreate(gamertag="", region="NA", user_id=TEST_USER_ID)
     
     # Test invalid user_id
     with pytest.raises(ValidationError):
-        PlayerCreate(gamertag="Test", platform="PS5", user_id=-1)
+        PlayerCreate(gamertag="Test", region="NA", user_id=-1)
 
 def test_player_update():
     """Test updating a player with partial data"""
     update_data = {
-        "gamertag": "UpdatedGamertag",
-        "bio": "Updated bio"
+        "gamertag": "UpdatedGamertag"
     }
     
     update = PlayerUpdate(**update_data)
     
     assert update.gamertag == "UpdatedGamertag"
-    assert update.bio == "Updated bio"
-    assert update.team_name is None  # Not updated
-    assert update.region is None     # Not updated
 
 def test_player_in_db():
     """Test creating a player in the database"""
@@ -87,7 +79,6 @@ def test_player_in_db():
     player_data = {
         "id": TEST_PLAYER_ID,
         "gamertag": "DBPlayer",
-        "platform": "Xbox",
         "position": "PG",
         "region_id": TEST_REGION_ID,
         "current_team_id": TEST_TEAM_ID,
@@ -102,9 +93,6 @@ def test_player_in_db():
         "alternate_gamertag": "AltPlayer123",
         "created_at": created_at,
         "updated_at": updated_at,
-        "team_name": "DB Team",
-        "region": "EU",
-        "bio": "Database player bio"
     }
     
     player = PlayerInDB(**player_data)
@@ -112,7 +100,7 @@ def test_player_in_db():
     # Test required fields
     assert player.id == TEST_PLAYER_ID
     assert player.gamertag == "DBPlayer"
-    assert player.platform == "Xbox"
+    assert player.region == "NA"
     
     # Test optional fields
     assert player.position == "PG"
@@ -137,7 +125,7 @@ def test_player_profile():
     profile_data = {
         "id": TEST_PLAYER_ID,
         "gamertag": "ProfilePlayer",
-        "platform": "PC",
+        "region": "NA",
         "username": "profileuser",
         "full_name": "Test User",
         "position": "SG",
@@ -154,8 +142,7 @@ def test_player_profile():
         "alternate_gamertag": "ProfileAlt",
         "created_at": created_at,
         "team_name": "Profile Team",
-        "region": "NA",
-        "bio": "Player profile bio"
+        "region": "NA"
     }
     
     profile = PlayerProfile(**profile_data)
@@ -200,12 +187,11 @@ def test_player_with_history():
     player_data = {
         "id": TEST_PLAYER_ID,
         "gamertag": "HistoryPlayer",
-        "platform": "Xbox",
+        "region": "NA",
         "created_at": now,
         "player_rp": 2500.0,
         "player_rank_score": 2600.0,
-        "team_name": "History Team",
-        "region": "NA"
+        "team_name": "History Team"
     }
     
     history_data = [

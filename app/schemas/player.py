@@ -19,20 +19,16 @@ class PlayerTier(str, Enum):
 
 class PlayerBase(BaseModel):
     gamertag: str = Field(..., min_length=1, max_length=100)
-    platform: str = Field(..., min_length=1, max_length=50)
     team_name: Optional[str] = Field(None, max_length=100)
     region: Optional[str] = Field(None, max_length=50)
-    bio: Optional[str] = Field(None, max_length=500)
 
 class PlayerCreate(PlayerBase):
     user_id: int = Field(..., gt=0, description="User ID must be a positive integer")
 
 class PlayerUpdate(BaseModel):
     gamertag: Optional[str] = None
-    platform: Optional[str] = None
-    team_name: Optional[str] = None
     region: Optional[str] = None
-    bio: Optional[str] = None
+    team_name: Optional[str] = None
 
 class PlayerInDB(PlayerBase):
     model_config = ConfigDict(from_attributes=True)

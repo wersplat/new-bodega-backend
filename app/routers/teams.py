@@ -10,7 +10,7 @@ from app.core.supabase import supabase
 from app.core.auth import get_current_active_user
 from app.schemas.team import TeamCreate, Team as TeamSchema, TeamUpdate, TeamWithPlayers
 
-router = APIRouter(prefix="/teams", tags=["teams"])
+router = APIRouter(prefix="", tags=["teams"])
 
 async def get_team_by_id(team_id: str) -> Optional[Dict[str, Any]]:
     """Helper function to get a team by ID from Supabase"""
@@ -79,16 +79,57 @@ async def list_teams(
     """
     List all teams with optional filtering
     """
-    client = supabase.get_client()
-    query = client.table("teams").select("*")
-    
-    if region_id:
-        query = query.eq("region_id", region_id)
-    if name:
-        query = query.ilike("name", f"%{name}%")
-    
-    result = query.range(skip, skip + limit - 1).execute()
-    return result.data if hasattr(result, 'data') else []
+    try:
+        print("Getting Supabase client...")
+        client = supabase.get_client()
+        print("Supabase client obtained successfully")
+        
+        print("Executing query...")
+        query = client.table("teams").select("*")
+        print("Base query created")
+        
+        if region_id:
+            print(f"Filtering by region_id: {region_id}")
+            query = query.eq("region_id", region_id)
+        if name:
+            print(f"Filtering by name: {name}")
+            query = query.ilike("name", f"%{name}%")
+        
+        print("Executing query with range...")
+        result = query.range(skip, skip + limit - 1).execute()
+        print("Query executed")
+        
+        print("Result object:", result)
+        print("Result type:", type(result))
+        print("Result dir:", dir(result))
+        
+        if not hasattr(result, 'data'):
+            error_msg = f"No 'data' attribute in result. Result: {result}"
+            print(error_msg)
+            return []
+        
+        print(f"Result data type: {type(result.data)}")
+        print(f"Result data: {result.data}")
+            
+        print(f"Successfully retrieved {len(result.data)} teams")
+        return result.data
+        
+    except Exception as e:
+        error_msg = f"Error in list_teams: {str(e)}\nType: {type(e).__name__}"
+        print(error_msg)
+        import traceback
+        traceback_str = traceback.format_exc()
+        print(traceback_str)
+        
+        # Return a 500 error with detailed information
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={
+                "error": "Failed to list teams",
+                "message": str(e),
+                "type": type(e).__name__
+            }
+        )
 
 @router.put("/{team_id}", response_model=TeamSchema)
 async def update_team(
