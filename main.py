@@ -58,16 +58,40 @@ app = FastAPI(
             "description": "Tournament and league events"
         },
         {
-            "name": "Leaderboard",
+            "name": "Leaderboards",
             "description": "Player and team rankings"
+        },
+        {
+            "name": "Teams",
+            "description": "Team management and rosters"
+        },
+        {
+            "name": "Matches",
+            "description": "Match results and statistics"
+        },
+        {
+            "name": "Player Stats",
+            "description": "Detailed player statistics and performance metrics"
         },
         {
             "name": "Admin",
             "description": "Administrative operations"
         },
         {
+            "name": "Discord Integration",
+            "description": "Discord bot integration endpoints"
+        },
+        {
+            "name": "Payment Integration",
+            "description": "Payment processing endpoints"
+        },
+        {
             "name": "Health",
             "description": "Service health and status checks"
+        },
+        {
+            "name": "Root",
+            "description": "API root endpoints"
         }
     ]
 )
@@ -89,17 +113,61 @@ app.add_middleware(
     max_age=600,  # 10 minutes
 )
 
-# Include routers
-app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
-app.include_router(players.router, prefix="/api/players", tags=["Players"])
-app.include_router(events.router, prefix="/api/events", tags=["Events"])
-app.include_router(leaderboard.router, prefix="/api/leaderboard", tags=["Leaderboard"])
-app.include_router(payments.router, prefix="/api/payments", tags=["Payments"])
-app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
-app.include_router(discord.router, prefix="/api/discord", tags=["Discord"])
-app.include_router(teams.router, prefix="/api/teams", tags=["Teams"])
-app.include_router(matches.router, prefix="/api/matches", tags=["Matches"])
-app.include_router(player_stats.router, prefix="/api/player-stats", tags=["Player Stats"])
+# Include routers with flattened RESTful structure
+# Authentication endpoints remain at root level
+app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+
+# Versioned API endpoints
+app.include_router(players.router, prefix="/v1/players", tags=["Players"])
+app.include_router(events.router, prefix="/v1/events", tags=["Events"])
+app.include_router(leaderboard.router, prefix="/v1/leaderboards", tags=["Leaderboards"])
+app.include_router(teams.router, prefix="/v1/teams", tags=["Teams"])
+app.include_router(matches.router, prefix="/v1/matches", tags=["Matches"])
+app.include_router(player_stats.router, prefix="/v1/player-stats", tags=["Player Stats"])
+
+# Admin endpoints
+app.include_router(admin.router, prefix="/v1/admin", tags=["Admin"])
+
+# Integration endpoints
+app.include_router(discord.router, prefix="/v1/integrations/discord", tags=["Discord Integration"])
+app.include_router(payments.router, prefix="/v1/integrations/payments", tags=["Payment Integration"])
+
+# Add backward compatibility redirects
+from fastapi.responses import RedirectResponse
+
+@app.get("/api/{path:path}", include_in_schema=False)
+async def legacy_api_redirect(path: str):
+    """
+    Redirect legacy /api/* routes to their new flattened counterparts.
+    This ensures backward compatibility with existing clients.
+    """
+    # Map old paths to new paths
+    path_mapping = {
+        "auth": "/auth",
+        "players": "/v1/players",
+        "events": "/v1/events",
+        "leaderboard": "/v1/leaderboards",
+        "teams": "/v1/teams",
+        "matches": "/v1/matches",
+        "player-stats": "/v1/player-stats",
+        "admin": "/v1/admin",
+        "discord": "/v1/integrations/discord",
+        "payments": "/v1/integrations/payments"
+    }
+    
+    # Extract the first part of the path (the resource)
+    parts = path.split('/', 1)
+    resource = parts[0]
+    
+    if resource in path_mapping:
+        new_path = path_mapping[resource]
+        # If there's a subpath, append it
+        if len(parts) > 1:
+            new_path = f"{new_path}/{parts[1]}"
+        return RedirectResponse(url=new_path)
+    
+    # If no mapping exists, redirect to the root
+    return RedirectResponse(url="/")
 
 @app.get("/", tags=["Root"])
 @app.head("/")
