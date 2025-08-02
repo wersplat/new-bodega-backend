@@ -22,7 +22,8 @@ from app.schemas.player_stats import (
 from app.core.auth import get_current_active_user, RoleChecker
 
 # Initialize router with rate limiting
-router = APIRouter(prefix="/player-stats", tags=["Player Statistics"])
+# Prefix is added in main.py for consistency
+router = APIRouter(tags=["Player Statistics"])
 
 def calculate_game_score(stats: Dict[str, Any]) -> float:
     """

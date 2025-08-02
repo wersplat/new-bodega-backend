@@ -117,10 +117,10 @@ app.add_middleware(
 # Authentication endpoints remain at root
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 app.include_router(players.router, prefix="/v1/players", tags=["Players"])
-app.include_router(events.router, tags=["Events"])  # Prefix already included in the router
+app.include_router(events.router, prefix="/v1/events", tags=["Events"])
 app.include_router(leaderboard.router, prefix="/v1/leaderboard", tags=["Leaderboards"])
-app.include_router(teams.router, tags=["Teams"])  # Prefix already included in the router
-app.include_router(matches.router, tags=["Matches"])  # Prefix already included in the router
+app.include_router(teams.router, prefix="/v1/teams", tags=["Teams"])
+app.include_router(matches.router, prefix="/v1/matches", tags=["Matches"])
 app.include_router(player_stats.router, prefix="/v1/player-stats", tags=["Player Stats"])
 app.include_router(admin.router, prefix="/v1/admin", tags=["Admin"])
 app.include_router(discord.router, prefix="/v1/discord", tags=["Discord Integration"])

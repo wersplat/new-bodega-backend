@@ -3,6 +3,7 @@ Supabase client initialization and utilities with type hints
 """
 from typing import Optional, Dict, Any, List, TypeVar, Generic, Type, Union, Callable, Iterator, ContextManager
 from contextlib import contextmanager
+from fastapi import HTTPException
 from pydantic import BaseModel
 from supabase import create_client, Client as SupabaseClient
 from app.core.config import settings
@@ -16,15 +17,35 @@ class TransactionError(Exception):
 
 class SupabaseService:
     _client: Optional[SupabaseClient] = None
+    _admin_client: Optional[SupabaseClient] = None
 
     @classmethod
-    def get_client(cls) -> SupabaseClient:
-        """Get or create the Supabase client instance"""
-        if cls._client is None:
-            if not settings.SUPABASE_URL or not settings.SUPABASE_KEY:
-                raise ValueError("Supabase URL and key must be set in environment variables")
-            cls._client = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
-        return cls._client
+    def get_client(cls, admin: bool = False) -> SupabaseClient:
+        """Get or create the Supabase client instance
+        
+        Args:
+            admin: If True, returns a client with service role key for admin operations.
+                  If False, returns a client with anon key for public operations.
+                  
+        Returns:
+            SupabaseClient: Configured Supabase client instance
+            
+        Note: The service role key bypasses Row Level Security (RLS) and should only be used
+              for administrative operations on the server side. Never expose the service role
+              key to client-side code.
+        """
+        if admin:
+            if cls._admin_client is None:
+                if not settings.SUPABASE_URL or not settings.SUPABASE_KEY:
+                    raise ValueError("Supabase URL and service role key must be set in environment variables")
+                cls._admin_client = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
+            return cls._admin_client
+        else:
+            if cls._client is None:
+                if not settings.SUPABASE_URL or not settings.SUPABASE_ANON_KEY:
+                    raise ValueError("Supabase URL and anon key must be set in environment variables")
+                cls._client = create_client(settings.SUPABASE_URL, settings.SUPABASE_ANON_KEY)
+            return cls._client
         
     @classmethod
     @contextmanager
@@ -148,15 +169,77 @@ class SupabaseService:
         password: str, 
         user_metadata: Optional[Dict] = None
     ) -> Dict[str, Any]:
-        """Sign up a new user with email and password"""
-        client = cls.get_client()
-        return client.auth.sign_up({
-            "email": email,
-            "password": password,
-            "options": {
-                "data": user_metadata or {}
-            }
-        })
+        """Sign up a new user with email and password
+        
+        Args:
+            email: User's email address
+            password: User's password
+            user_metadata: Optional metadata to include with the user
+            
+        Returns:
+            Dict containing the user data if successful
+            
+        Raises:
+            HTTPException: If there's an error during signup
+        """
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        try:
+            logger.info(f"Attempting to sign up user with email: {email}")
+            client = cls.get_client()
+            
+            # Ensure email is a string and not empty
+            if not isinstance(email, str) or not email.strip():
+                error_msg = f"Invalid email format: {email}"
+                logger.error(error_msg)
+                raise ValueError(error_msg)
+                
+            # Ensure password meets minimum requirements
+            if not isinstance(password, str) or len(password) < 6:
+                error_msg = "Password must be at least 6 characters"
+                logger.error(error_msg)
+                raise ValueError(error_msg)
+            
+            # Normalize email - ensure it's in the correct format
+            normalized_email = email.strip().lower()
+            
+            # Log the signup attempt
+            logger.debug(f"Attempting to sign up with email: {normalized_email}")
+            
+            # Attempt to sign up the user
+            result = client.auth.sign_up({
+                "email": normalized_email,
+                "password": password,
+                "options": {
+                    "data": user_metadata or {}
+                }
+            })
+            
+            if hasattr(result, 'user') and result.user:
+                logger.info(f"Successfully signed up user: {result.user.id}")
+                return {
+                    "id": result.user.id,
+                    "email": result.user.email,
+                    "created_at": getattr(result.user, 'created_at', None),
+                    "confirmed_at": getattr(result.user, 'confirmed_at', None)
+                }
+            else:
+                logger.warning("Signup response missing user data")
+                return {"message": "Check your email for the confirmation link"}
+            
+        except Exception as e:
+            error_msg = str(e)
+            logger.error(f"Error during user signup: {error_msg}", exc_info=True)
+            
+            # Provide a more user-friendly error message
+            if "email" in error_msg.lower() and "invalid" in error_msg.lower():
+                error_msg = f"The email address '{email}' is not valid. Please check the format and try again."
+            
+            raise HTTPException(
+                status_code=400,
+                detail=error_msg
+            )
 
 
 

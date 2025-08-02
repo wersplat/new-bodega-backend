@@ -31,7 +31,8 @@ from app.core.rate_limiter import limiter
 from app.core.config import settings
 
 # Initialize router with rate limiting
-router = APIRouter(prefix="/players", tags=["Players"])
+# Prefix is handled in main.py
+router = APIRouter(tags=["Players"])
 
 # Configure logging
 logger = logging.getLogger(__name__)

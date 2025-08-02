@@ -28,7 +28,8 @@ from app.schemas.match import (
 import logging
 
 # Initialize router with rate limiting
-router = APIRouter(prefix="/matches", tags=["Matches"])
+# Prefix is added in main.py for consistency
+router = APIRouter(tags=["Matches"])
 
 # Configure logging
 logger = logging.getLogger(__name__)

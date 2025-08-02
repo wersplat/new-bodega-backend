@@ -23,7 +23,8 @@ from app.core.config import settings
 from app.schemas.player import PlayerProfile, PlayerTier
 
 # Initialize router with rate limiting
-router = APIRouter(prefix="/leaderboard", tags=["Leaderboard"])
+# Prefix is added in main.py for consistency
+router = APIRouter(tags=["Leaderboard"])
 
 # Configure logging
 logger = logging.getLogger(__name__)
