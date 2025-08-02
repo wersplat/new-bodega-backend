@@ -1,13 +1,18 @@
 """
 Supabase client initialization and utilities with type hints
 """
-from typing import Optional, Dict, Any, List, TypeVar, Generic, Type, Union
+from typing import Optional, Dict, Any, List, TypeVar, Generic, Type, Union, Callable, Iterator, ContextManager
+from contextlib import contextmanager
 from pydantic import BaseModel
 from supabase import create_client, Client as SupabaseClient
 from app.core.config import settings
 
 # Type variables for generic operations
 T = TypeVar('T', bound=BaseModel)
+
+class TransactionError(Exception):
+    """Exception raised for errors in database transactions"""
+    pass
 
 class SupabaseService:
     _client: Optional[SupabaseClient] = None
@@ -20,6 +25,30 @@ class SupabaseService:
                 raise ValueError("Supabase URL and key must be set in environment variables")
             cls._client = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
         return cls._client
+        
+    @classmethod
+    @contextmanager
+    def transaction(cls) -> Iterator[SupabaseClient]:
+        """Context manager for database transactions
+        
+        Example:
+            with supabase.transaction() as db:
+                # Perform operations within transaction
+                db.table('users').insert(...).execute()
+                db.table('profiles').update(...).execute()
+                # Commit happens automatically if no exceptions
+        """
+        client = cls.get_client()
+        try:
+            # Start a transaction
+            client.rpc('begin')
+            yield client
+            # Commit the transaction
+            client.rpc('commit')
+        except Exception as e:
+            # Rollback on error
+            client.rpc('rollback')
+            raise TransactionError(f"Transaction failed: {str(e)}") from e
         
     # Generic CRUD Operations
     @classmethod
@@ -51,48 +80,51 @@ class SupabaseService:
             return response.data[0] if hasattr(response, 'data') and response.data and len(response.data) > 0 else None
 
     @classmethod
-    def insert(cls, table: str, data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    def insert(cls, table: str, data: Dict[str, Any], client: Optional[SupabaseClient] = None) -> Optional[Dict[str, Any]]:
         """Insert a new record into the specified table
         
         Args:
             table: Name of the table to insert into
             data: Dictionary of data to insert
+            client: Optional client to use for the operation (for transactions)
             
         Returns:
             Dictionary containing the inserted record if successful, None otherwise
         """
-        client = cls.get_client()
+        client = client or cls.get_client()
         response = client.table(table).insert(data).execute()
         return response.data[0] if response.data and len(response.data) > 0 else None
 
     @classmethod
-    def update(cls, table: str, id: Union[str, int], data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    def update(cls, table: str, id: Union[str, int], data: Dict[str, Any], client: Optional[SupabaseClient] = None) -> Optional[Dict[str, Any]]:
         """Update a record in the specified table
         
         Args:
             table: Name of the table containing the record
             id: ID of the record to update (can be string or integer)
             data: Dictionary of fields to update
+            client: Optional client to use for the operation (for transactions)
             
         Returns:
             Dictionary containing the updated record if successful, None otherwise
         """
-        client = cls.get_client()
+        client = client or cls.get_client()
         response = client.table(table).update(data).eq('id', id).execute()
         return response.data[0] if response.data and len(response.data) > 0 else None
 
     @classmethod
-    def delete(cls, table: str, id: Union[str, int]) -> bool:
+    def delete(cls, table: str, id: Union[str, int], client: Optional[SupabaseClient] = None) -> bool:
         """Delete a record from the specified table
         
         Args:
             table: Name of the table containing the record
             id: ID of the record to delete (can be string or integer)
+            client: Optional client to use for the operation (for transactions)
             
         Returns:
             bool: True if record was deleted, False otherwise
         """
-        client = cls.get_client()
+        client = client or cls.get_client()
         response = client.table(table).delete().eq('id', id).execute()
         return len(response.data) > 0 if hasattr(response, 'data') and response.data else False
 

@@ -3,12 +3,27 @@ NBA 2K Global Rankings Backend
 Main application entry point
 """
 
+import logging
 from datetime import datetime
-from fastapi import FastAPI, Depends, HTTPException, status
+from typing import Dict, Any
+
+from fastapi import FastAPI, Depends, HTTPException, status, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from slowapi import Limiter
+from slowapi.middleware import SlowAPIMiddleware
 
 from app.core.config import settings
 from app.core.supabase import supabase
+from app.core.rate_limiter import (
+    limiter,
+    rate_limit_exceeded_handler,
+    get_identifier
+)
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 from app.routers import (
     players_supabase as players, 
     events_supabase as events, 
@@ -28,16 +43,50 @@ app = FastAPI(
     description="Backend API for NBA 2K Global Rankings system",
     version="1.0.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
+    openapi_tags=[
+        {
+            "name": "Authentication",
+            "description": "User authentication and authorization endpoints"
+        },
+        {
+            "name": "Players",
+            "description": "Player profiles and statistics"
+        },
+        {
+            "name": "Events",
+            "description": "Tournament and league events"
+        },
+        {
+            "name": "Leaderboard",
+            "description": "Player and team rankings"
+        },
+        {
+            "name": "Admin",
+            "description": "Administrative operations"
+        },
+        {
+            "name": "Health",
+            "description": "Service health and status checks"
+        }
+    ]
 )
+
+# Add rate limiting middleware
+app.state.limiter = limiter
+app.add_exception_handler(429, rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
 
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with your frontend URL
+    allow_origins=settings.CORS_ORIGINS.split(","),
+    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?$",
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"],
     allow_headers=["*"],
+    expose_headers=["X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset"],
+    max_age=600,  # 10 minutes
 )
 
 # Include routers
@@ -54,25 +103,35 @@ app.include_router(player_stats.router, prefix="/api/player-stats", tags=["Playe
 
 @app.get("/", tags=["Root"])
 @app.head("/")
-async def root():
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
+async def root(request: Request):
     """
     Root endpoint that responds to both GET and HEAD requests.
     
+    This endpoint provides basic API information and is rate limited.
+    
     Returns:
-        dict: A welcome message for the NBA 2K Global Rankings API
+        dict: A welcome message and API information
+        
+    Raises:
+        HTTPException: If rate limit is exceeded
     """
     return {
         "message": "NBA 2K Global Rankings API",
         "version": "1.0.0",
         "docs": "/docs",
-        "status": "operational"
+        "status": "operational",
+        "timestamp": datetime.utcnow().isoformat()
     }
 
 @app.get("/health", tags=["Health"])
 @app.head("/health")
-async def health_check():
+@limiter.exempt
+def health_check():
     """
     Health check endpoint that responds to both GET and HEAD requests.
+    
+    This endpoint is exempt from rate limiting and provides system health status.
     
     Returns:
         dict: Health status of the API and its dependencies
@@ -83,12 +142,26 @@ async def health_check():
         # Simple query to check database connectivity
         supabase.get_client().rpc('version').execute()
     except Exception as e:
+        logger.error(f"Database health check failed: {str(e)}")
         db_status = f"error: {str(e)}"
+    
+    # Check Redis connectivity
+    redis_status = "ok"
+    try:
+        from app.core.rate_limiter import redis_client
+        redis_client.ping()
+    except Exception as e:
+        logger.error(f"Redis health check failed: {str(e)}")
+        redis_status = f"error: {str(e)}"
     
     return {
         "status": "ok",
-        "database": db_status,
-        "timestamp": datetime.utcnow().isoformat()
+        "services": {
+            "database": db_status,
+            "cache": redis_status
+        },
+        "timestamp": datetime.utcnow().isoformat(),
+        "environment": "development" if settings.DEBUG else "production"
     }
 
 if __name__ == "__main__":
