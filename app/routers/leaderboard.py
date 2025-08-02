@@ -2,7 +2,7 @@
 Leaderboard router for global and event rankings
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, Path
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from sqlalchemy import desc
@@ -45,7 +45,7 @@ async def get_top_players(
 
 @router.get("/tier/{tier}", response_model=List[PlayerProfile])
 async def get_tier_leaderboard(
-    tier: PlayerTier,
+    tier: PlayerTier = Path(..., description="Tier to get leaderboard for"),
     limit: int = Query(100, ge=1, le=1000),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db)
@@ -60,7 +60,7 @@ async def get_tier_leaderboard(
 
 @router.get("/event/{event_id}", response_model=List[PlayerProfile])
 async def get_event_leaderboard(
-    event_id: int,
+    event_id: int = Path(..., description="ID of the event to get leaderboard for"),
     db: Session = Depends(get_db)
 ):
     """
@@ -108,7 +108,7 @@ async def get_peak_rp_leaderboard(
 
 @router.get("/region/{region}", response_model=List[PlayerProfile])
 async def get_region_leaderboard(
-    region: str,
+    region: str = Path(..., description="Region code to get leaderboard for"),
     limit: int = Query(100, ge=1, le=1000),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db)
@@ -120,18 +120,3 @@ async def get_region_leaderboard(
         Player.region.ilike(f"%{region}%")
     ).order_by(desc(Player.current_rp)).offset(offset).limit(limit).all()
     return players
-
-@router.get("/region/{region}", response_model=List[PlayerProfile])
-async def get_region_leaderboard(
-    region: str,
-    limit: int = Query(100, ge=1, le=1000),
-    offset: int = Query(0, ge=0),
-    db: Session = Depends(get_db)
-):
-    """
-    Get leaderboard for specific region
-    """
-    players = db.query(Player).filter(
-        Player.region.ilike(f"%{region}%")
-    ).order_by(desc(Player.current_rp)).offset(offset).limit(limit).all()
-    return players 

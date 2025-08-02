@@ -336,7 +336,7 @@ async def get_tier_leaderboard(
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_event_leaderboard(
     request: Request,
-    event_id: str = Query(..., description="ID of the event to get leaderboard for"),
+    event_id: str = Path(..., description="ID of the event to get leaderboard for"),
     include_stats: bool = Query(False, description="Include detailed player statistics")
 ) -> List[Dict[str, Any]]:
     """

@@ -2,7 +2,7 @@
 Players router for player profile management and lookups
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Path
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -54,7 +54,10 @@ async def create_player(
     return db_player
 
 @router.get("/{player_id}", response_model=PlayerProfile)
-async def get_player(player_id: int, db: Session = Depends(get_db)):
+async def get_player(
+    player_id: int = Path(..., description="ID of the player to retrieve"),
+    db: Session = Depends(get_db)
+):
     """
     Get player profile by ID
     """
@@ -111,7 +114,10 @@ async def update_my_profile(
     return player
 
 @router.get("/{player_id}/history", response_model=PlayerWithHistory)
-async def get_player_history(player_id: int, db: Session = Depends(get_db)):
+async def get_player_history(
+    player_id: int = Path(..., description="ID of the player to get history for"),
+    db: Session = Depends(get_db)
+):
     """
     Get player profile with RP history
     """
@@ -125,7 +131,10 @@ async def get_player_history(player_id: int, db: Session = Depends(get_db)):
     return player
 
 @router.get("/search/{gamertag}", response_model=PlayerProfile)
-async def search_player_by_gamertag(gamertag: str, db: Session = Depends(get_db)):
+async def search_player_by_gamertag(
+    gamertag: str = Path(..., description="Gamertag to search for"),
+    db: Session = Depends(get_db)
+):
     """
     Search for player by gamertag
     """

@@ -2,7 +2,7 @@
 Events router for tournament and event management
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Path
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -71,7 +71,10 @@ async def list_open_events(db: Session = Depends(get_db)):
     return events
 
 @router.get("/{event_id}", response_model=EventWithRegistrations)
-async def get_event(event_id: int, db: Session = Depends(get_db)):
+async def get_event(
+    event_id: int = Path(..., description="ID of the event to retrieve"),
+    db: Session = Depends(get_db)
+):
     """
     Get event details with registrations
     """
@@ -86,7 +89,7 @@ async def get_event(event_id: int, db: Session = Depends(get_db)):
 
 @router.put("/{event_id}", response_model=EventSchema)
 async def update_event(
-    event_id: int,
+    event_id: int = Path(..., description="ID of the event to update"),
     event_update: EventUpdate,
     current_user: User = Depends(get_current_admin_user),
     db: Session = Depends(get_db)
@@ -113,7 +116,7 @@ async def update_event(
 
 @router.post("/{event_id}/register")
 async def register_for_event(
-    event_id: int,
+    event_id: int = Path(..., description="ID of the event to register for"),
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
@@ -178,7 +181,7 @@ async def register_for_event(
 
 @router.delete("/{event_id}/register")
 async def unregister_from_event(
-    event_id: int,
+    event_id: int = Path(..., description="ID of the event to unregister from"),
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
