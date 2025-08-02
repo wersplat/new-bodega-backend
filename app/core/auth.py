@@ -2,12 +2,20 @@
 Authentication utilities and JWT token management using Supabase
 """
 
+import logging
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
+
+# Set up logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+logger.addHandler(handler)
 
 from app.core.config import settings
 from app.core.supabase import supabase
@@ -45,12 +53,18 @@ def verify_token(token: str) -> Optional[str]:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
+            logger.warning("JWT token missing 'sub' claim")
             return None
         return username
-    except JWTError:
+    except JWTError as e:
+        logger.warning(f"JWT token verification failed: {str(e)}")
+        return None
+    except Exception as e:
+        logger.error(f"Unexpected error verifying JWT token: {str(e)}", exc_info=True)
         return None
 
 async def get_current_user(
+    request: Request,
     token: str = Depends(oauth2_scheme)
 ) -> UserInDB:
     """Get current authenticated user from Supabase"""
@@ -60,14 +74,20 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     
+    # Log authentication attempt
+    client_host = request.client.host if request.client else "unknown"
+    logger.info(f"Authentication attempt from {client_host}")
+    
     email = verify_token(token)
     if email is None:
+        logger.warning(f"Invalid token provided from {client_host}")
         raise credentials_exception
     
     try:
         # Get user data from Supabase
         result = supabase.get_client().table("users").select("*").eq("email", email).single().execute()
         if not result.data:
+            logger.warning(f"User not found in database: {email}")
             raise credentials_exception
         
         # Convert to UserInDB model
@@ -83,8 +103,12 @@ async def get_current_user(
             created_at=user_data["created_at"],
             updated_at=user_data.get("updated_at")
         )
+        
+        # Log successful authentication
+        logger.info(f"Successfully authenticated user: {user.email} (ID: {user.id})")
         return user
     except Exception as e:
+        logger.error(f"Error during user authentication for {email}: {str(e)}", exc_info=True)
         raise credentials_exception
 
 async def get_current_active_user(current_user: UserInDB = Depends(get_current_user)) -> UserInDB:

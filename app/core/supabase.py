@@ -21,37 +21,80 @@ class SupabaseService:
             cls._client = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
         return cls._client
         
+    # Generic CRUD Operations
     @classmethod
-    def fetch_by_id(cls, table: str, id: str) -> Optional[Dict[str, Any]]:
-        """Fetch a single record by ID from the specified table"""
+    def fetch_all(cls, table: str) -> List[Dict[str, Any]]:
+        """Fetch all records from a table"""
         client = cls.get_client()
-        result = client.table(table).select("*").eq("id", id).execute()
-        return result.data[0] if result.data and len(result.data) > 0 else None
+        response = client.table(table).select("*").execute()
+        return response.data if hasattr(response, 'data') else []
+
+    @classmethod
+    def fetch_by_id(cls, table: str, id: Union[str, int]) -> Optional[Dict[str, Any]]:
+        """Fetch a single record by ID from the specified table using Session.get()
         
-    @classmethod
-    def insert(cls, table: str, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Insert a new record into the specified table"""
+        Args:
+            table: Name of the table to query
+            id: ID of the record to fetch (can be string or integer)
+            
+        Returns:
+            Dictionary containing the record data if found, None otherwise
+        """
         client = cls.get_client()
-        result = client.table(table).insert(data).execute()
-        if hasattr(result, 'data') and result.data and len(result.data) > 0:
-            return result.data[0]
-        raise ValueError(f"Failed to insert record into {table}")
+        try:
+            # Try to use Session.get() for primary key lookups
+            response = client.table(table).select("*").eq('id', id).single().execute()
+            return response.data if hasattr(response, 'data') and response.data else None
+        except Exception:
+            # Fall back to the standard query if single() is not supported
+            response = client.table(table).select("*").eq('id', id).execute()
+            return response.data[0] if hasattr(response, 'data') and response.data and len(response.data) > 0 else None
+
+    @classmethod
+    def insert(cls, table: str, data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """Insert a new record into the specified table
         
-    @classmethod
-    def update(cls, table: str, id: str, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Update a record in the specified table"""
+        Args:
+            table: Name of the table to insert into
+            data: Dictionary of data to insert
+            
+        Returns:
+            Dictionary containing the inserted record if successful, None otherwise
+        """
         client = cls.get_client()
-        result = client.table(table).update(data).eq("id", id).execute()
-        if hasattr(result, 'data') and result.data and len(result.data) > 0:
-            return result.data[0]
-        raise ValueError(f"Failed to update record {id} in {table}")
+        response = client.table(table).insert(data).execute()
+        return response.data[0] if response.data and len(response.data) > 0 else None
+
+    @classmethod
+    def update(cls, table: str, id: Union[str, int], data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """Update a record in the specified table
         
-    @classmethod
-    def delete(cls, table: str, id: str) -> bool:
-        """Delete a record from the specified table"""
+        Args:
+            table: Name of the table containing the record
+            id: ID of the record to update (can be string or integer)
+            data: Dictionary of fields to update
+            
+        Returns:
+            Dictionary containing the updated record if successful, None otherwise
+        """
         client = cls.get_client()
-        result = client.table(table).delete().eq("id", id).execute()
-        return result.data is not None
+        response = client.table(table).update(data).eq('id', id).execute()
+        return response.data[0] if response.data and len(response.data) > 0 else None
+
+    @classmethod
+    def delete(cls, table: str, id: Union[str, int]) -> bool:
+        """Delete a record from the specified table
+        
+        Args:
+            table: Name of the table containing the record
+            id: ID of the record to delete (can be string or integer)
+            
+        Returns:
+            bool: True if record was deleted, False otherwise
+        """
+        client = cls.get_client()
+        response = client.table(table).delete().eq('id', id).execute()
+        return len(response.data) > 0 if hasattr(response, 'data') and response.data else False
 
     # Authentication Methods
     @classmethod
@@ -83,41 +126,7 @@ class SupabaseService:
             }
         })
 
-    # Generic CRUD Operations
-    @classmethod
-    def fetch_all(cls, table: str) -> List[Dict[str, Any]]:
-        """Fetch all records from a table"""
-        client = cls.get_client()
-        response = client.table(table).select("*").execute()
-        return response.data if hasattr(response, 'data') else []
 
-    @classmethod
-    def fetch_by_id(cls, table: str, id: Union[str, int]) -> Optional[Dict[str, Any]]:
-        """Fetch a single record by ID"""
-        client = cls.get_client()
-        response = client.table(table).select("*").eq('id', id).execute()
-        return response.data[0] if response.data else None
-
-    @classmethod
-    def insert(cls, table: str, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Insert a new record"""
-        client = cls.get_client()
-        response = client.table(table).insert(data).execute()
-        return response.data[0] if response.data else None
-
-    @classmethod
-    def update(cls, table: str, id: Union[str, int], data: Dict[str, Any]) -> Dict[str, Any]:
-        """Update an existing record"""
-        client = cls.get_client()
-        response = client.table(table).update(data).eq('id', id).execute()
-        return response.data[0] if response.data else None
-
-    @classmethod
-    def delete(cls, table: str, id: Union[str, int]) -> bool:
-        """Delete a record by ID"""
-        client = cls.get_client()
-        response = client.table(table).delete().eq('id', id).execute()
-        return len(response.data) > 0 if response.data else False
 
     # Custom Queries (Add more as needed)
     @classmethod
