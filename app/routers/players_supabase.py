@@ -142,7 +142,7 @@ async def get_player_by_gamertag(gamertag: str) -> Optional[Dict[str, Any]]:
 
 @router.post(
     "/", 
-    response_model=PlayerSchema,
+    response_model=PlayerResponse,
     status_code=status.HTTP_201_CREATED,
     responses={
         201: {"description": "Player created successfully"},
@@ -235,7 +235,7 @@ async def create_player(
 
 @router.get(
     "/{player_id}", 
-    response_model=PlayerWithHistory,
+    response_model=PlayerResponse,
     responses={
         200: {"description": "Player profile retrieved successfully"},
         404: {"description": "Player not found"},
@@ -329,7 +329,7 @@ async def get_player(
 
 @router.get(
     "/me", 
-    response_model=PlayerSchema,
+    response_model=PlayerResponse,
     responses={
         200: {"description": "Player profile retrieved successfully"},
         401: {"description": "Not authenticated"},
@@ -394,7 +394,7 @@ async def get_my_profile(
 
 @router.patch(
     "/me", 
-    response_model=PlayerSchema,
+    response_model=PlayerResponse,
     responses={
         200: {"description": "Player profile updated successfully"},
         400: {"description": "Invalid input data"},

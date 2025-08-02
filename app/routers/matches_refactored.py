@@ -659,8 +659,8 @@ async def submit_match_stats(
     request: Request,
     match_id: str = Path(..., description="The UUID of the match", 
                         example=UUID_EXAMPLE, regex=UUID_PATTERN),
-    stats: List[PlayerMatchStats],
-    current_user: Dict[str, Any] = Depends(get_current_admin_user)
+    current_user: Dict[str, Any] = Depends(get_current_admin_user),
+    stats: List[PlayerMatchStats] = Body(..., description="List of player match statistics")
 ) -> List[Dict[str, Any]]:
     """
     Submit player statistics for a match (Admin only).

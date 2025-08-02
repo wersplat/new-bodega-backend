@@ -164,7 +164,7 @@ async def get_leaderboard(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred while retrieving the leaderboard"
         )
-)
+
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_tier_leaderboard(
     request: Request,
