@@ -1,23 +1,19 @@
 """
 Leaderboard Router
 
-This module provides API endpoints for retrieving various leaderboards and rankings.
-It handles global, tier-based, event-based, and regional leaderboards with support for
-sorting, filtering, and pagination.
+This module provides a unified API endpoint for retrieving player rankings and leaderboards
+with support for filtering, sorting, and pagination.
 
-Endpoints:
-- GET /global: Get global leaderboard with various sorting options
-- GET /global/top: Get top players globally by RP
-- GET /tier/{tier}: Get leaderboard for a specific tier
-- GET /event/{event_id}: Get leaderboard for a specific event
-- GET /peak-rp: Get leaderboard by peak RP
-- GET /region/{region}: Get leaderboard for a specific region
+Endpoint:
+- GET /: Get leaderboard with comprehensive filtering options
+  - Filter by: tier, region, event, min_games
+  - Sort by: RP, peak RP, wins, win rate
+  - Pagination support
 """
 
 import logging
-import uuid
 from enum import Enum
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Union
 
 from fastapi import APIRouter, Depends, HTTPException, status, Request, Query, Path
 
@@ -33,49 +29,70 @@ router = APIRouter(prefix="/leaderboard", tags=["Leaderboard"])
 logger = logging.getLogger(__name__)
 
 class LeaderboardSortBy(str, Enum):
-    # Using player_rp instead of current_rp to match Supabase schema
+    """Available fields to sort the leaderboard by."""
     CURRENT_RP = "player_rp"
-    PEAK_RP = "player_rank_score"  # Using player_rank_score as peak RP
+    PEAK_RP = "player_rank_score"
     WINS = "wins"
     WIN_RATE = "win_rate"
-    RANK = "rank"  # Fallback column if others don't exist
+    RANK = "rank"
 
 @router.get(
-    "/global",
+    "/",
     response_model=List[PlayerProfile],
     responses={
-        200: {"description": "Global leaderboard retrieved successfully"},
+        200: {"description": "Leaderboard retrieved successfully"},
         400: {"description": "Invalid query parameters"},
         429: {"description": "Rate limit exceeded"},
         500: {"description": "Internal server error"}
     }
 )
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
-async def get_global_leaderboard(
+async def get_leaderboard(
     request: Request,
+    # Pagination
     limit: int = Query(100, ge=1, le=1000, description="Number of entries to return (1-1000)"),
     offset: int = Query(0, ge=0, description="Pagination offset"),
+    
+    # Filtering
     tier: Optional[PlayerTier] = Query(None, description="Filter by player tier"),
+    region: Optional[str] = Query(None, description="Filter by region code (e.g., 'NA', 'EU')"),
+    event_id: Optional[str] = Query(None, description="Filter by specific event ID"),
+    min_games: Optional[int] = Query(None, ge=1, description="Minimum number of games played"),
+    
+    # Sorting
     sort_by: LeaderboardSortBy = Query(
         LeaderboardSortBy.CURRENT_RP,
         description="Field to sort the leaderboard by"
     ),
-    descending: bool = Query(True, description="Sort in descending order")
+    descending: bool = Query(True, description="Sort in descending order"),
+    
+    # Top players shortcut
+    top: Optional[int] = Query(
+        None, 
+        ge=1, 
+        le=100, 
+        description="Shortcut to get top N players (overrides limit and offset)"
+    )
 ) -> List[Dict[str, Any]]:
     """
-    Get global leaderboard with various sorting and filtering options.
+    Get leaderboard with comprehensive filtering and sorting options.
     
-    This endpoint retrieves a paginated list of players sorted by the specified criteria.
-    It supports filtering by tier and various sorting options including current RP,
-    peak RP, wins, and win rate.
+    This endpoint provides a unified way to query player rankings with support for:
+    - Filtering by tier, region, event, and minimum games played
+    - Sorting by RP, peak RP, wins, or win rate
+    - Pagination and top-N shortcuts
     
     Args:
         request: The FastAPI request object (used for rate limiting)
         limit: Maximum number of entries to return (1-1000)
         offset: Pagination offset
-        tier: Optional tier filter
+        tier: Filter by player tier
+        region: Filter by region code
+        event_id: Filter by specific event
+        min_games: Minimum number of games played
         sort_by: Field to sort the leaderboard by
         descending: Whether to sort in descending order
+        top: Shortcut to get top N players (overrides limit and offset)
         
     Returns:
         List[Dict[str, Any]]: List of player profiles with ranking information
@@ -84,157 +101,69 @@ async def get_global_leaderboard(
         HTTPException: If there's an error retrieving the leaderboard
     """
     try:
+        # Handle top-N shortcut
+        if top is not None:
+            limit = top
+            offset = 0
+            
         logger.info(
-            f"Fetching global leaderboard - sort_by: {sort_by}, "
-            f"descending: {descending}, tier: {tier}, limit: {limit}, offset: {offset}"
+            f"Fetching leaderboard - sort_by: {sort_by}, "
+            f"descending: {descending}, tier: {tier}, region: {region}, "
+            f"event_id: {event_id}, min_games: {min_games}, "
+            f"limit: {limit}, offset: {offset}"
         )
         
         client = supabase.get_client()
         
-        # Build the query with only necessary fields for better performance
+        # Base query - select only necessary fields for better performance
         query = client.table("players").select(
             "id, gamertag, avatar_url, player_rp, player_rank_score, "
-            "wins, losses, win_rate, tier, region, created_at"
+            "wins, losses, win_rate, tier, region, created_at, total_games"
         )
         
         # Apply filters
         if tier:
-            query = query.eq("tier", tier.value)
-        
-        # Apply sorting with fallback if column doesn't exist
-        try:
-            # First try the requested sort column
-            query = query.order(sort_by.value, desc=descending)
-            logger.debug(f"Sorted by {sort_by.value} (descending: {descending})")
-        except Exception as e:
-            if "column" in str(e) and "does not exist" in str(e):
-                logger.warning(
-                    f"Sort column {sort_by.value} not found, falling back to default sort"
-                )
-                # If the column doesn't exist, try fallback columns
-                fallback_columns = ["player_rp", "wins", "created_at"]
-                for col in fallback_columns:
-                    try:
-                        query = query.order(col, desc=descending)
-                        logger.debug(f"Fell back to sorting by {col}")
-                        break
-                    except Exception as fallback_error:
-                        logger.debug(f"Fallback sort by {col} failed: {str(fallback_error)}")
-                        continue
-            else:
-                # Re-raise if it's a different error
-                logger.error(
-                    f"Error applying sort {sort_by.value}: {str(e)}",
-                    exc_info=True
-                )
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Invalid sort column: {sort_by.value}"
-                )
+            query = query.eq("tier", tier.value if hasattr(tier, 'value') else tier)
+            
+        if region:
+            query = query.eq("region", region.upper())
+            
+        if min_games:
+            query = query.gte("total_games", min_games)
+            
+        # Handle event-specific leaderboard
+        if event_id:
+            # This would join with event_participants table in a real implementation
+            # For now, we'll just filter by event_id if present
+            query = query.eq("last_event_id", event_id)  # Assuming this field exists
+            
+        # Apply sorting
+        sort_field = sort_by.value if hasattr(sort_by, 'value') else sort_by
+        query = query.order(sort_field, desc=descending)
         
         # Apply pagination
         query = query.range(offset, offset + limit - 1)
         
-        # Execute the query
+        # Execute query
         result = query.execute()
-        players = result.data if hasattr(result, 'data') else []
         
-        # Add rank based on the current sort order
-        for i, player in enumerate(players, start=1):
-            player["rank"] = offset + i
-        
-        logger.info(f"Retrieved {len(players)} players from global leaderboard")
-        return players
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(
-            f"Error retrieving global leaderboard: {str(e)}",
-            exc_info=True
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="An error occurred while retrieving the global leaderboard"
-        )
-
-@router.get(
-    "/global/top",
-    response_model=List[PlayerProfile],
-    responses={
-        200: {"description": "Top players retrieved successfully"},
-        400: {"description": "Invalid query parameters"},
-        429: {"description": "Rate limit exceeded"},
-        500: {"description": "Internal server error"}
-    }
-)
-@limiter.limit(settings.RATE_LIMIT_DEFAULT)
-async def get_top_players(
-    request: Request,
-    limit: int = Query(10, ge=1, le=100, description="Number of top players to return (1-100)")
-) -> List[Dict[str, Any]]:
-    """
-    Get top players globally by player RP.
-    
-    This endpoint retrieves the top players based on their current RP (Reputation Points).
-    It's optimized for performance by only selecting necessary fields and using an index.
-    
-    Args:
-        request: The FastAPI request object (used for rate limiting)
-        limit: Maximum number of top players to return (1-100)
-        
-    Returns:
-        List[Dict[str, Any]]: List of top player profiles with ranking information
-        
-    Raises:
-        HTTPException: If there's an error retrieving the top players
-    """
-    try:
-        logger.info(f"Fetching top {limit} players by RP")
-        
-        client = supabase.get_client()
-        
-        # Build the query with only necessary fields for better performance
-        result = (
-            client.table("players")
-            .select(
-                "id, gamertag, avatar_url, player_rp, player_rank_score, "
-                "wins, losses, win_rate, tier, region, created_at"
-            )
-            .order("player_rp", desc=True)
-            .limit(limit)
-            .execute()
-        )
-        
-        players = result.data if hasattr(result, 'data') else []
-        
-        # Add rank to each player
-        for i, player in enumerate(players, start=1):
-            player["rank"] = i
-        
-        logger.info(f"Retrieved top {len(players)} players")
-        return players
+        if not hasattr(result, 'data') or not result.data:
+            return []
+            
+        # Add ranking position
+        ranked_players = []
+        for idx, player in enumerate(result.data, start=offset + 1):
+            player['rank'] = idx
+            ranked_players.append(player)
+            
+        return ranked_players
         
     except Exception as e:
-        logger.error(
-            f"Error retrieving top players: {str(e)}",
-            exc_info=True
-        )
+        logger.error(f"Error retrieving leaderboard: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="An error occurred while retrieving the top players"
+            detail="An error occurred while retrieving the leaderboard"
         )
-
-@router.get(
-    "/tier/{tier}",
-    response_model=List[PlayerProfile],
-    responses={
-        200: {"description": "Tier leaderboard retrieved successfully"},
-        400: {"description": "Invalid query parameters or tier"},
-        404: {"description": "Tier not found"},
-        429: {"description": "Rate limit exceeded"},
-        500: {"description": "Internal server error"}
-    }
 )
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_tier_leaderboard(

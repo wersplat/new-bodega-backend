@@ -33,7 +33,7 @@ from app.routers import (
     discord, 
     payments,
     teams,
-    matches,
+    matches_refactored as matches,
     player_stats
 )
 
@@ -122,7 +122,7 @@ app.include_router(players.router, prefix="/v1/players", tags=["Players"])
 app.include_router(events.router, prefix="/v1/events", tags=["Events"])
 app.include_router(leaderboard.router, prefix="/v1/leaderboards", tags=["Leaderboards"])
 app.include_router(teams.router, prefix="/v1/teams", tags=["Teams"])
-app.include_router(matches.router, prefix="/v1/matches", tags=["Matches"])
+app.include_router(matches.router, prefix="/v1/matches", tags=["Matches"])  # Using refactored matches router
 app.include_router(player_stats.router, prefix="/v1/player-stats", tags=["Player Stats"])
 
 # Admin endpoints
