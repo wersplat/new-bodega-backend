@@ -80,6 +80,7 @@ def test_player_in_db():
         "id": TEST_PLAYER_ID,
         "gamertag": "DBPlayer",
         "position": "PG",
+        "region": "NA",
         "region_id": TEST_REGION_ID,
         "current_team_id": TEST_TEAM_ID,
         "performance_score": 85.5,
