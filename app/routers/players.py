@@ -53,13 +53,11 @@ Error Responses:
 import logging
 from datetime import datetime
 from typing import List, Optional, Dict, Any, Union
-from uuid import UUID
+from uuid import UUID, uuid4
 
-from fastapi import (
-    APIRouter, Depends, HTTPException, status, 
-    Request, Query, Path, Body
-)
-from pydantic import BaseModel, Field, validator
+from fastapi import APIRouter, Depends, HTTPException, status, Query, Request
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic.types import constr
 
 from app.core.supabase import supabase
@@ -101,13 +99,15 @@ class PlayerCreate(PlayerBase):
     """Model for creating a new player."""
     user_id: UUID
     
-    @validator('gamertag')
-    def validate_gamertag(cls, v):
-        if not v.strip():
+    @field_validator('gamertag')
+    @classmethod
+    def validate_gamertag(cls, v: str) -> str:
+        v = v.strip()
+        if not v:
             raise ValueError('Gamertag cannot be empty')
         if not v.replace(' ', '').isalnum():
             raise ValueError('Gamertag can only contain alphanumeric characters and spaces')
-        return v.strip()
+        return v
 
 class PlayerUpdate(BaseModel):
     """Model for updating an existing player (partial updates allowed)."""
@@ -127,11 +127,29 @@ class PlayerResponse(PlayerBase):
     is_active: bool
     last_online: Optional[datetime] = None
     
-    class Config:
-        orm_mode = True
-        json_encoders = {
-            datetime: lambda v: v.isoformat()
+    model_config = ConfigDict(
+        from_attributes=True,  # Replaces orm_mode=True
+        json_schema_extra={
+            "example": {
+                "id": "550e8400-e29b-41d4-a716-446655440000",
+                "user_id": "110e8400-e29b-41d4-a716-446655440000",
+                "gamertag": "examplePlayer",
+                "created_at": "2023-01-01T12:00:00Z",
+                "updated_at": "2023-01-02T14:30:00Z",
+                "is_active": True,
+                "last_online": "2023-01-02T14:30:00Z"
+            }
         }
+    )
+    
+    # Custom JSON serialization for datetime fields
+    def model_dump(self, *args, **kwargs):
+        data = super().model_dump(*args, **kwargs)
+        # Convert datetime fields to ISO format
+        for field in ["created_at", "updated_at", "last_online"]:
+            if field in data and data[field] is not None:
+                data[field] = data[field].isoformat()
+        return data
 
 class PlayerListResponse(BaseModel):
     """Paginated list of players with metadata."""

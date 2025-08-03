@@ -7,11 +7,11 @@ performance, better error handling, and comprehensive documentation.
 
 import logging
 from datetime import datetime
-from typing import List, Optional, Dict, Any, Union
+from typing import Any, Dict, List, Optional, Union
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query, Path, Body, Request
-from pydantic import BaseModel, Field, HttpUrl
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, Request, status
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl
 
 from app.core.supabase import supabase
 from app.core.auth import get_current_user, get_current_admin_user
@@ -72,11 +72,32 @@ class TeamResponse(TeamBase):
     updated_at: datetime = Field(..., description="When the team was last updated")
     created_by: Optional[str] = Field(None, description="ID of the user who created the team")
     
-    class Config:
-        orm_mode = True
-        json_encoders = {
-            datetime: lambda v: v.isoformat()
+    model_config = ConfigDict(
+        from_attributes=True,  # Replaces orm_mode=True
+        json_schema_extra={
+            "example": {
+                "id": "550e8400-e29b-41d4-a716-446655440000",
+                "name": "Team Alpha",
+                "tag": "TMA",
+                "description": "A competitive team focused on excellence",
+                "logo_url": "https://example.com/team-alpha-logo.png",
+                "region_id": "110e8400-e29b-41d4-a716-446655440000",
+                "is_active": True,
+                "created_at": "2023-01-01T12:00:00Z",
+                "updated_at": "2023-01-02T14:30:00Z",
+                "created_by": "220e8400-e29b-41d4-a716-446655440000"
+            }
         }
+    )
+    
+    # Custom JSON serialization for datetime fields
+    def model_dump(self, *args, **kwargs):
+        data = super().model_dump(*args, **kwargs)
+        # Convert datetime fields to ISO format
+        for field in ["created_at", "updated_at"]:
+            if field in data and data[field] is not None:
+                data[field] = data[field].isoformat()
+        return data
 
 class TeamWithPlayers(TeamResponse):
     """Team model that includes player information."""
@@ -193,7 +214,7 @@ async def create_team(
 async def get_team(
     request: Request,
     team_id: str = Path(..., description="The UUID of the team to retrieve", 
-                       example=UUID_EXAMPLE, pattern=UUID_PATTERN),
+                       examples=[UUID_EXAMPLE], pattern=UUID_PATTERN),
     include_players: bool = Query(
         True,
         description="Whether to include player details in the response"
@@ -255,7 +276,7 @@ async def list_teams(
         None,
         description="Filter teams by region ID",
         pattern=UUID_PATTERN,
-        example=UUID_EXAMPLE
+        examples=[UUID_EXAMPLE]
     ),
     is_active: Optional[bool] = Query(
         None,

@@ -86,17 +86,18 @@ class Event(EventInDB):
     pass
 
 class EventRegistration(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
     id: int
     event_id: int
     player_id: int
     registration_date: datetime
     payment_status: str
     is_confirmed: bool
-    
-    class Config:
-        from_attributes = True
 
 class EventResult(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
     id: int
     event_id: int
     player_id: int
@@ -105,9 +106,6 @@ class EventResult(BaseModel):
     rp_before: float
     rp_after: float
     created_at: datetime
-    
-    class Config:
-        from_attributes = True
 
 class EventWithRegistrations(Event):
     """Event with registration details"""

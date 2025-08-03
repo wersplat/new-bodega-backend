@@ -272,7 +272,7 @@ async def get_match(
     match_id: str = Path(
         ...,
         description="The UUID of the match to retrieve",
-        example=UUID_EXAMPLE,
+        examples=[UUID_EXAMPLE],
         pattern=UUID_REGEX,
         openapi_examples={
             "example1": {"summary": "Sample match ID 1", "value": "123e4567-e89b-12d3-a456-426614174000"},
@@ -417,12 +417,12 @@ async def list_matches(
     team_id: Optional[UUID] = Query(
         None,
         description="Filter matches by team ID (returns matches where the team is either team A or team B)",
-        example=UUID_EXAMPLE
+        examples=[UUID_EXAMPLE]
     ),
     event_id: Optional[UUID] = Query(
         None,
         description="Filter matches by event ID",
-        example=UUID_EXAMPLE
+        examples=[UUID_EXAMPLE]
     ),
     status: Optional[MatchStatus] = Query(
         None,
@@ -567,7 +567,7 @@ async def update_match(
     match_id: str = Path(
         ...,
         description="The UUID of the match to update",
-        example=UUID_EXAMPLE,
+        examples=[UUID_EXAMPLE],
         pattern=UUID_REGEX
     ),
     match_update: MatchUpdate = ...,

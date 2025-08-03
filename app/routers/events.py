@@ -6,16 +6,19 @@ performance, better error handling, and comprehensive documentation.
 """
 
 import logging
-from datetime import datetime
-from typing import List, Optional, Dict, Any, Union
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional, Union
+from uuid import UUID, uuid4
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query, Path, Body, Request
-from pydantic import BaseModel, Field, HttpUrl, validator
+from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query, Request, status
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field, HttpUrl, validator, model_validator
+from pydantic_core import PydanticUndefinedType
 
-from app.core.supabase import supabase
-from app.core.auth import get_current_user, get_current_admin_user
-from app.core.rate_limiter import limiter
+from app.core.auth import get_current_admin_user, get_current_user
 from app.core.config import settings
+from app.core.rate_limiter import limiter
+from app.core.supabase import supabase
 
 # Initialize router with rate limiting and explicit prefix
 router = APIRouter(
@@ -67,12 +70,27 @@ class EventBase(BaseModel):
     """Base event model with common fields."""
     model_config = ConfigDict(
         arbitrary_types_allowed=True,
-        json_encoders={
-            EventStatus: lambda v: v.value,
-            EventType: lambda v: v.value,
-            EventTier: lambda v: v.value
+        json_schema_extra={
+            "example": {
+                "name": "Summer Championship 2023",
+                "description": "Annual summer gaming championship",
+                "event_type": "TOURNAMENT",
+                "tier": "T1",
+                "start_date": "2023-07-15T15:00:00Z",
+                "end_date": "2023-07-18T22:00:00Z",
+                "status": "UPCOMING"
+            }
         }
     )
+    
+    # Custom JSON serialization for enums
+    def model_dump(self, *args, **kwargs):
+        data = super().model_dump(*args, **kwargs)
+        # Convert enums to their values for JSON serialization
+        for field, value in data.items():
+            if isinstance(value, (EventStatus, EventType, EventTier)):
+                data[field] = value.value
+        return data
     
     name: str = Field(..., min_length=3, max_length=200, description="Event name")
     description: Optional[str] = Field(None, description="Event description")
@@ -97,7 +115,7 @@ class EventBase(BaseModel):
         None,
         description="Region ID for regional events",
         pattern=UUID_PATTERN,
-        example=UUID_EXAMPLE
+        examples=[UUID_EXAMPLE]
     )
     season_number: int = Field(1, ge=1, description="Season number for the event")
     status: EventStatus = Field(EventStatus.UPCOMING, description="Current event status")
@@ -106,17 +124,17 @@ class EventBase(BaseModel):
     prize_pool: Optional[float] = Field(None, ge=0, description="Total prize pool in USD")
     registration_fee: Optional[float] = Field(None, ge=0, description="Registration fee in USD")
 
-    @validator('end_date')
-    def validate_dates(cls, v, values):
-        if 'start_date' in values and v < values['start_date']:
+    @model_validator(mode='after')
+    def validate_dates(self):
+        if self.end_date and self.start_date and self.end_date < self.start_date:
             raise ValueError('end_date must be after start_date')
-        return v
+        return self
 
-    @validator('registration_deadline')
-    def validate_registration_deadline(cls, v, values):
-        if v and 'start_date' in values and v > values['start_date']:
+    @model_validator(mode='after')
+    def validate_registration_deadline(self):
+        if self.registration_deadline and self.start_date and self.registration_deadline > self.start_date:
             raise ValueError('registration_deadline must be before start_date')
-        return v
+        return self
 
 class EventCreate(EventBase):
     """Model for creating a new event."""
@@ -133,7 +151,7 @@ class EventUpdate(BaseModel):
     registration_deadline: Optional[datetime] = None
     max_participants: Optional[int] = Field(None, ge=2)
     is_global: Optional[bool] = None
-    region_id: Optional[str] = Field(None, pattern=UUID_PATTERN, example=UUID_EXAMPLE)
+    region_id: Optional[str] = Field(None, pattern=UUID_PATTERN, examples=[UUID_EXAMPLE])
     season_number: Optional[int] = Field(None, ge=1)
     status: Optional[EventStatus] = None
     rules_url: Optional[HttpUrl] = None
@@ -148,11 +166,27 @@ class EventResponse(EventBase):
     updated_at: datetime = Field(..., description="When the event was last updated")
     created_by: Optional[str] = Field(None, description="ID of the user who created the event")
     
-    class Config:
-        orm_mode = True
-        json_encoders = {
-            datetime: lambda v: v.isoformat()
+    model_config = ConfigDict(
+        from_attributes=True,  # Replaces orm_mode=True
+        json_schema_extra={
+            "example": {
+                "id": "550e8400-e29b-41d4-a716-446655440000",
+                "name": "Summer Championship 2023",
+                "created_at": "2023-06-01T10:00:00Z",
+                "updated_at": "2023-06-01T10:00:00Z",
+                "created_by": "110e8400-e29b-41d4-a716-446655440000"
+            }
         }
+    )
+    
+    # Custom JSON serialization for datetime fields
+    def model_dump(self, *args, **kwargs):
+        data = super().model_dump(*args, **kwargs)
+        # Convert datetime fields to ISO format
+        for field in ["created_at", "updated_at"]:
+            if field in data and data[field] is not None:
+                data[field] = data[field].isoformat()
+        return data
 
 class EventListResponse(BaseModel):
     """Paginated list of events with metadata."""
@@ -268,7 +302,7 @@ async def get_event(
     request: Request,
     event_id: str = Path(..., 
                         description="The UUID of the event to retrieve",
-                        example=UUID_EXAMPLE, 
+                        examples=[UUID_EXAMPLE], 
                         pattern=UUID_PATTERN),
     include_participants: bool = Query(
         False,
@@ -348,7 +382,7 @@ async def list_events(
         None,
         description="Filter events by region ID",
         pattern=UUID_PATTERN,
-        example=UUID_EXAMPLE
+        examples=[UUID_EXAMPLE]
     ),
     season_number: Optional[int] = Query(
         None,
@@ -467,7 +501,7 @@ async def update_event(
     request: Request,
     event_id: str = Path(..., 
                         description="The UUID of the event to update",
-                        example=UUID_EXAMPLE, 
+                        examples=[UUID_EXAMPLE], 
                         pattern=UUID_PATTERN),
     event_update: EventUpdate = Body(..., description="Event data to update"),
     current_user: Dict[str, Any] = Depends(get_current_admin_user)
@@ -550,7 +584,7 @@ async def delete_event(
     request: Request,
     event_id: str = Path(..., 
                         description="The UUID of the event to delete",
-                        example=UUID_EXAMPLE, 
+                        examples=[UUID_EXAMPLE], 
                         pattern=UUID_PATTERN),
     force: bool = Query(
         False,

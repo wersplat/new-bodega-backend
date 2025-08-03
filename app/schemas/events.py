@@ -8,7 +8,7 @@ These schemas are used for request/response validation and OpenAPI documentation
 from datetime import datetime
 from enum import Enum
 from typing import List, Optional, Dict, Any
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 class EventStatus(str, Enum):
@@ -112,8 +112,8 @@ class EventBase(BaseModel):
         description="Detailed prize distribution structure"
     )
     
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "name": "Summer Championship 2023",
                 "description": "Annual summer gaming championship featuring top teams",
@@ -138,24 +138,25 @@ class EventBase(BaseModel):
                 }
             }
         }
+    )
     
-    @validator('end_date')
-    def validate_end_date(cls, v, values):
-        if v and 'start_date' in values and v < values['start_date']:
+    @model_validator(mode='after')
+    def validate_dates(self):
+        if self.end_date and self.start_date and self.end_date < self.start_date:
             raise ValueError('End date must be after start date')
-        return v
+        return self
     
-    @validator('registration_deadline')
-    def validate_registration_deadline(cls, v, values):
-        if v and 'start_date' in values and v > values['start_date']:
+    @model_validator(mode='after')
+    def validate_registration_deadline(self):
+        if self.registration_deadline and self.start_date and self.registration_deadline > self.start_date:
             raise ValueError('Registration deadline must be before the event start time')
-        return v
+        return self
     
-    @validator('region_id')
-    def validate_region_id(cls, v, values):
-        if 'is_global' in values and not values['is_global'] and not v:
+    @model_validator(mode='after')
+    def validate_region_id(self):
+        if not self.is_global and not self.region_id:
             raise ValueError('Region ID is required for non-global events')
-        return v
+        return self
 
 
 class EventCreate(EventBase):
@@ -180,17 +181,27 @@ class EventUpdate(BaseModel):
     is_global: Optional[bool] = Field(None, description="Updated global status")
     region_id: Optional[str] = Field(
             None, 
-            description="Updated region ID (if not global)",
-            pattern=r"^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+            description="Updated region ID (if not global)"
         )
+    
+    @field_validator('region_id')
+    @classmethod
+    def validate_region_id(cls, v: Optional[str], info):
+        if v is not None and not info.data.get('is_global', False):
+            # Validate UUID format if region_id is provided and event is not global
+            import re
+            if not re.match(r'^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$', v):
+                raise ValueError('Invalid UUID format for region_id')
+        return v
+    
     banner_url: Optional[str] = Field(None, description="Updated banner URL")
     thumbnail_url: Optional[str] = Field(None, description="Updated thumbnail URL")
     rules: Optional[Dict[str, Any]] = Field(None, description="Updated rules")
     prize_pool: Optional[float] = Field(None, ge=0, description="Updated prize pool")
     prize_distribution: Optional[Dict[str, Any]] = Field(None, description="Updated prize distribution")
     
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "name": "Summer Championship 2023 - Updated",
                 "status": "in_progress",
@@ -202,6 +213,7 @@ class EventUpdate(BaseModel):
                 }
             }
         }
+    )
 
 
 class EventSchema(EventBase):
@@ -213,9 +225,9 @@ class EventSchema(EventBase):
     updated_by: Optional[str] = Field(None, description="ID of the user who last updated the event")
     participant_count: int = Field(0, description="Number of participants registered for the event")
     
-    class Config(EventBase.Config):
-        json_schema_extra = {
-            **EventBase.Config.json_schema_extra["example"],
+    model_config = ConfigDict(
+        json_schema_extra={
+            **EventBase.model_config["json_schema_extra"]["example"],
             "id": "123e4567-e89b-12d3-a456-426614174000",
             "created_at": "2023-01-15T10:30:00Z",
             "updated_at": "2023-01-20T14:45:00Z",
@@ -223,3 +235,4 @@ class EventSchema(EventBase):
             "updated_by": "550e8400-e29b-41d4-a716-446655440001",
             "participant_count": 42
         }
+    )
