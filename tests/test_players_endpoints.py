@@ -1,7 +1,10 @@
-"""Supabase integration tests for player endpoints.
-
-These tests require a live Supabase instance and are skipped by default.
-"""
 import pytest
 
-pytest.skip("Supabase integration tests require a Supabase instance", allow_module_level=True)
+
+def test_get_player(client, mock_supabase, player_data):
+    """Ensure player profile can be retrieved."""
+    mock_supabase.fetch_by_id.return_value = player_data
+
+    response = client.get(f"/v1/players/{player_data['id']}")
+    assert response.status_code == 200
+    assert response.json()["id"] == player_data["id"]
