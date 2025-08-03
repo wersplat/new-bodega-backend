@@ -1,69 +1,63 @@
-"""
-Pytest configuration and fixtures for testing
-"""
-import os
+"""Pytest configuration and shared fixtures."""
+
+import importlib
+from unittest.mock import MagicMock
+
 import pytest
-from typing import Generator, Any
-from unittest.mock import Mock, patch
 from fastapi.testclient import TestClient
-from fastapi import FastAPI
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
-from supabase import create_client
 
-from app.core.config import settings
-from app.core.supabase import SupabaseService
+from main import app
+from app.core.auth import get_current_user, get_current_admin_user
+supabase_module = importlib.import_module("app.core.supabase")
 
-# Create a test FastAPI app for testing
-app = FastAPI()
 
-# Test database URL - using the same as the main database for now
-TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL", settings.DATABASE_URL)
+@pytest.fixture
+def mock_supabase(monkeypatch):
+    """Provide a mocked Supabase service for tests."""
+    mock = MagicMock()
+    monkeypatch.setattr(supabase_module, "supabase", mock)
 
-# Create a test Supabase client that uses the service role key
-class TestSupabaseService(SupabaseService):
-    """Test Supabase service that can bypass RLS"""
-    
-    @classmethod
-    def get_client(cls) -> Any:
-        """Get or create a test Supabase client instance"""
-        if cls._client is None:
-            # Use the service role key if available, otherwise use the regular key
-            service_role_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY", settings.SUPABASE_KEY)
-            cls._client = create_client(settings.SUPABASE_URL, service_role_key)
-        return cls._client
+    modules = [
+        "app.routers.players",
+        "app.routers.events",
+        "app.routers.teams",
+        "app.routers.matches",
+        "app.routers.player_stats",
+        "app.routers.admin",
+        "app.routers.leaderboard_supabase",
+        "app.routers.payments",
+        "app.routers.discord",
+    ]
+    for path in modules:
+        try:
+            module = importlib.import_module(path)
+            monkeypatch.setattr(module, "supabase", mock, raising=False)
+        except ModuleNotFoundError:
+            continue
+    return mock
 
-# Override the global supabase instance with our test version
-test_supabase = TestSupabaseService()
 
-@pytest.fixture(scope="session")
-def test_db() -> Generator[Session, None, None]:
-    """
-    Create a test database session and set up test data.
-    This runs once per test session.
-    """
-    engine = create_engine(TEST_DATABASE_URL)
-    TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    
-    try:
-        db = TestingSessionLocal()
-        yield db
-    finally:
-        db.close()
+@pytest.fixture
+def mock_current_user():
+    async def _mock_current_user():
+        return {"id": 1, "email": "user@example.com", "is_active": True, "is_admin": False}
 
-@pytest.fixture(scope="module")
-def client() -> Generator[TestClient, None, None]:
-    """
-    Create a test client for the FastAPI application.
-    This client will be used by all tests in the module.
-    """
+    return _mock_current_user
+
+
+@pytest.fixture
+def mock_current_admin_user():
+    async def _mock_current_admin_user():
+        return {"id": 1, "email": "admin@example.com", "is_active": True, "is_admin": True}
+
+    return _mock_current_admin_user
+
+
+@pytest.fixture
+def client(mock_current_user, mock_current_admin_user, mock_supabase):
+    """Test client with authentication dependencies overridden."""
+    app.dependency_overrides[get_current_user] = mock_current_user
+    app.dependency_overrides[get_current_admin_user] = mock_current_admin_user
     with TestClient(app) as test_client:
         yield test_client
-
-@pytest.fixture(scope="module")
-def test_supabase_fixture() -> TestSupabaseService:
-    """
-    Provide a test Supabase client instance.
-    This client will use the service role key if available.
-    """
-    return test_supabase
+    app.dependency_overrides.clear()
