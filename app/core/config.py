@@ -65,7 +65,6 @@ class Settings(BaseSettings):
     
     # Security
     BACKEND_CORS_ORIGINS: List[str] = []
-    ALLOWED_HOSTS_LIST: List[str] = []
     
     # Monitoring
     SENTRY_DSN: Optional[str] = None
