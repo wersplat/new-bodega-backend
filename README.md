@@ -14,6 +14,11 @@ A comprehensive FastAPI backend for managing NBA 2K Global Rankings, tournaments
 - **Admin Panel**: RP updates, badge assignment, and event management
 - **Badge System**: Achievement and title system for players
 - **Modern Schema Validation**: Pydantic v2 models with strict type checking and validation
+- **Structured Logging**: Comprehensive logging with structlog
+- **Rate Limiting**: Redis-based rate limiting with configurable limits
+- **Error Handling**: Custom exception handling with standardized error responses
+- **Monitoring**: Sentry integration for error tracking
+- **Development Tools**: Black, isort, mypy, and pytest for code quality
 
 ## 🏗️ Project Structure
 
@@ -27,6 +32,9 @@ A comprehensive FastAPI backend for managing NBA 2K Global Rankings, tournaments
     admin.py            # RP updates, award assignment
     discord.py          # Discord ID lookups, bot-safe endpoints
     payments.py         # Stripe payment integration
+    teams.py            # Team management
+    matches.py          # Match results and statistics
+    player_stats.py     # Player statistics
   /models               # SQLAlchemy models
   /schemas              # Pydantic v2 schemas with validation
     __init__.py         # Schema package initialization
@@ -36,8 +44,17 @@ A comprehensive FastAPI backend for managing NBA 2K Global Rankings, tournaments
     user.py             # User authentication schemas
   /services             # RP calculation, email, webhook logic
   /core                 # App init, config, auth dependencies
-main.py
-alembic/               # Database migrations
+    config.py           # Configuration management
+    logging.py          # Structured logging setup
+    exceptions.py       # Custom exception handling
+    supabase.py         # Supabase client and utilities
+    rate_limiter.py     # Rate limiting configuration
+main.py                 # FastAPI application entry point
+requirements.txt        # Python dependencies
+pyproject.toml          # Development tools configuration
+Dockerfile              # Multi-stage Docker configuration
+docker-compose.yml      # Development environment setup
+scripts/dev-setup.sh    # Development setup automation
 ```
 
 ## 🔐 Authentication
@@ -64,12 +81,26 @@ python scripts/check_auth.py
 
 ### Prerequisites
 
-- Python 3.8+
+- Python 3.9+
 - Supabase account (https://supabase.com/)
 - Stripe account (for payments)
 - Discord bot token (optional)
+- Redis (for rate limiting and caching)
 
-### Installation
+### Quick Setup (Recommended)
+
+Use the automated setup script:
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd new-bodega-backend
+
+# Run the setup script
+./scripts/dev-setup.sh
+```
+
+### Manual Setup
 
 1. **Clone the repository**
    ```bash
@@ -79,7 +110,7 @@ python scripts/check_auth.py
 
 2. **Create virtual environment**
    ```bash
-   python -m venv venv
+   python3 -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
@@ -90,7 +121,7 @@ python scripts/check_auth.py
 
 4. **Environment Configuration**
    ```bash
-   cp .env.example .env
+   cp env.example .env
    # Edit .env with your Supabase credentials
    ```
 
@@ -100,7 +131,8 @@ python scripts/check_auth.py
    3. Update `.env` with your Supabase credentials:
       ```
       SUPABASE_URL=your-project-url
-      SUPABASE_KEY=your-anon-key
+      SUPABASE_KEY=your-service-role-key
+      SUPABASE_ANON_KEY=your-anon-key
       ```
    4. (Optional) For direct database access, use the connection string from:
       Project Settings > Database > Connection string > URI
@@ -113,10 +145,22 @@ python scripts/check_auth.py
    
    Note: With Supabase, you can also use the Table Editor in the Supabase dashboard to manage your database schema.
 
-6. **Run the application**
+7. **Run the application**
    ```bash
    uvicorn main:app --reload
    ```
+
+### Docker Setup
+
+For containerized development:
+
+```bash
+# Start all services (app, Redis, PostgreSQL, pgAdmin)
+docker-compose up
+
+# Or build and run specific services
+docker-compose up app redis
+```
 
 ## 🔧 Configuration
 
@@ -125,18 +169,22 @@ python scripts/check_auth.py
 Create a `.env` file based on the `.env.example` file with the following required variables:
 
 ```env
+# Environment Configuration
+ENVIRONMENT=development  # development, testing, production
+
 # Supabase Configuration (Required)
 SUPABASE_URL=your-project-url
-SUPABASE_KEY=your-anon-key
+SUPABASE_KEY=your-service-role-key
+SUPABASE_ANON_KEY=your-anon-key
 
 # Database (Optional: For direct database access)
-# Format: postgresql://postgres:your-password@db.your-project.supabase.co:5432/postgres
-DATABASE_URL=
+DATABASE_URL=postgresql://postgres:your-password@db.your-project.supabase.co:5432/postgres
 
 # JWT
 SECRET_KEY=your-super-secret-key-here
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
+REFRESH_TOKEN_EXPIRE_DAYS=7
 
 # Stripe
 STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
@@ -147,9 +195,28 @@ STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
 DISCORD_BOT_TOKEN=your_discord_bot_token
 DISCORD_API_KEY=your_discord_api_key
 
+# Redis (for rate limiting and caching)
+REDIS_URL=redis://localhost:6379/0
+REDIS_MAX_CONNECTIONS=20
+
+# Rate Limiting
+RATE_LIMIT_DEFAULT=100/minute
+RATE_LIMIT_ANONYMOUS=10/minute
+RATE_LIMIT_AUTHENTICATED=1000/hour
+RATE_LIMIT_ADMIN=5000/hour
+
+# Caching
+CACHE_TTL=300
+CACHE_ENABLED=True
+
 # App
 DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
 CORS_ORIGINS=http://localhost:3000,http://localhost:8080
+
+# Monitoring
+SENTRY_DSN=your_sentry_dsn_here
+LOG_LEVEL=INFO
 ```
 
 ## 📚 API Documentation
@@ -166,26 +233,26 @@ Once the server is running, visit:
 - `GET /auth/me` - Get current user info
 
 ### Players
-- `POST /players/` - Register new player profile
-- `GET /players/{id}` - Get player profile
-- `GET /players/me/profile` - Get current user's profile
-- `PUT /players/me/profile` - Update current user's profile
-- `GET /players/search/{gamertag}` - Search by gamertag
+- `POST /v1/players/` - Register new player profile
+- `GET /v1/players/{id}` - Get player profile
+- `GET /v1/players/me` - Get current user's profile
+- `PATCH /v1/players/me` - Update current user's profile
+- `GET /v1/players/search` - Search by gamertag
 
 ### Events
-- `GET /events/` - List all events
-- `GET /events/open` - List open events
-- `POST /events/` - Create new event (admin)
-- `GET /events/{id}` - Get event details
-- `POST /events/{id}/register` - Register for event
-- `DELETE /events/{id}/register` - Unregister from event
+- `GET /v1/events/` - List all events
+- `GET /v1/events/open` - List open events
+- `POST /v1/events/` - Create new event (admin)
+- `GET /v1/events/{id}` - Get event details
+- `POST /v1/events/{id}/register` - Register for event
+- `DELETE /v1/events/{id}/register` - Unregister from event
 
 ### Leaderboard
-- `GET /leaderboard/global` - Global leaderboard
-- `GET /leaderboard/global/top` - Top players
-- `GET /leaderboard/tier/{tier}` - Tier-specific leaderboard
-- `GET /leaderboard/event/{id}` - Event leaderboard
-- `GET /leaderboard/peak` - Peak RP leaderboard
+- `GET /v1/leaderboards/global` - Global leaderboard
+- `GET /v1/leaderboards/global/top` - Top players
+- `GET /v1/leaderboards/tier/{tier}` - Tier-specific leaderboard
+- `GET /v1/leaderboards/event/{id}` - Event leaderboard
+- `GET /v1/leaderboards/peak` - Peak RP leaderboard
 
 ### Admin
 - `POST /admin/update-rp` - Update player RP
@@ -224,15 +291,25 @@ The system uses the following NBA 2K tiers:
 - Secure defaults for all configuration options
 - API key protection for Discord endpoints
 - Stripe webhook signature verification
+- Rate limiting with Redis
+- Structured logging with sensitive data filtering
 
 ## 🧪 Testing
 
 ```bash
-# Run tests
+# Run all tests
 pytest
 
 # Run with coverage
-pytest --cov=app
+pytest --cov=app --cov-report=html
+
+# Run specific test categories
+pytest -m unit
+pytest -m integration
+pytest -m "not slow"
+
+# Run tests in parallel
+pytest -n auto
 ```
 
 ## 🚀 Deployment
@@ -240,20 +317,23 @@ pytest --cov=app
 ### Docker (Recommended)
 
 ```bash
-# Build image
-docker build -t nba2k-rankings-backend .
+# Build production image
+docker build --target production -t nba2k-rankings-backend .
 
 # Run container
 docker run -p 8000:8000 nba2k-rankings-backend
 ```
 
-### Production
+### Production Checklist
 
-1. Set `DEBUG=False` in environment
-2. Use production database
+1. Set `ENVIRONMENT=production` in environment
+2. Use production database and Redis
 3. Configure proper CORS origins
 4. Set up SSL/TLS
 5. Use production Stripe keys
+6. Configure Sentry for error tracking
+7. Set up monitoring and alerting
+8. Configure backup strategies
 
 ## 📝 Database Migrations
 
@@ -268,13 +348,44 @@ alembic upgrade head
 alembic downgrade -1
 ```
 
+## 🛠️ Development
+
+### Code Quality
+
+```bash
+# Format code
+black app/ main.py
+
+# Sort imports
+isort app/ main.py
+
+# Type checking
+mypy app/
+
+# Linting
+flake8 app/
+
+# Security scanning
+bandit -r app/
+```
+
+### Pre-commit Hooks
+
+Install pre-commit hooks for automatic code quality checks:
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
 ## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
 4. Add tests
-5. Submit a pull request
+5. Ensure code quality checks pass
+6. Submit a pull request
 
 ## 📄 License
 
@@ -286,3 +397,4 @@ For support and questions:
 - Create an issue on GitHub
 - Check the API documentation at `/docs`
 - Review the code examples in the routers
+- Check the logs for detailed error information
