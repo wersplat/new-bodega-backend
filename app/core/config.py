@@ -82,8 +82,7 @@ class Settings(BaseSettings):
         extra="ignore"
     )
     
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def model_post_init(self, __context):
         self._validate_required_settings()
     
     def _validate_required_settings(self):
