@@ -9,11 +9,11 @@ from datetime import datetime
 
 import structlog
 from structlog.stdlib import LoggerFactory
-from app.core.config import settings
+
 
 def configure_logging() -> None:
     """Configure structured logging for the application"""
-    
+    from app.core.config import settings
     # Configure structlog
     structlog.configure(
         processors=[
