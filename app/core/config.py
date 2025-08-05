@@ -54,7 +54,7 @@ class Settings(BaseSettings):
     # App
     DEBUG: bool = True
     ALLOWED_HOSTS: str = "localhost,127.0.0.1"
-    CORS_ORIGINS: str = "http://localhost:3000, http://localhost:10000, http://bodegacatsgc.gg, http://railway.app"
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:10000,http://api.bodegacatsgc.gg,http://railway.app"
     
     # API Configuration
     API_V1_STR: str = "/v1"
@@ -73,7 +73,7 @@ class Settings(BaseSettings):
     MAX_PAGE_SIZE: int = 100
     
     # Frontend URL for OAuth redirects
-    FRONTEND_URL: str = "http://localhost:3000"
+    FRONTEND_URL: str = "http://localhost:10000"
     
     model_config = SettingsConfigDict(
         env_file=".env",

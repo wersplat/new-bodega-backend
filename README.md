@@ -211,7 +211,7 @@ CACHE_ENABLED=True
 # App
 DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1
-CORS_ORIGINS=http://localhost:3000,http://localhost:8080
+CORS_ORIGINS=http://localhost:3000,http://localhost:10000
 
 # Monitoring
 SENTRY_DSN=your_sentry_dsn_here
@@ -221,8 +221,8 @@ LOG_LEVEL=INFO
 ## 📚 API Documentation
 
 Once the server is running, visit:
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
+- **Swagger UI**: http://localhost:10000/docs
+- **ReDoc**: http://localhost:10000/redoc
 
 ## 🔌 API Endpoints
 
