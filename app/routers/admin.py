@@ -37,7 +37,6 @@ def calculate_rank(rp: int) -> str:
 
 # Initialize router with explicit prefix and standardized tags
 router = APIRouter(
-    prefix="/v1/admin",
     tags=["Admin"],
     responses={404: {"description": "Not found"}},
 )
