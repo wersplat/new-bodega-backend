@@ -15,7 +15,7 @@ A comprehensive FastAPI backend for managing NBA 2K Global Rankings, tournaments
 - **Badge System**: Achievement and title system for players
 - **Modern Schema Validation**: Pydantic v2 models with strict type checking and validation
 - **Structured Logging**: Comprehensive logging with structlog
-- **Rate Limiting**: Redis-based rate limiting with configurable limits
+- **Rate Limiting**: In-memory rate limiting with configurable limits
 - **Error Handling**: Custom exception handling with standardized error responses
 - **Monitoring**: Sentry integration for error tracking
 - **Development Tools**: Black, isort, mypy, and pytest for code quality
@@ -85,7 +85,7 @@ python scripts/check_auth.py
 - Supabase account (https://supabase.com/)
 - Stripe account (for payments)
 - Discord bot token (optional)
-- Redis (for rate limiting and caching)
+- Rate limiting (in-memory storage)
 
 ### Quick Setup (Recommended)
 
@@ -155,11 +155,11 @@ cd new-bodega-backend
 For containerized development:
 
 ```bash
-# Start all services (app, Redis, PostgreSQL, pgAdmin)
+# Start all services (app, PostgreSQL, pgAdmin)
 docker-compose up
 
 # Or build and run specific services
-docker-compose up app redis
+docker-compose up app
 ```
 
 ## 🔧 Configuration
@@ -195,9 +195,8 @@ STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
 DISCORD_BOT_TOKEN=your_discord_bot_token
 DISCORD_API_KEY=your_discord_api_key
 
-# Redis (for rate limiting and caching)
-REDIS_URL=redis://localhost:6379/0
-REDIS_MAX_CONNECTIONS=20
+# Rate Limiting (in-memory storage)
+# No Redis configuration needed
 
 # Rate Limiting
 RATE_LIMIT_DEFAULT=100/minute
@@ -291,7 +290,7 @@ The system uses the following NBA 2K tiers:
 - Secure defaults for all configuration options
 - API key protection for Discord endpoints
 - Stripe webhook signature verification
-- Rate limiting with Redis
+- Rate limiting with in-memory storage
 - Structured logging with sensitive data filtering
 
 ## 🧪 Testing
@@ -327,7 +326,7 @@ docker run -p 8000:8000 nba2k-rankings-backend
 ### Production Checklist
 
 1. Set `ENVIRONMENT=production` in environment
-2. Use production database and Redis
+2. Use production database
 3. Configure proper CORS origins
 4. Set up SSL/TLS
 5. Use production Stripe keys

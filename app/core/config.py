@@ -41,9 +41,7 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str = ""
     SMTP_USE_TLS: bool = True
     
-    # Redis (for rate limiting and caching)
-    REDIS_URL: str = "redis://localhost:6379/0"
-    REDIS_MAX_CONNECTIONS: int = 20
+    # Rate Limiting
     RATE_LIMIT_DEFAULT: str = "100/minute"
     RATE_LIMIT_ANONYMOUS: str = "10/minute"
     RATE_LIMIT_AUTHENTICATED: str = "1000/hour"

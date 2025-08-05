@@ -56,7 +56,6 @@ def mock_rate_limiter():
         def exempt(self, func):
             return func
 
-    rate_limiter_module.redis_client = MagicMock()
     rate_limiter_module.limiter = DummyLimiter()
 
     import slowapi.middleware

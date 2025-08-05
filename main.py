@@ -207,20 +207,21 @@ def health_check():
         logger.error(f"Database health check failed: {str(e)}")
         db_status = f"error: {str(e)}"
     
-    # Check Redis connectivity
-    redis_status = "ok"
+    # Rate limiting status
+    rate_limiting_status = "ok"
     try:
-        from app.core.rate_limiter import redis_client
-        redis_client.ping()
+        from app.core.rate_limiter import limiter
+        # Rate limiter is initialized with in-memory storage
+        rate_limiting_status = "ok"
     except Exception as e:
-        logger.error(f"Redis health check failed: {str(e)}")
-        redis_status = f"error: {str(e)}"
+        logger.error(f"Rate limiting health check failed: {str(e)}")
+        rate_limiting_status = f"error: {str(e)}"
     
     return {
         "status": "ok",
         "services": {
             "database": db_status,
-            "cache": redis_status
+            "rate_limiting": rate_limiting_status
         },
         "timestamp": datetime.utcnow().isoformat(),
         "environment": "development" if settings.DEBUG else "production"

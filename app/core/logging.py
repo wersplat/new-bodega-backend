@@ -48,7 +48,6 @@ def configure_logging() -> None:
     # Reduce noise from third-party libraries
     logging.getLogger("httpx").setLevel(logging.WARNING)
     logging.getLogger("httpcore").setLevel(logging.WARNING)
-    logging.getLogger("redis").setLevel(logging.WARNING)
 
 def get_logger(name: str) -> structlog.stdlib.BoundLogger:
     """Get a structured logger instance"""
