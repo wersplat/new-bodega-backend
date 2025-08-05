@@ -40,8 +40,71 @@ router = APIRouter(
     prefix="/v1/admin",
     tags=["Admin"],
     responses={404: {"description": "Not found"}},
-    dependencies=[Depends(get_current_admin_user)]
 )
+
+# Public admin check endpoint (no admin auth required)
+@router.post("/check-public", response_model=AdminCheckResponse)
+async def check_admin_status_public(
+    admin_check: AdminCheckRequest
+):
+    """
+    Check if a user has admin privileges (public endpoint)
+    """
+    try:
+        # Check if user email is in admin list
+        admin_emails = [
+            'christian@bodegacatsgc.gg',
+            'admin@bodegacatsgc.gg',
+            # Add more admin emails as needed
+        ]
+        
+        is_admin_email = admin_check.email and admin_check.email.lower() in admin_emails
+        
+        return AdminCheckResponse(
+            is_admin=is_admin_email,
+            user_id=admin_check.user_id,
+            email=admin_check.email
+        )
+    except Exception as e:
+        return AdminCheckResponse(
+            is_admin=False,
+            user_id=admin_check.user_id,
+            email=admin_check.email
+        )
+
+# Protected admin endpoints (require admin authentication)
+@router.post("/check", response_model=AdminCheckResponse)
+async def check_admin_status(
+    admin_check: AdminCheckRequest,
+    current_user: UserInDB = Depends(get_current_admin_user)
+):
+    """
+    Check if a user has admin privileges
+    """
+    try:
+        # If the current user can access this endpoint, they are an admin
+        # This endpoint is protected by get_current_admin_user dependency
+        return AdminCheckResponse(
+            is_admin=True,
+            user_id=admin_check.user_id,
+            email=admin_check.email
+        )
+    except Exception as e:
+        # If there's any error (like authentication failure), user is not admin
+        return AdminCheckResponse(
+            is_admin=False,
+            user_id=admin_check.user_id,
+            email=admin_check.email
+        )
+
+class AdminCheckRequest(BaseModel):
+    user_id: str
+    email: Optional[str] = None
+
+class AdminCheckResponse(BaseModel):
+    is_admin: bool
+    user_id: str
+    email: Optional[str] = None
 
 class RPUpdateRequest(BaseModel):
     player_id: str  # UUID as string
