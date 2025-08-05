@@ -62,17 +62,20 @@ scripts/dev-setup.sh    # Development setup automation
 For detailed authentication documentation, see [AUTHENTICATION.md](docs/AUTHENTICATION.md).
 
 ### Key Features
+
 - **JWT-based Authentication**: Secure token-based authentication
 - **Role-Based Access Control**: Different permissions for users, players, and admins
 - **Row Level Security**: Fine-grained data access control
 - **Token Refresh**: Secure token refresh mechanism
 
 ### Quick Start
+
 1. Configure your `.env` file with Supabase credentials
 2. Use the `/auth` endpoints to register/login
 3. Include the JWT in the `Authorization: Bearer <token>` header
 
 For testing authentication, run:
+
 ```bash
 python scripts/check_auth.py
 ```
@@ -82,7 +85,7 @@ python scripts/check_auth.py
 ### Prerequisites
 
 - Python 3.9+
-- Supabase account (https://supabase.com/)
+- Supabase account (<https://supabase.com/>)
 - Stripe account (for payments)
 - Discord bot token (optional)
 - Rate limiting (in-memory storage)
@@ -103,49 +106,57 @@ cd new-bodega-backend
 ### Manual Setup
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd new-bodega-backend
    ```
 
 2. **Create virtual environment**
+
    ```bash
    python3 -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
 3. **Install dependencies**
+
    ```bash
    pip install -r requirements.txt
    ```
 
 4. **Environment Configuration**
+
    ```bash
    cp env.example .env
    # Edit .env with your Supabase credentials
    ```
 
 5. **Supabase Setup**
-   1. Create a new project at https://supabase.com/
+   1. Create a new project at <https://supabase.com/>
    2. Go to Project Settings > API to find your Project URL and anon/public key
    3. Update `.env` with your Supabase credentials:
+
       ```
       SUPABASE_URL=your-project-url
       SUPABASE_KEY=your-service-role-key
       SUPABASE_ANON_KEY=your-anon-key
       ```
+
    4. (Optional) For direct database access, use the connection string from:
       Project Settings > Database > Connection string > URI
-      
+
 6. **Database Migrations**
+
    ```bash
    # Apply database migrations if using SQLAlchemy
    alembic upgrade head
    ```
-   
+
    Note: With Supabase, you can also use the Table Editor in the Supabase dashboard to manage your database schema.
 
 7. **Run the application**
+
    ```bash
    uvicorn main:app --reload
    ```
@@ -221,17 +232,20 @@ LOG_LEVEL=INFO
 ## 📚 API Documentation
 
 Once the server is running, visit:
-- **Swagger UI**: http://localhost:10000/docs
-- **ReDoc**: http://localhost:10000/redoc
+
+- **Swagger UI**: <http://localhost:10000/docs>
+- **ReDoc**: <http://localhost:10000/redoc>
 
 ## 🔌 API Endpoints
 
 ### Authentication
+
 - `POST /auth/register` - Register new user
 - `POST /auth/login` - Login and get JWT token
 - `GET /auth/me` - Get current user info
 
 ### Players
+
 - `POST /v1/players/` - Register new player profile
 - `GET /v1/players/{id}` - Get player profile
 - `GET /v1/players/me` - Get current user's profile
@@ -239,6 +253,7 @@ Once the server is running, visit:
 - `GET /v1/players/search` - Search by gamertag
 
 ### Events
+
 - `GET /v1/events/` - List all events
 - `GET /v1/events/open` - List open events
 - `POST /v1/events/` - Create new event (admin)
@@ -247,6 +262,7 @@ Once the server is running, visit:
 - `DELETE /v1/events/{id}/register` - Unregister from event
 
 ### Leaderboard
+
 - `GET /v1/leaderboards/global` - Global leaderboard
 - `GET /v1/leaderboards/global/top` - Top players
 - `GET /v1/leaderboards/tier/{tier}` - Tier-specific leaderboard
@@ -254,18 +270,21 @@ Once the server is running, visit:
 - `GET /v1/leaderboards/peak` - Peak RP leaderboard
 
 ### Admin
+
 - `POST /admin/update-rp` - Update player RP
 - `POST /admin/award-badge` - Award badge to player
 - `GET /admin/players` - List all players
 - `GET /admin/badges` - List all badges
 
 ### Discord
+
 - `GET /discord/players/{discord_id}` - Get player by Discord ID
 - `POST /discord/players/register` - Register via Discord
 - `GET /discord/players/{discord_id}/rank` - Get player rank
 - `GET /discord/stats` - Discord integration stats
 
 ### Payments
+
 - `POST /payments/create-session` - Create Stripe checkout
 - `POST /payments/webhooks/stripe` - Stripe webhook handler
 - `GET /payments/session/{id}/status` - Check payment status
@@ -273,6 +292,7 @@ Once the server is running, visit:
 ## 🎮 Player Tiers
 
 The system uses the following NBA 2K tiers:
+
 - **Bronze** (0-1000 RP)
 - **Silver** (1001-2500 RP)
 - **Gold** (2501-5000 RP)
@@ -393,6 +413,7 @@ This project is licensed under the MIT License.
 ## 🆘 Support
 
 For support and questions:
+
 - Create an issue on GitHub
 - Check the API documentation at `/docs`
 - Review the code examples in the routers
