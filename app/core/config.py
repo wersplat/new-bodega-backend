@@ -72,6 +72,9 @@ class Settings(BaseSettings):
     DEFAULT_PAGE_SIZE: int = 20
     MAX_PAGE_SIZE: int = 100
     
+    # Frontend URL for OAuth redirects
+    FRONTEND_URL: str = "http://localhost:3000"
+    
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

@@ -7,6 +7,9 @@ from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
 import logging
 
+from fastapi.responses import RedirectResponse
+from urllib.parse import urlencode
+
 from app.core.auth import verify_password, create_access_token, get_current_active_user
 from app.core.config import settings
 from app.core.supabase import supabase, SupabaseService
@@ -262,6 +265,72 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+@router.get("/callback")
+async def oauth_callback(
+    code: str = None,
+    state: str = None,
+    error: str = None,
+    error_description: str = None
+):
+    """
+    OAuth callback endpoint for handling authentication redirects
+    This endpoint receives the OAuth callback from Supabase and redirects to the appropriate frontend
+    """
+    try:
+        if error:
+            # Handle OAuth errors
+            error_params = urlencode({
+                'error': error,
+                'error_description': error_description or 'Authentication failed'
+            })
+            
+            # Redirect to frontend with error
+            frontend_url = settings.FRONTEND_URL or "http://localhost:3000"
+            return RedirectResponse(url=f"{frontend_url}/auth/error?{error_params}")
+        
+        if not code:
+            # No authorization code received
+            return RedirectResponse(url=f"{settings.FRONTEND_URL or 'http://localhost:3000'}/auth/error?error=no_code")
+        
+        # Exchange the authorization code for a session
+        try:
+            client = supabase.get_client()
+            session = client.auth.exchange_code_for_session(code)
+            
+            if session and session.access_token:
+                # Successfully authenticated
+                # Redirect to frontend with success
+                frontend_url = settings.FRONTEND_URL or "http://localhost:3000"
+                
+                # You can add additional parameters like user info if needed
+                success_params = urlencode({
+                    'access_token': session.access_token,
+                    'refresh_token': session.refresh_token,
+                    'expires_at': str(session.expires_at) if session.expires_at else '',
+                    'user_id': session.user.id if session.user else ''
+                })
+                
+                return RedirectResponse(url=f"{frontend_url}/auth/callback?{success_params}")
+            else:
+                # No session received
+                return RedirectResponse(url=f"{settings.FRONTEND_URL or 'http://localhost:3000'}/auth/error?error=no_session")
+                
+        except Exception as e:
+            # Handle session exchange errors
+            error_params = urlencode({
+                'error': 'session_exchange_failed',
+                'error_description': str(e)
+            })
+            return RedirectResponse(url=f"{settings.FRONTEND_URL or 'http://localhost:3000'}/auth/error?{error_params}")
+            
+    except Exception as e:
+        # Handle any other errors
+        error_params = urlencode({
+            'error': 'callback_error',
+            'error_description': str(e)
+        })
+        return RedirectResponse(url=f"{settings.FRONTEND_URL or 'http://localhost:3000'}/auth/error?{error_params}")
 
 @router.get("/debug/config")
 async def debug_config():
