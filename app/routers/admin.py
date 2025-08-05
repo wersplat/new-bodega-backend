@@ -14,6 +14,34 @@ from app.schemas.user import UserInDB
 from app.schemas.player import PlayerProfile
 from app.schemas.badge import Badge as BadgeSchema, PlayerBadge as PlayerBadgeSchema
 
+# Request/Response models
+class AdminCheckRequest(BaseModel):
+    user_id: str
+    email: Optional[str] = None
+
+class AdminCheckResponse(BaseModel):
+    is_admin: bool
+    user_id: str
+    email: Optional[str] = None
+
+class RPUpdateRequest(BaseModel):
+    player_id: str  # UUID as string
+    rp_change: int
+    reason: str
+
+class BadgeAwardRequest(BaseModel):
+    player_id: str  # UUID as string
+    badge_id: str  # UUID as string
+
+class PlayerBadgeResponse(BaseModel):
+    id: str  # UUID as string
+    player_id: str  # UUID as string
+    badge_id: str  # UUID as string
+    badge_name: str
+    badge_description: str
+    awarded_at: str
+    is_equipped: bool
+
 # Helper function to calculate rank based on RP
 def calculate_rank(rp: int) -> str:
     if rp >= 2000:
@@ -95,33 +123,6 @@ async def check_admin_status(
             user_id=admin_check.user_id,
             email=admin_check.email
         )
-
-class AdminCheckRequest(BaseModel):
-    user_id: str
-    email: Optional[str] = None
-
-class AdminCheckResponse(BaseModel):
-    is_admin: bool
-    user_id: str
-    email: Optional[str] = None
-
-class RPUpdateRequest(BaseModel):
-    player_id: str  # UUID as string
-    rp_change: int
-    reason: str
-
-class BadgeAwardRequest(BaseModel):
-    player_id: str  # UUID as string
-    badge_id: str  # UUID as string
-
-class PlayerBadgeResponse(BaseModel):
-    id: str  # UUID as string
-    player_id: str  # UUID as string
-    badge_id: str  # UUID as string
-    badge_name: str
-    badge_description: str
-    awarded_at: str
-    is_equipped: bool
 
 @router.post("/update-rp")
 async def update_player_rp(
