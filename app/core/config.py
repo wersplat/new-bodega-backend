@@ -73,7 +73,7 @@ class Settings(BaseSettings):
     MAX_PAGE_SIZE: int = 100
     
     # Frontend URL for OAuth redirects
-    FRONTEND_URL: str = "http://localhost:10000"
+    FRONTEND_URL: str = "dashboard.bodegacatsgc.gg"
     
     model_config = SettingsConfigDict(
         env_file=".env",
