@@ -54,7 +54,7 @@ class Settings(BaseSettings):
     # App
     DEBUG: bool = True
     ALLOWED_HOSTS: str = "localhost,127.0.0.1"
-    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:10000,http://api.bodegacatsgc.gg,http://railway.app"
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:10000,https://dashboard.bodegacatsgc.gg,https://data.bodegacatsgc.gg,https://api.bodegacatsgc.gg,http://railway.app"
     
     # API Configuration
     API_V1_STR: str = "/v1"
