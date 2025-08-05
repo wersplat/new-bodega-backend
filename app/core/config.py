@@ -133,4 +133,4 @@ def get_settings() -> Settings:
     return Settings()
 
 # Global settings instance
-settings = get_settings()ß
+settings = get_settings()
