@@ -54,7 +54,7 @@ class Settings(BaseSettings):
     # App
     DEBUG: bool = True
     ALLOWED_HOSTS: str = "localhost,127.0.0.1"
-    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:8080"
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:8080, http://bodegacatsgc.gg, http://railway.app"
     
     # API Configuration
     API_V1_STR: str = "/v1"
@@ -133,4 +133,4 @@ def get_settings() -> Settings:
     return Settings()
 
 # Global settings instance
-settings = get_settings()
+settings = get_settings()ß
