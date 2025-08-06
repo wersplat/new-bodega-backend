@@ -34,18 +34,20 @@ app = FastAPI(
 
 # Add rate limiting middleware
 app.state.limiter = limiter
-app.add_middleware(SlowAPIMiddleware)
-
-# Add exception handler for rate limiting
-app.add_exception_handler(429, rate_limit_exceeded_handler)
+# Temporarily disable rate limiting to fix deployment issue
+# app.add_exception_handler(429, rate_limit_exceeded_handler)
+# app.add_middleware(SlowAPIMiddleware)
 
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=settings.CORS_ORIGINS.split(","),
+    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?$",
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"],
     allow_headers=["*"],
+    expose_headers=["X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset"],
+    max_age=600,  # 10 minutes
 )
 
 # Include routers - using Supabase versions where available
@@ -59,7 +61,7 @@ app.include_router(payments.router, prefix="/payments", tags=["Payments"])
 
 @app.get("/", tags=["Root"])
 @app.head("/")
-@limiter.limit(settings.RATE_LIMIT_DEFAULT)
+# @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def root(request: Request):
     """
     Root endpoint that responds to both GET and HEAD requests.
@@ -79,7 +81,7 @@ async def root(request: Request):
 
 @app.get("/health")
 @app.head("/health")
-@limiter.exempt
+# @limiter.exempt
 async def health_check():
     """Health check endpoint"""
     return {
