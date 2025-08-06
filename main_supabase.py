@@ -3,14 +3,25 @@ NBA 2K Global Rankings Backend with Supabase
 Main application entry point for Supabase version
 """
 
-from fastapi import FastAPI
+import logging
+from datetime import datetime
+from typing import Dict, Any
+
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from slowapi.middleware import SlowAPIMiddleware
 
 from app.core.config import settings
+from app.core.rate_limiter import limiter, rate_limit_exceeded_handler
 from app.routers import auth, admin, discord, payments
 from app.routers.players import router as players_router
 from app.routers.events import router as events_router
 from app.routers.leaderboard_supabase import router as leaderboard_router
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -20,6 +31,13 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc"
 )
+
+# Add rate limiting middleware
+app.state.limiter = limiter
+app.add_middleware(SlowAPIMiddleware)
+
+# Add exception handler for rate limiting
+app.add_exception_handler(429, rate_limit_exceeded_handler)
 
 # Configure CORS
 app.add_middleware(
@@ -39,10 +57,36 @@ app.include_router(admin.router, prefix="/admin", tags=["Admin"])
 app.include_router(discord.router, prefix="/discord", tags=["Discord"])
 app.include_router(payments.router, prefix="/payments", tags=["Payments"])
 
+@app.get("/", tags=["Root"])
+@app.head("/")
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
+async def root(request: Request):
+    """
+    Root endpoint that responds to both GET and HEAD requests.
+    
+    This endpoint provides basic API information and is rate limited.
+    
+    Returns:
+        dict: A welcome message and API information
+    """
+    return {
+        "message": "NBA 2K Global Rankings API (Supabase)",
+        "version": "1.0.0",
+        "docs": "/docs",
+        "status": "operational",
+        "timestamp": datetime.utcnow().isoformat()
+    }
+
 @app.get("/health")
+@app.head("/health")
+@limiter.exempt
 async def health_check():
     """Health check endpoint"""
-    return {"status": "healthy"}
+    return {
+        "status": "healthy",
+        "timestamp": datetime.utcnow().isoformat(),
+        "environment": "development" if settings.DEBUG else "production"
+    }
 
 if __name__ == "__main__":
     import uvicorn
