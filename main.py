@@ -99,7 +99,9 @@ app = FastAPI(
 # Add rate limiting middleware
 app.state.limiter = limiter
 app.add_exception_handler(429, rate_limit_exceeded_handler)
-app.add_middleware(SlowAPIMiddleware)
+
+# Temporarily disable slowapi middleware to fix deployment issue
+# app.add_middleware(SlowAPIMiddleware)
 
 # CORS middleware
 app.add_middleware(
@@ -130,6 +132,7 @@ app.include_router(payments.router, tags=["Payment Integration"])
 from fastapi.responses import RedirectResponse
 
 @app.get("/api/{path:path}", include_in_schema=False)
+# @limiter.exempt
 async def legacy_api_redirect(path: str):
     """
     Redirect legacy /api/* routes to their new flattened counterparts.
@@ -158,14 +161,14 @@ async def legacy_api_redirect(path: str):
         # If there's a subpath, append it
         if len(parts) > 1:
             new_path = f"{new_path}/{parts[1]}"
-        return RedirectResponse(url=new_path)
+        return RedirectResponse(url=new_path, status_code=307)
     
     # If no mapping exists, redirect to the root
-    return RedirectResponse(url="/")
+    return RedirectResponse(url="/", status_code=307)
 
 @app.get("/", tags=["Root"])
 @app.head("/")
-@limiter.limit(settings.RATE_LIMIT_DEFAULT)
+# @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def root(request: Request):
     """
     Root endpoint that responds to both GET and HEAD requests.
@@ -188,7 +191,7 @@ async def root(request: Request):
 
 @app.get("/health", tags=["Health"])
 @app.head("/health")
-@limiter.exempt
+# @limiter.exempt
 def health_check():
     """
     Health check endpoint that responds to both GET and HEAD requests.
