@@ -35,14 +35,16 @@ For backward compatibility, all legacy endpoints are automatically redirected to
 
 ### JavaScript/TypeScript
 
-#### Before:
+#### Before
+
 ```javascript
 // Legacy API call
 const response = await fetch('/api/players/123');
 const player = await response.json();
 ```
 
-#### After:
+#### After
+
 ```javascript
 // New API call
 const response = await fetch('/v1/players/123');
@@ -51,7 +53,8 @@ const player = await response.json();
 
 ### Python
 
-#### Before:
+#### Before
+
 ```python
 # Legacy API call
 import requests
@@ -59,7 +62,8 @@ response = requests.get('https://api.example.com/api/players/123')
 player = response.json()
 ```
 
-#### After:
+#### After
+
 ```python
 # New API call
 import requests
@@ -85,4 +89,4 @@ player = response.json()
 
 ## Need Help?
 
-If you encounter any issues during migration, please contact our support team at support@example.com or open an issue on our GitHub repository.
+If you encounter any issues during migration, please contact our support team at <support@example.com> or open an issue on our GitHub repository.
