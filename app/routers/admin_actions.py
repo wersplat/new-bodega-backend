@@ -63,6 +63,73 @@ class ReviewMatchSubmissionRequest(CamelModel):
     notes: Optional[str] = None
 
 
+def _map_submission_row_to_dto(row: Dict[str, Any]) -> Dict[str, Any]:
+    """Shape raw match_submissions row to the admin UI's expected structure."""
+    return {
+        "id": row.get("id"),
+        "status": (row.get("review_status") or "pending"),
+        "submittedAt": row.get("created_at"),
+        "submittedBy": {
+            "id": row.get("reviewed_by") or "",
+            "email": "",
+        },
+        "matchData": {
+            "homeTeam": {
+                "id": row.get("team_a_id") or "",
+                "name": row.get("team_a_name") or "",
+            },
+            "awayTeam": {
+                "id": row.get("team_b_id") or "",
+                "name": row.get("team_b_name") or "",
+            },
+            # Scores/dates may not exist in this table; provide sensible fallbacks
+            "homeScore": 0,
+            "awayScore": 0,
+            "date": row.get("created_at"),
+            "players": [],
+        },
+        "notes": None,
+        "flags": [],
+    }
+
+
+@router.get("/match-submissions")
+@limiter.limit("60/minute")
+async def list_match_submissions(
+    request: Request,
+    status: Optional[str] = None,
+    _: None = Depends(require_admin_api_token),
+):
+    """List match submissions, optionally filtered by review status."""
+    client = supabase.get_client()
+    query = client.table("match_submissions").select("*")
+    if status:
+        query = query.eq("review_status", status)
+    # Newest first
+    res = query.order("created_at", desc=True).execute()
+    rows = getattr(res, "data", []) or []
+    items = [_map_submission_row_to_dto(row) for row in rows]
+    return {"items": items}
+
+
+@router.get("/match-submissions/{submission_id}")
+@limiter.limit("60/minute")
+async def get_match_submission(
+    request: Request,
+    submission_id: str,
+    _: None = Depends(require_admin_api_token),
+):
+    """Fetch a single match submission by id."""
+    client = supabase.get_client()
+    res = (
+        client.table("match_submissions").select("*").eq("id", submission_id).single().execute()
+    )
+    row = getattr(res, "data", None)
+    if not row:
+        raise HTTPException(status_code=404, detail="Submission not found")
+    return {"submission": _map_submission_row_to_dto(row)}
+
+
 @router.post("/rosters")
 @limiter.limit("60/minute")
 async def add_player_to_roster(
