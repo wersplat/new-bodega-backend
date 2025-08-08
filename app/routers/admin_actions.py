@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Optional, Dict, Any
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, Path
+from fastapi import APIRouter, Depends, HTTPException, Path, Request
 from pydantic import BaseModel, Field, ConfigDict
 
 from app.core.supabase import supabase
@@ -66,6 +66,7 @@ class ReviewMatchSubmissionRequest(CamelModel):
 @router.post("/rosters")
 @limiter.limit("60/minute")
 async def add_player_to_roster(
+    request: Request,
     body: RosterAddRequest,
     _: None = Depends(require_admin_api_token),
 ):
@@ -88,6 +89,7 @@ async def add_player_to_roster(
 @router.delete("/rosters/{roster_id}")
 @limiter.limit("60/minute")
 async def remove_player_from_roster(
+    request: Request,
     roster_id: str = Path(..., description="Roster entry ID"),
     _: None = Depends(require_admin_api_token),
 ):
@@ -98,6 +100,7 @@ async def remove_player_from_roster(
 @router.post("/ranking-points")
 @limiter.limit("60/minute")
 async def award_ranking_points(
+    request: Request,
     body: RankingPointsRequest,
     _: None = Depends(require_admin_api_token),
 ):
@@ -119,6 +122,7 @@ async def award_ranking_points(
 @router.post("/player-rp-transactions")
 @limiter.limit("60/minute")
 async def create_player_rp_transaction(
+    request: Request,
     body: PlayerRpTransactionRequest,
     _: None = Depends(require_admin_api_token),
 ):
@@ -157,6 +161,7 @@ async def create_player_rp_transaction(
 @router.post("/rp-transactions")
 @limiter.limit("60/minute")
 async def create_rp_transaction(
+    request: Request,
     body: Dict[str, Any],
     _: None = Depends(require_admin_api_token),
 ):
@@ -166,13 +171,14 @@ async def create_rp_transaction(
     reason = body.get("reason")
     if player_id and isinstance(delta, int):
         req = PlayerRpTransactionRequest(playerId=player_id, delta=delta, reason=reason)
-        return await create_player_rp_transaction(req, None)  # type: ignore[arg-type]
+        return await create_player_rp_transaction(request, req, None)  # type: ignore[arg-type]
     raise HTTPException(status_code=400, detail="Unsupported rp-transaction payload")
 
 
 @router.post("/match-points")
 @limiter.limit("60/minute")
 async def award_match_points(
+    request: Request,
     body: MatchPointsRequest,
     _: None = Depends(require_admin_api_token),
 ):
@@ -195,6 +201,7 @@ async def award_match_points(
 @router.post("/match-mvp")
 @limiter.limit("60/minute")
 async def set_match_mvp(
+    request: Request,
     body: MatchMvpRequest,
     _: None = Depends(require_admin_api_token),
 ):
@@ -214,6 +221,7 @@ async def set_match_mvp(
 @router.post("/submissions/{submission_id}/review")
 @limiter.limit("60/minute")
 async def review_match_submission(
+    request: Request,
     submission_id: str,
     body: ReviewMatchSubmissionRequest,
     _: None = Depends(require_admin_api_token),
