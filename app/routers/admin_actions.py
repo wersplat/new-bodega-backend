@@ -68,6 +68,36 @@ class ReviewMatchSubmissionRequest(CamelModel):
 
 def _map_submission_row_to_dto(row: Dict[str, Any]) -> Dict[str, Any]:
     """Shape raw match_submissions row to the admin UI's expected structure."""
+    # Try to surface scores if present under common column names or payload
+    def _extract_score_candidates(r: Dict[str, Any]) -> Dict[str, int]:
+        score_a = (
+            r.get("team_a_score")
+            or r.get("home_score")
+            or r.get("score_a")
+            or 0
+        )
+        score_b = (
+            r.get("team_b_score")
+            or r.get("away_score")
+            or r.get("score_b")
+            or 0
+        )
+        # If payload/json exists, look inside
+        payload = r.get("payload") or r.get("data") or {}
+        if isinstance(payload, dict):
+            score_a = payload.get("homeScore", score_a)
+            score_b = payload.get("awayScore", score_b)
+        try:
+            score_a = int(score_a) if score_a is not None else 0
+        except Exception:
+            score_a = 0
+        try:
+            score_b = int(score_b) if score_b is not None else 0
+        except Exception:
+            score_b = 0
+        return {"home": score_a, "away": score_b}
+
+    scores = _extract_score_candidates(row)
     return {
         "id": row.get("id"),
         "status": (row.get("review_status") or "pending"),
@@ -85,9 +115,9 @@ def _map_submission_row_to_dto(row: Dict[str, Any]) -> Dict[str, Any]:
                 "id": row.get("team_b_id") or "",
                 "name": row.get("team_b_name") or "",
             },
-            # Scores/dates may not exist in this table; provide sensible fallbacks
-            "homeScore": 0,
-            "awayScore": 0,
+            # Scores if present; otherwise 0
+            "homeScore": scores["home"],
+            "awayScore": scores["away"],
             "date": row.get("created_at"),
             "players": [],
         },
