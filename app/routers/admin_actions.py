@@ -131,6 +131,14 @@ def _get_match_scores(client, match_id: Optional[str]) -> Dict[str, int]:
     default = {"home": 0, "away": 0}
     if not match_id:
         return default
+def _is_pending_status(value: Optional[str]) -> bool:
+    if value is None:
+        return True
+    try:
+        norm = str(value).strip().lower()
+    except Exception:
+        return False
+    return norm == "" or norm == "pending"
     try:
         res = client.table("matches").select("score_a,score_b").eq("id", match_id).single().execute()
         data = getattr(res, "data", None) or {}
@@ -167,10 +175,10 @@ async def list_match_submissions(
         rows = getattr(res, "data", []) or []
 
         if status:
-            if status == "pending":
-                rows = [r for r in rows if (r.get("review_status") in (None, "", "pending"))]
+            if str(status).strip().lower() == "pending":
+                rows = [r for r in rows if _is_pending_status(r.get("review_status"))]
             else:
-                rows = [r for r in rows if r.get("review_status") == status]
+                rows = [r for r in rows if str(r.get("review_status")) == status]
 
         items = []
         for row in rows:
@@ -204,7 +212,7 @@ async def list_match_submissions_pending(
         client = supabase.get_client()
         res = client.table("match_submissions").select("*").order("created_at", desc=True).execute()
         rows = getattr(res, "data", []) or []
-        rows = [r for r in rows if (r.get("review_status") in (None, "", "pending"))]
+        rows = [r for r in rows if _is_pending_status(r.get("review_status"))]
         items = []
         for row in rows:
             try:
