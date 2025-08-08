@@ -131,16 +131,14 @@ def _get_match_scores(client, match_id: Optional[str]) -> Dict[str, int]:
     default = {"home": 0, "away": 0}
     if not match_id:
         return default
-def _is_pending_status(value: Optional[str]) -> bool:
-    if value is None:
-        return True
     try:
-        norm = str(value).strip().lower()
-    except Exception:
-        return False
-    return norm == "" or norm == "pending"
-    try:
-        res = client.table("matches").select("score_a,score_b").eq("id", match_id).single().execute()
+        res = (
+            client.table("matches")
+            .select("score_a,score_b")
+            .eq("id", match_id)
+            .single()
+            .execute()
+        )
         data = getattr(res, "data", None) or {}
         home = data.get("score_a") or 0
         away = data.get("score_b") or 0
@@ -156,6 +154,16 @@ def _is_pending_status(value: Optional[str]) -> bool:
     except Exception as e:
         logger.error(f"_get_match_scores error for {match_id}: {e}")
         return default
+
+
+def _is_pending_status(value: Optional[str]) -> bool:
+    if value is None:
+        return True
+    try:
+        norm = str(value).strip().lower()
+    except Exception:
+        return False
+    return norm == "" or norm == "pending"
 
 
 @router.get("/match-submissions")
@@ -276,12 +284,22 @@ async def get_match_submission(
     row = getattr(res, "data", None)
     if not row:
         raise HTTPException(status_code=404, detail="Submission not found")
-    dto = _map_submission_row_to_dto(row)
-    mid = row.get("match_id")
-    if mid:
-        scores = _get_match_scores(client, mid)
-        dto["matchData"]["homeScore"] = scores["home"]
-        dto["matchData"]["awayScore"] = scores["away"]
+    # Map and enrich defensively
+    try:
+        dto = _map_submission_row_to_dto(row)
+    except Exception as map_err:
+        logger.error(f"get_match_submission map error: {map_err}; row id={row.get('id')}")
+        dto = {"id": row.get("id"), "status": row.get("review_status") or "pending", "matchData": {}}
+    try:
+        mid = row.get("match_id")
+        if mid:
+            scores = _get_match_scores(client, mid)
+            match_data = dto.get("matchData") or {}
+            match_data["homeScore"] = scores.get("home", 0)
+            match_data["awayScore"] = scores.get("away", 0)
+            dto["matchData"] = match_data
+    except Exception as enrich_err:
+        logger.error(f"get_match_submission enrich error: {enrich_err}; row id={row.get('id')}")
     return {"submission": dto}
 
 
