@@ -4951,6 +4951,13 @@ export type Database = {
         Args: { target_user_id: string; role_to_assign: string }
         Returns: boolean
       }
+      assign_role_to_user: {
+        Args: {
+          p_user_id: string
+          p_role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
       calculate_all_player_salaries: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -5020,6 +5027,10 @@ export type Database = {
         }
         Returns: string
       }
+      custom_jwt: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       generate_award_nominees: {
         Args: { event_uuid: string; award_type_param: string; top_n?: number }
         Returns: {
@@ -5063,6 +5074,12 @@ export type Database = {
           normalized_starting: number
         }[]
       }
+      get_my_permissions: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          permission: string
+        }[]
+      }
       get_user_roles: {
         Args: { user_id_param?: string }
         Returns: {
@@ -5079,6 +5096,10 @@ export type Database = {
       }
       initialize_new_season: {
         Args: { season_name: string }
+        Returns: undefined
+      }
+      initialize_user_roles: {
+        Args: Record<PropertyKey, never>
         Returns: undefined
       }
       is_league_admin: {
@@ -5131,6 +5152,13 @@ export type Database = {
         Args: { target_user_id: string; role_to_remove: string }
         Returns: boolean
       }
+      remove_role_from_user: {
+        Args: {
+          p_user_id: string
+          p_role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
       schedule_rp_decay: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -5141,6 +5169,10 @@ export type Database = {
           award_type_param: string
           winner_player_id: string
         }
+        Returns: undefined
+      }
+      sync_user_roles_for_user: {
+        Args: { p_user_id: string }
         Returns: undefined
       }
       update_all_teams_money_won: {

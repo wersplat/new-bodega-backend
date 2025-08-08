@@ -53,15 +53,14 @@ Error Responses:
 import logging
 from datetime import datetime
 from typing import List, Optional, Dict, Any, Union
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query, Request
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator
 from pydantic.types import constr
 
 from app.core.supabase import supabase
-from app.core.auth import get_current_active_user, RoleChecker
+from app.core.auth_supabase import supabase_user_from_bearer
 from app.core.rate_limiter import limiter
 from app.core.config import settings
 
@@ -275,7 +274,7 @@ async def get_player_by_gamertag(gamertag: str) -> Optional[Dict[str, Any]]:
 async def create_player(
     request: Request,
     player: PlayerCreate,
-    current_user: Dict[str, Any] = Depends(get_current_active_user)
+    current_user: Dict[str, Any] = Depends(supabase_user_from_bearer)
 ) -> Dict[str, Any]:
     """
     Register a new player profile.
@@ -298,7 +297,11 @@ async def create_player(
             - 500: If there's an error creating the profile in the database
     """
     try:
-        logger.info(f"Creating player profile for user {current_user.id}")
+        # Extract Supabase user id
+        user_id = current_user.get("sub") or current_user.get("user_id") or current_user.get("id")
+        if not user_id:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token: no user id")
+        logger.info(f"Creating player profile for user {user_id}")
         
         # Check if user already has a player profile
         existing_profile = await get_player_by_gamertag(player.gamertag)
@@ -310,7 +313,7 @@ async def create_player(
         
         # Check if user already has a player profile
         client = supabase.get_client()
-        existing_player = client.table("players").select("id").eq("user_id", str(current_user.id)).execute()
+        existing_player = client.table("players").select("id").eq("user_id", str(user_id)).execute()
         if hasattr(existing_player, 'data') and existing_player.data:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -319,7 +322,7 @@ async def create_player(
         
         # Create player profile
         player_data = player.model_dump()
-        player_data["user_id"] = str(current_user.id)  # Ensure user_id is a string
+        player_data["user_id"] = str(user_id)  # Ensure user_id is a string
         player_data["created_at"] = datetime.utcnow().isoformat()
         player_data["updated_at"] = datetime.utcnow().isoformat()
         
@@ -589,7 +592,7 @@ async def get_player(
 @limiter.limit(settings.RATE_LIMIT_AUTHENTICATED)
 async def get_my_profile(
     request: Request,
-    current_user: Dict[str, Any] = Depends(get_current_active_user),
+    current_user: Dict[str, Any] = Depends(supabase_user_from_bearer),
     include_stats: bool = Query(True, description="Include player statistics in the response")
 ) -> Dict[str, Any]:
     """
@@ -633,15 +636,17 @@ async def get_my_profile(
         
     except HTTPException:
         raise
-    except Exception as e:
-        logger.error(f"Error fetching profile for user {current_user.id}: {str(e)}", exc_info=True)
+    except Exception:
+        logger.error("Error fetching current user's profile", exc_info=True)
         raise HTTPException(
-)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while retrieving the player's profile"
+        )
 @limiter.limit(settings.RATE_LIMIT_AUTHENTICATED)
 async def update_my_profile(
     request: Request,
     player_update: PlayerUpdate,
-    current_user: Dict[str, Any] = Depends(get_current_active_user)
+    current_user: Dict[str, Any] = Depends(supabase_user_from_bearer)
 ) -> Dict[str, Any]:
     """
     Update current user's player profile.
@@ -661,11 +666,14 @@ async def update_my_profile(
         HTTPException: If the player profile is not found or there's an error updating
     """
     try:
-        logger.info(f"Updating profile for user {current_user.id}")
+        user_id = current_user.get("sub") or current_user.get("user_id") or current_user.get("id")
+        if not user_id:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token: no user id")
+        logger.info(f"Updating profile for user {user_id}")
         
         # Get current player data
         client = supabase.get_client()
-        result = client.table("players").select("id").eq("user_id", str(current_user.id)).execute()
+        result = client.table("players").select("id").eq("user_id", str(user_id)).execute()
         
         if not hasattr(result, 'data') or not result.data:
             raise HTTPException(
@@ -721,25 +729,6 @@ async def update_my_profile(
             detail="An unexpected error occurred while updating the player profile"
         )
 # The get_player_history endpoint has been consolidated with the get_player endpoint
-        
-        # Format response
-        player["rp_history"] = history.data if hasattr(history, 'data') else []
-        player["pagination"] = {
-            "total": count_result.count if hasattr(count_result, 'count') else 0,
-            "limit": limit,
-            "offset": offset
-        }
-        
-        return player
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error fetching RP history for player {player_id}: {str(e)}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="An error occurred while retrieving the player's RP history"
-        )
 
 @router.get(
     "/search",

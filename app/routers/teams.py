@@ -7,14 +7,13 @@ performance, better error handling, and comprehensive documentation.
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Union
-from uuid import UUID
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, Request, status
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl
 
 from app.core.supabase import supabase
-from app.core.auth import get_current_user, get_current_admin_user
+from app.core.auth_supabase import supabase_user_from_bearer, require_admin_api_token
 from app.core.rate_limiter import limiter
 from app.core.config import settings
 
@@ -161,7 +160,7 @@ async def get_team_by_id(team_id: str) -> Optional[Dict[str, Any]]:
 async def create_team(
     request: Request,
     team: TeamCreate,
-    current_user: Dict[str, Any] = Depends(get_current_user)
+    current_user: Dict[str, Any] = Depends(supabase_user_from_bearer)
 ) -> Dict[str, Any]:
     """
     Create a new team.
@@ -185,7 +184,9 @@ async def create_team(
         
         # Prepare team data
         team_data = team.dict(exclude_unset=True)
-        team_data["created_by"] = str(current_user.get("id"))
+        # Prefer sub/user_id/id claim order
+        user_id = current_user.get("sub") or current_user.get("user_id") or current_user.get("id")
+        team_data["created_by"] = str(user_id) if user_id else None
         
         # Create team
         created_team = supabase.insert("teams", team_data)
@@ -377,7 +378,7 @@ async def list_teams(
 async def update_team(
     team_id: str,
     team_update: TeamUpdate,
-    current_user: Dict[str, Any] = Depends(get_current_user)
+    _: None = Depends(require_admin_api_token)
 ):
     """
     Update team information
@@ -405,7 +406,7 @@ async def update_team(
 @router.delete("/{team_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_team(
     team_id: str,
-    current_user: Dict[str, Any] = Depends(get_current_user)
+    _: None = Depends(require_admin_api_token)
 ):
     """
     Delete a team

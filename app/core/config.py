@@ -46,6 +46,8 @@ class Settings(BaseSettings):
     RATE_LIMIT_ANONYMOUS: str = "10/minute"
     RATE_LIMIT_AUTHENTICATED: str = "1000/hour"
     RATE_LIMIT_ADMIN: str = "5000/hour"
+    DISABLE_RATE_LIMITING: bool = False
+    REDIS_URL: Optional[str] = None
     
     # Caching
     CACHE_TTL: int = 300  # 5 minutes default
@@ -67,6 +69,7 @@ class Settings(BaseSettings):
     # Monitoring
     SENTRY_DSN: Optional[str] = None
     LOG_LEVEL: str = "INFO"
+    ADMIN_API_TOKEN: Optional[str] = None
     
     # Pagination
     DEFAULT_PAGE_SIZE: int = 20
@@ -116,6 +119,13 @@ class Settings(BaseSettings):
     def is_production(self) -> bool:
         """Check if running in production environment"""
         return self.ENVIRONMENT.lower() == "production"
+
+    @property
+    def rate_limit_storage_uri(self) -> str:
+        """Choose storage for rate limiter: Redis in prod if set, else memory."""
+        if self.REDIS_URL:
+            return self.REDIS_URL
+        return "memory://"
     
     @property
     def is_development(self) -> bool:

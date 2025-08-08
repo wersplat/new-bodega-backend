@@ -1,3 +1,12 @@
+## Environment variables
+
+Add these to your `.env` (or Railway/Github envs):
+
+- `ADMIN_API_TOKEN`: Static token required by admin-only endpoints. Send it as `X-Admin-Api-Token` header from trusted services (e.g., GraphQL server).
+- `REDIS_URL`: If set, rate limiting uses Redis (recommended for production). Example: `redis://default:<password>@<host>:6379/0`.
+- `DISABLE_RATE_LIMITING`: Set to `true` to disable rate limiting (not recommended in production). Default: `false`.
+
+Other existing vars still apply: `SUPABASE_URL`, `SUPABASE_KEY`/`SUPABASE_ANON_KEY`, `STRIPE_SECRET_KEY`, etc.
 # NBA 2K Global Rankings Backend
 
 A comprehensive FastAPI backend for managing NBA 2K Global Rankings, tournaments, and player profiles, powered by Supabase.

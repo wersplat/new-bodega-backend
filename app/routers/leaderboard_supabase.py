@@ -13,9 +13,10 @@ Endpoint:
 
 import logging
 from enum import Enum
-from typing import Dict, List, Optional, Any, Union
+import uuid
+from typing import Dict, List, Optional, Any
 
-from fastapi import APIRouter, Depends, HTTPException, status, Request, Query, Path
+from fastapi import APIRouter, HTTPException, status, Request, Query, Path
 
 from app.core.supabase import supabase
 from app.core.rate_limiter import limiter

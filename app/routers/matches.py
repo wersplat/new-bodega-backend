@@ -7,22 +7,22 @@ performance, better error handling, and comprehensive documentation.
 
 from datetime import datetime
 from typing import List, Optional, Dict, Any
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 from fastapi import (
     APIRouter, Depends, HTTPException, status, 
     Query, Path, Body, Request
 )
-from pydantic import BaseModel, Field, validator, HttpUrl
+from pydantic import BaseModel, Field
 
 from app.core.supabase import supabase
-from app.core.auth import get_current_user, get_current_admin_user, RoleChecker
+from app.core.auth_supabase import require_admin_api_token
 from app.core.rate_limiter import limiter
 from app.core.config import settings
 from app.schemas.match import (
     MatchStatus, MatchStage, MatchCreate, 
     MatchUpdate, Match, MatchWithDetails,
-    PlayerMatchStats, MatchStats
+    PlayerMatchStats
 )
 
 import logging
@@ -127,7 +127,7 @@ def get_match_by_id(match_id: str) -> Dict[str, Any]:
 async def create_match(
     request: Request,
     match: MatchCreate,
-    current_user: Dict[str, Any] = Depends(get_current_admin_user)
+    _: None = Depends(require_admin_api_token)
 ) -> Dict[str, Any]:
     """
     Create a new match (Admin only).
@@ -497,7 +497,7 @@ async def update_match(
     match_id: str = Path(..., description="The UUID of the match to update", 
                         examples=[UUID_EXAMPLE], pattern=UUID_PATTERN),
     match_update: MatchUpdate = ...,
-    current_user: Dict[str, Any] = Depends(get_current_admin_user)
+    _: None = Depends(require_admin_api_token)
 ) -> Dict[str, Any]:
     """
     Update an existing match (Admin only).
@@ -588,7 +588,7 @@ async def delete_match(
         False,
         description="Force deletion even if the match has statistics"
     ),
-    current_user: Dict[str, Any] = Depends(get_current_admin_user)
+    _: None = Depends(require_admin_api_token)
 ) -> None:
     """
     Delete a match (Admin only).
@@ -663,7 +663,7 @@ async def submit_match_stats(
     request: Request,
     match_id: str = Path(..., description="The UUID of the match", 
                         examples=[UUID_EXAMPLE], pattern=UUID_PATTERN),
-    current_user: Dict[str, Any] = Depends(get_current_admin_user),
+    _: None = Depends(require_admin_api_token),
     stats: List[PlayerMatchStats] = Body(..., description="List of player match statistics")
 ) -> List[Dict[str, Any]]:
     """

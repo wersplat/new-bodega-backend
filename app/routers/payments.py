@@ -3,12 +3,9 @@ Payments router for Stripe integration
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status, Request, Header
-from typing import Optional, List, Dict, Any
-import uuid
-from datetime import datetime
 import logging
 
-from app.core.auth import get_current_active_user, get_current_admin_user
+from app.core.auth_supabase import supabase_user_from_bearer, require_admin_api_token
 from app.core.supabase import supabase
 from app.services.payments import PaymentService
 from app.schemas.payments import CreatePaymentSessionRequest
@@ -26,14 +23,15 @@ router = APIRouter(
 @router.post("/session/create")
 async def create_payment_session(
     request: CreatePaymentSessionRequest,
-    current_user: dict = Depends(get_current_active_user)
+    current_user: dict = Depends(supabase_user_from_bearer)
 ):
     """
     Create payment session for event registration
     """
     try:
         # Get player profile
-        player_result = supabase.get_client().table("players").select("*").eq("user_id", current_user["id"]).single().execute()
+        user_id = current_user.get("sub") or current_user.get("user_id") or current_user.get("id")
+        player_result = supabase.get_client().table("players").select("*").eq("user_id", user_id).single().execute()
         
         if not player_result.data:
             raise HTTPException(
@@ -84,7 +82,7 @@ async def stripe_webhook(
 @router.post("/refund/{registration_id}")
 async def refund_payment(
     registration_id: str,
-    current_user: dict = Depends(get_current_admin_user)
+    _: None = Depends(require_admin_api_token)
 ):
     """
     Process refund for event registration (admin only)
@@ -102,7 +100,7 @@ async def refund_payment(
 @router.get("/session/{session_id}/status")
 async def get_payment_status(
     session_id: str,
-    current_user: dict = Depends(get_current_active_user)
+    current_user: dict = Depends(supabase_user_from_bearer)
 ):
     """
     Get payment session status
@@ -117,7 +115,8 @@ async def get_payment_status(
         session = stripe.checkout.Session.retrieve(session_id)
         
         # Check if user owns this session
-        player_result = supabase.get_client().table("players").select("*").eq("user_id", current_user["id"]).single().execute()
+        user_id = current_user.get("sub") or current_user.get("user_id") or current_user.get("id")
+        player_result = supabase.get_client().table("players").select("*").eq("user_id", user_id).single().execute()
         
         if not player_result.data:
             raise HTTPException(

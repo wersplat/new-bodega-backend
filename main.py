@@ -5,12 +5,11 @@ Main application entry point
 
 import logging
 from datetime import datetime
-from typing import Dict, Any
+# no typing imports needed at module level
 
-from fastapi import FastAPI, Depends, HTTPException, status, Request, Response
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from slowapi import Limiter
+from fastapi.responses import RedirectResponse
 from slowapi.middleware import SlowAPIMiddleware
 
 from app.core.config import settings
@@ -18,7 +17,7 @@ from app.core.supabase import supabase
 from app.core.rate_limiter import (
     limiter,
     rate_limit_exceeded_handler,
-    get_identifier
+    is_rate_limiting_enabled,
 )
 
 # Configure logging
@@ -30,6 +29,7 @@ from app.routers import (
     leaderboard_supabase as leaderboard, 
     auth, 
     admin, 
+    admin_actions,
     discord, 
     payments,
     teams,  # Updated to use refactored teams router
@@ -97,22 +97,23 @@ app = FastAPI(
 )
 
 # Add rate limiting middleware
-app.state.limiter = limiter
-app.add_exception_handler(429, rate_limit_exceeded_handler)
+if is_rate_limiting_enabled():
+    app.state.limiter = limiter  # type: ignore[attr-defined]
+    app.add_exception_handler(429, rate_limit_exceeded_handler)
 
-# Temporarily disable slowapi middleware to fix deployment issue
-# app.add_middleware(SlowAPIMiddleware)
+# Add rate limiting middleware if enabled
+if is_rate_limiting_enabled():
+    app.add_middleware(SlowAPIMiddleware)
 
-# CORS middleware
+# CORS middleware (tightened to allowlist)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS.split(","),
-    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?$",
+    allow_origins=settings.CORS_ORIGINS_LIST,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"],
-    allow_headers=["*"],
+    allow_headers=["Authorization", "Content-Type", "X-Admin-Api-Token", "X-API-Key"],
     expose_headers=["X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset"],
-    max_age=600,  # 10 minutes
+    max_age=600,
 )
 
 # Include routers with flattened RESTful structure
@@ -125,11 +126,11 @@ app.include_router(teams.router, tags=["Teams"])
 app.include_router(matches.router, tags=["Matches"])
 app.include_router(player_stats.router, tags=["Player Stats"])
 app.include_router(admin.router, tags=["Admin"])
+app.include_router(admin_actions.router, tags=["Admin"])
 app.include_router(discord.router, tags=["Discord Integration"])
 app.include_router(payments.router, tags=["Payment Integration"])
 
 # Add backward compatibility redirects
-from fastapi.responses import RedirectResponse
 
 @app.get("/api/{path:path}", include_in_schema=False)
 # @limiter.exempt
@@ -213,9 +214,8 @@ def health_check():
     # Rate limiting status
     rate_limiting_status = "ok"
     try:
-        from app.core.rate_limiter import limiter
-        # Rate limiter is initialized with in-memory storage
-        rate_limiting_status = "ok"
+        # Report enabled/disabled based on config
+        rate_limiting_status = "enabled" if is_rate_limiting_enabled() else "disabled"
     except Exception as e:
         logger.error(f"Rate limiting health check failed: {str(e)}")
         rate_limiting_status = f"error: {str(e)}"

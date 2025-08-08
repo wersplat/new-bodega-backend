@@ -9,10 +9,11 @@ from datetime import datetime
 import uuid
 
 from app.core.auth import get_current_admin_user
+from app.core.auth_supabase import require_admin_api_token
 from app.core.supabase import supabase
 from app.schemas.user import UserInDB
 from app.schemas.player import PlayerProfile
-from app.schemas.badge import Badge as BadgeSchema, PlayerBadge as PlayerBadgeSchema
+from app.schemas.badge import Badge as BadgeSchema
 
 # Request/Response models
 class AdminCheckRequest(BaseModel):
@@ -92,7 +93,7 @@ async def check_admin_status_public(
             user_id=admin_check.user_id,
             email=admin_check.email
         )
-    except Exception as e:
+    except Exception:
         return AdminCheckResponse(
             is_admin=False,
             user_id=admin_check.user_id,
@@ -116,7 +117,7 @@ async def check_admin_status(
             user_id=admin_check.user_id,
             email=admin_check.email
         )
-    except Exception as e:
+    except Exception:
         # If there's any error (like authentication failure), user is not admin
         return AdminCheckResponse(
             is_admin=False,
@@ -127,7 +128,7 @@ async def check_admin_status(
 @router.post("/update-rp")
 async def update_player_rp(
     rp_update: RPUpdateRequest,
-    current_user: UserInDB = Depends(get_current_admin_user)
+    _: None = Depends(require_admin_api_token)
 ):
     """
     Update player RP (admin only)
@@ -173,7 +174,7 @@ async def update_player_rp(
             "old_rp": old_rp,
             "new_rp": new_rp,
             "change_reason": rp_update.reason,
-            "updated_by": current_user.id,
+            "updated_by": "admin_api",
             "created_at": now
         }).execute()
         
@@ -192,7 +193,7 @@ async def update_player_rp(
 @router.post("/award-badge", response_model=PlayerBadgeResponse)
 async def award_badge(
     badge_award: BadgeAwardRequest,
-    current_user: UserInDB = Depends(get_current_admin_user)
+    _: None = Depends(require_admin_api_token)
 ):
     """
     Award badge to player (admin only)
@@ -262,7 +263,7 @@ async def award_badge(
 async def list_all_players(
     limit: int = 100,
     offset: int = 0,
-    current_user: UserInDB = Depends(get_current_admin_user)
+    _: None = Depends(require_admin_api_token)
 ):
     """
     List all players (admin only)
@@ -295,7 +296,7 @@ async def list_all_players(
 
 @router.get("/badges", response_model=List[BadgeSchema])
 async def list_all_badges(
-    current_user: UserInDB = Depends(get_current_admin_user)
+    _: None = Depends(require_admin_api_token)
 ):
     """
     List all badges (admin only)
@@ -328,7 +329,7 @@ async def list_all_badges(
 @router.post("/badges", response_model=BadgeSchema)
 async def create_badge(
     badge: BadgeSchema,
-    current_user: UserInDB = Depends(get_current_admin_user)
+    _: None = Depends(require_admin_api_token)
 ):
     """
     Create a new badge (admin only)
@@ -346,7 +347,7 @@ async def create_badge(
             "rarity": badge.rarity or "common",
             "is_active": True,
             "created_at": datetime.utcnow().isoformat(),
-            "created_by": current_user.id
+            "created_by": "admin_api"
         }
         
         # Insert badge into Supabase
@@ -370,7 +371,7 @@ async def create_badge(
 @router.delete("/badges/{badge_id}")
 async def delete_badge(
     badge_id: str,
-    current_user: UserInDB = Depends(get_current_admin_user)
+    _: None = Depends(require_admin_api_token)
 ):
     """
     Delete a badge (admin only)
@@ -389,7 +390,7 @@ async def delete_badge(
         supabase.get_client().table("badges").update({
             "is_active": False,
             "updated_at": datetime.utcnow().isoformat(),
-            "updated_by": current_user.id
+            "updated_by": "admin_api"
         }).eq("id", badge_id).execute()
         
         return {"message": "Badge deleted successfully"}

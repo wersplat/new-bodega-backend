@@ -6,16 +6,13 @@ performance, better error handling, and comprehensive documentation.
 """
 
 import logging
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Union
-from uuid import UUID, uuid4
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query, Request, status
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field, HttpUrl, validator, model_validator
-from pydantic_core import PydanticUndefinedType
+from pydantic import BaseModel, Field, HttpUrl, model_validator
 
-from app.core.auth import get_current_admin_user, get_current_user
+from app.core.auth_supabase import require_admin_api_token
 from app.core.config import settings
 from app.core.rate_limiter import limiter
 from app.core.supabase import supabase
@@ -34,9 +31,8 @@ logger = logging.getLogger(__name__)
 UUID_PATTERN = r'^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
 UUID_EXAMPLE = "123e4567-e89b-12d3-a456-426614174000"
 
-from enum import Enum, auto
+from enum import Enum
 from pydantic import ConfigDict
-from typing import Any
 
 # Enums (moved from schemas for better cohesion)
 class StringEnum(str, Enum):
@@ -248,7 +244,7 @@ async def get_event_by_id(event_id: str) -> Optional[Dict[str, Any]]:
 async def create_event(
     request: Request,
     event: EventCreate,
-    current_user: Dict[str, Any] = Depends(get_current_admin_user)
+    _: None = Depends(require_admin_api_token)
 ) -> Dict[str, Any]:
     """
     Create a new event (Admin only).
@@ -272,7 +268,7 @@ async def create_event(
         
         # Prepare event data
         event_data = event.dict(exclude_unset=True)
-        event_data["created_by"] = str(current_user.get("id"))
+        event_data["created_by"] = "admin_api"
         
         # Create event
         created_event = supabase.insert("events", event_data)
@@ -504,7 +500,7 @@ async def update_event(
                         examples=[UUID_EXAMPLE], 
                         pattern=UUID_PATTERN),
     event_update: EventUpdate = Body(..., description="Event data to update"),
-    current_user: Dict[str, Any] = Depends(get_current_admin_user)
+    _: None = Depends(require_admin_api_token)
 ) -> Dict[str, Any]:
     """
     Update an existing event (Admin only).
@@ -590,7 +586,7 @@ async def delete_event(
         False,
         description="Force deletion even if the event has participants (use with caution)"
     ),
-    current_user: Dict[str, Any] = Depends(get_current_admin_user)
+    _: None = Depends(require_admin_api_token)
 ) -> None:
     """
     Delete an event (Admin only).
