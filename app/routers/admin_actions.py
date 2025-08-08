@@ -4,10 +4,11 @@ All endpoints require an admin API token.
 """
 
 from datetime import datetime
+import logging
 from typing import Optional, Dict, Any
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, Path, Request
+from fastapi import APIRouter, Depends, HTTPException, Path, Request, Query
 from pydantic import BaseModel, Field, ConfigDict
 
 from app.core.supabase import supabase
@@ -20,6 +21,8 @@ router = APIRouter(
     tags=["Admin"],
     responses={404: {"description": "Not found"}},
 )
+
+logger = logging.getLogger(__name__)
 
 
 class CamelModel(BaseModel):
@@ -97,25 +100,49 @@ def _map_submission_row_to_dto(row: Dict[str, Any]) -> Dict[str, Any]:
 @limiter.limit("60/minute")
 async def list_match_submissions(
     request: Request,
-    status: Optional[str] = None,
+    status: Optional[str] = Query(default=None),
     _: None = Depends(require_admin_api_token),
 ):
     """List match submissions, optionally filtered by review status.
 
     Treat NULL review_status as "pending" for convenience.
     """
-    client = supabase.get_client()
-    res = client.table("match_submissions").select("*").order("created_at", desc=True).execute()
-    rows = getattr(res, "data", []) or []
+    try:
+        client = supabase.get_client()
+        res = client.table("match_submissions").select("*").order("created_at", desc=True).execute()
+        rows = getattr(res, "data", []) or []
 
-    if status:
-        if status == "pending":
-            rows = [r for r in rows if (r.get("review_status") in (None, "", "pending"))]
-        else:
-            rows = [r for r in rows if r.get("review_status") == status]
+        if status:
+            if status == "pending":
+                rows = [r for r in rows if (r.get("review_status") in (None, "", "pending"))]
+            else:
+                rows = [r for r in rows if r.get("review_status") == status]
 
-    items = [_map_submission_row_to_dto(row) for row in rows]
-    return {"items": items}
+        items = [_map_submission_row_to_dto(row) for row in rows]
+        return {"items": items}
+    except Exception as e:
+        logger.error(f"list_match_submissions error: {e}")
+        # Never 500 to the admin UI for list; return empty
+        return {"items": []}
+
+
+@router.get("/match-submissions/pending")
+@limiter.limit("60/minute")
+async def list_match_submissions_pending(
+    request: Request,
+    _: None = Depends(require_admin_api_token),
+):
+    """Deterministic endpoint for pending submissions (includes NULL)."""
+    try:
+        client = supabase.get_client()
+        res = client.table("match_submissions").select("*").order("created_at", desc=True).execute()
+        rows = getattr(res, "data", []) or []
+        rows = [r for r in rows if (r.get("review_status") in (None, "", "pending"))]
+        items = [_map_submission_row_to_dto(row) for row in rows]
+        return {"items": items}
+    except Exception as e:
+        logger.error(f"list_match_submissions_pending error: {e}")
+        return {"items": []}
 
 
 @router.get("/match-submissions/{submission_id}")
