@@ -148,7 +148,13 @@ async def list_match_submissions(
             else:
                 rows = [r for r in rows if r.get("review_status") == status]
 
-        items = [_map_submission_row_to_dto(row) for row in rows]
+        items = []
+        for row in rows:
+            try:
+                items.append(_map_submission_row_to_dto(row))
+            except Exception as map_err:
+                logger.error(f"map submission row error: {map_err}; row id={row.get('id')}")
+                continue
         return {"items": items}
     except Exception as e:
         logger.error(f"list_match_submissions error: {e}")
@@ -168,7 +174,13 @@ async def list_match_submissions_pending(
         res = client.table("match_submissions").select("*").order("created_at", desc=True).execute()
         rows = getattr(res, "data", []) or []
         rows = [r for r in rows if (r.get("review_status") in (None, "", "pending"))]
-        items = [_map_submission_row_to_dto(row) for row in rows]
+        items = []
+        for row in rows:
+            try:
+                items.append(_map_submission_row_to_dto(row))
+            except Exception as map_err:
+                logger.error(f"map submission row error: {map_err}; row id={row.get('id')}")
+                continue
         return {"items": items}
     except Exception as e:
         logger.error(f"list_match_submissions_pending error: {e}")
