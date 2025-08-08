@@ -186,16 +186,21 @@ async def list_match_submissions(
         for row in rows:
             try:
                 dto = _map_submission_row_to_dto(row)
-                # Enrich from matches when match_id present
-                mid = row.get("match_id")
-                if mid:
-                    scores = _get_match_scores(client, mid)
-                    dto["matchData"]["homeScore"] = scores["home"]
-                    dto["matchData"]["awayScore"] = scores["away"]
-                items.append(dto)
             except Exception as map_err:
                 logger.error(f"map submission row error: {map_err}; row id={row.get('id')}")
                 continue
+            # Enrich from matches when match_id present; never drop the row on error
+            try:
+                mid = row.get("match_id")
+                if mid:
+                    scores = _get_match_scores(client, mid)
+                    match_data = dto.get("matchData") or {}
+                    match_data["homeScore"] = scores.get("home", 0)
+                    match_data["awayScore"] = scores.get("away", 0)
+                    dto["matchData"] = match_data
+            except Exception as enrich_err:
+                logger.error(f"enrich submission row error: {enrich_err}; row id={row.get('id')}")
+            items.append(dto)
         resp = {"items": items}
         if debug:
             # attach minimal debug metadata without leaking sensitive info
@@ -229,15 +234,20 @@ async def list_match_submissions_pending(
         for row in rows:
             try:
                 dto = _map_submission_row_to_dto(row)
-                mid = row.get("match_id")
-                if mid:
-                    scores = _get_match_scores(client, mid)
-                    dto["matchData"]["homeScore"] = scores["home"]
-                    dto["matchData"]["awayScore"] = scores["away"]
-                items.append(dto)
             except Exception as map_err:
                 logger.error(f"map submission row error: {map_err}; row id={row.get('id')}")
                 continue
+            try:
+                mid = row.get("match_id")
+                if mid:
+                    scores = _get_match_scores(client, mid)
+                    match_data = dto.get("matchData") or {}
+                    match_data["homeScore"] = scores.get("home", 0)
+                    match_data["awayScore"] = scores.get("away", 0)
+                    dto["matchData"] = match_data
+            except Exception as enrich_err:
+                logger.error(f"enrich submission row error: {enrich_err}; row id={row.get('id')}")
+            items.append(dto)
         resp = {"items": items}
         if debug:
             resp["debug"] = {
