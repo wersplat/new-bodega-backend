@@ -4,11 +4,10 @@ Player statistics router for handling player stats related operations
 
 import logging
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Union, cast
-from uuid import UUID, uuid4
+from typing import Any, Dict, List, Optional
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status, Request, Query
-from pydantic import BaseModel, Field, validator
 
 from app.core.config import settings
 from app.core.supabase import supabase
@@ -19,7 +18,7 @@ from app.schemas.player_stats import (
     PlayerStatsUpdate,
     PlayerStatsWithDetails
 )
-from app.core.auth import get_current_active_user, RoleChecker
+from app.core.auth_supabase import require_admin_api_token, supabase_user_from_bearer
 
 # Initialize router with rate limiting and explicit prefix
 router = APIRouter(
@@ -113,8 +112,7 @@ def calculate_efficiency(stats: Dict[str, Any]) -> float:
 # Configure logging
 logger = logging.getLogger(__name__)
 
-# Role-based access control
-admin_role = RoleChecker(["admin", "moderator"])
+# Admin protection via API token (used by GraphQL server)
 
 def calculate_performance_score(stats: PlayerStatsCreate) -> float:
     """
@@ -308,7 +306,7 @@ async def get_player_stats_by_id(stats_id: str) -> Optional[Dict[str, Any]]:
     "/",
     response_model=PlayerStatsSchema,
     status_code=status.HTTP_201_CREATED,
-    dependencies=[Depends(admin_role)],
+    dependencies=[Depends(require_admin_api_token)],
     responses={
         201: {"description": "Player statistics created successfully"},
         400: {"description": "Invalid input data or duplicate entry"},
@@ -323,7 +321,7 @@ async def get_player_stats_by_id(stats_id: str) -> Optional[Dict[str, Any]]:
 async def create_player_stats(
     request: Request,
     stats: PlayerStatsCreate,
-    current_user: Dict[str, Any] = Depends(get_current_active_user)
+    current_user: Dict[str, Any] = Depends(supabase_user_from_bearer)
 ) -> Dict[str, Any]:
     """
     Create new player statistics for a match.
@@ -694,7 +692,7 @@ async def list_player_stats(
 async def update_player_stats(
     stats_id: str,
     stats_update: PlayerStatsUpdate,
-    current_user: Dict[str, Any] = Depends(get_current_active_user)
+    _: None = Depends(require_admin_api_token)
 ):
     """
     Update player statistics
@@ -739,7 +737,7 @@ async def update_player_stats(
 @router.delete("/{stats_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_player_stats(
     stats_id: str,
-    current_user: Dict[str, Any] = Depends(get_current_active_user)
+    _: None = Depends(require_admin_api_token)
 ):
     """
     Delete player statistics

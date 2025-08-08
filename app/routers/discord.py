@@ -2,8 +2,8 @@
 Discord router for bot integration and Discord ID lookups using Supabase
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status, Header, Request
-from typing import Optional, List, Dict, Any
+from fastapi import APIRouter, Depends, HTTPException, status, Header
+from typing import Optional
 from pydantic import BaseModel, Field, HttpUrl
 from datetime import datetime, timezone
 import uuid
@@ -11,8 +11,7 @@ import logging
 
 from app.core.config import settings
 from app.core.supabase import supabase
-from app.schemas.player import PlayerProfile, PlayerTier
-from app.schemas.user import UserCreate, UserInDB
+# (schemas imported elsewhere if needed; avoid unused imports here)
 
 # Configure logging
 logger = logging.getLogger(__name__)

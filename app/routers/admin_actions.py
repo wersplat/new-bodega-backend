@@ -11,6 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, Path
 from pydantic import BaseModel, Field, ConfigDict
 
 from app.core.supabase import supabase
+from app.core.rate_limiter import limiter
 from app.core.auth_supabase import require_admin_api_token
 
 
@@ -63,6 +64,7 @@ class ReviewMatchSubmissionRequest(CamelModel):
 
 
 @router.post("/rosters")
+@limiter.limit("60/minute")
 async def add_player_to_roster(
     body: RosterAddRequest,
     _: None = Depends(require_admin_api_token),
@@ -84,6 +86,7 @@ async def add_player_to_roster(
 
 
 @router.delete("/rosters/{roster_id}")
+@limiter.limit("60/minute")
 async def remove_player_from_roster(
     roster_id: str = Path(..., description="Roster entry ID"),
     _: None = Depends(require_admin_api_token),
@@ -93,6 +96,7 @@ async def remove_player_from_roster(
 
 
 @router.post("/ranking-points")
+@limiter.limit("60/minute")
 async def award_ranking_points(
     body: RankingPointsRequest,
     _: None = Depends(require_admin_api_token),
@@ -113,6 +117,7 @@ async def award_ranking_points(
 
 
 @router.post("/player-rp-transactions")
+@limiter.limit("60/minute")
 async def create_player_rp_transaction(
     body: PlayerRpTransactionRequest,
     _: None = Depends(require_admin_api_token),
@@ -150,6 +155,7 @@ async def create_player_rp_transaction(
 
 
 @router.post("/rp-transactions")
+@limiter.limit("60/minute")
 async def create_rp_transaction(
     body: Dict[str, Any],
     _: None = Depends(require_admin_api_token),
@@ -165,6 +171,7 @@ async def create_rp_transaction(
 
 
 @router.post("/match-points")
+@limiter.limit("60/minute")
 async def award_match_points(
     body: MatchPointsRequest,
     _: None = Depends(require_admin_api_token),
@@ -186,6 +193,7 @@ async def award_match_points(
 
 
 @router.post("/match-mvp")
+@limiter.limit("60/minute")
 async def set_match_mvp(
     body: MatchMvpRequest,
     _: None = Depends(require_admin_api_token),
@@ -204,6 +212,7 @@ async def set_match_mvp(
 
 
 @router.post("/submissions/{submission_id}/review")
+@limiter.limit("60/minute")
 async def review_match_submission(
     submission_id: str,
     body: ReviewMatchSubmissionRequest,

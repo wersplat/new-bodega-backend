@@ -9,6 +9,7 @@ from app.core.auth_supabase import supabase_user_from_bearer, require_admin_api_
 from app.core.supabase import supabase
 from app.services.payments import PaymentService
 from app.schemas.payments import CreatePaymentSessionRequest
+from app.core.rate_limiter import limiter
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -55,6 +56,7 @@ async def create_payment_session(
         )
 
 @router.post("/webhooks/stripe")
+@limiter.limit("10/minute")
 async def stripe_webhook(
     request: Request,
     stripe_signature: str = Header(None)

@@ -7,6 +7,42 @@ Add these to your `.env` (or Railway/Github envs):
 - `DISABLE_RATE_LIMITING`: Set to `true` to disable rate limiting (not recommended in production). Default: `false`.
 
 Other existing vars still apply: `SUPABASE_URL`, `SUPABASE_KEY`/`SUPABASE_ANON_KEY`, `STRIPE_SECRET_KEY`, etc.
+
+## Admin actions API (used by GraphQL server)
+
+All endpoints require either `X-Admin-Api-Token: <ADMIN_API_TOKEN>` header or `Authorization: Bearer <ADMIN_API_TOKEN>`.
+
+Base path: `/v1`
+
+- POST `/rosters`
+  - Body: `{ teamId: string, playerId: string, isCaptain?: boolean, isPlayerCoach?: boolean }`
+  - Effect: Insert into `team_rosters` with metadata.
+
+- DELETE `/rosters/{rosterId}`
+  - Effect: Remove roster entry.
+
+- POST `/ranking-points`
+  - Body: `{ teamId: string, eventId?: string, points: number, source?: string }`
+  - Effect: Insert into `ranking_points`.
+
+- POST `/player-rp-transactions`
+  - Body: `{ playerId: string, delta: number, reason?: string }`
+  - Effect: Update player `current_rp`/`peak_rp`; insert into `rp_history`.
+
+- POST `/rp-transactions`
+  - Body: generic; routes to player transaction if `{ playerId, delta }` present.
+
+- POST `/match-points`
+  - Body: `{ matchId: string, teamId: string, points: number, source?: string }`
+  - Effect: Records points in `ranking_points` with `source=match:<matchId>`.
+
+- POST `/submissions/{submissionId}/review`
+  - Body: `{ decision: 'approve'|'reject'|'flag', notes?: string }`
+  - Effect: Update `match_submissions` review fields.
+
+Rate limits
+- Stripe webhook: `10/minute`
+- Admin actions: `60/minute` per endpoint
 # NBA 2K Global Rankings Backend
 
 A comprehensive FastAPI backend for managing NBA 2K Global Rankings, tournaments, and player profiles, powered by Supabase.
