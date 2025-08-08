@@ -7,6 +7,7 @@ from fastapi import HTTPException
 from pydantic import BaseModel
 from supabase import create_client, Client as SupabaseClient
 from app.core.config import settings
+import os
 
 # Type variables for generic operations
 T = TypeVar('T', bound=BaseModel)
@@ -36,9 +37,21 @@ class SupabaseService:
         """
         if admin:
             if cls._admin_client is None:
-                if not settings.SUPABASE_URL or not settings.SUPABASE_KEY:
+                # Prefer explicit service role key; fall back to SUPABASE_KEY
+                service_role_key = (
+                    settings.SUPABASE_KEY
+                    or os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
+                    or os.getenv("SERVICE_ROLE_KEY", "")
+                )
+                if not settings.SUPABASE_URL or not service_role_key:
                     raise ValueError("Supabase URL and service role key must be set in environment variables")
-                cls._admin_client = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
+                # Safety: avoid accidentally using anon key for admin client
+                if service_role_key.startswith("sb-publishable-"):
+                    # Try to recover by reading common env var names
+                    alt = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SERVICE_ROLE_KEY")
+                    if alt and alt.startswith("sb-service-"):
+                        service_role_key = alt
+                cls._admin_client = create_client(settings.SUPABASE_URL, service_role_key)
             return cls._admin_client
         else:
             if cls._client is None:
