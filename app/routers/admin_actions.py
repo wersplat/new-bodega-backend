@@ -163,6 +163,7 @@ def _is_pending_status(value: Optional[str]) -> bool:
 async def list_match_submissions(
     request: Request,
     status: Optional[str] = Query(default=None),
+    debug: Optional[int] = Query(default=None),
     _: None = Depends(require_admin_api_token),
 ):
     """List match submissions, optionally filtered by review status.
@@ -173,6 +174,7 @@ async def list_match_submissions(
         client = supabase.get_client()
         res = client.table("match_submissions").select("*").order("created_at", desc=True).execute()
         rows = getattr(res, "data", []) or []
+        raw_count = len(rows)
 
         if status:
             if str(status).strip().lower() == "pending":
@@ -194,7 +196,15 @@ async def list_match_submissions(
             except Exception as map_err:
                 logger.error(f"map submission row error: {map_err}; row id={row.get('id')}")
                 continue
-        return {"items": items}
+        resp = {"items": items}
+        if debug:
+            # attach minimal debug metadata without leaking sensitive info
+            resp["debug"] = {
+                "rawCount": raw_count,
+                "filteredCount": len(items),
+                "firstStatuses": [r.get("review_status") for r in rows[:5]],
+            }
+        return resp
     except Exception as e:
         logger.error(f"list_match_submissions error: {e}")
         # Never 500 to the admin UI for list; return empty
@@ -205,6 +215,7 @@ async def list_match_submissions(
 @limiter.limit("60/minute")
 async def list_match_submissions_pending(
     request: Request,
+    debug: Optional[int] = Query(default=None),
     _: None = Depends(require_admin_api_token),
 ):
     """Deterministic endpoint for pending submissions (includes NULL)."""
@@ -212,6 +223,7 @@ async def list_match_submissions_pending(
         client = supabase.get_client()
         res = client.table("match_submissions").select("*").order("created_at", desc=True).execute()
         rows = getattr(res, "data", []) or []
+        raw_count = len(rows)
         rows = [r for r in rows if _is_pending_status(r.get("review_status"))]
         items = []
         for row in rows:
@@ -226,7 +238,14 @@ async def list_match_submissions_pending(
             except Exception as map_err:
                 logger.error(f"map submission row error: {map_err}; row id={row.get('id')}")
                 continue
-        return {"items": items}
+        resp = {"items": items}
+        if debug:
+            resp["debug"] = {
+                "rawCount": raw_count,
+                "filteredCount": len(items),
+                "firstStatuses": [r.get("review_status") for r in rows[:5]],
+            }
+        return resp
     except Exception as e:
         logger.error(f"list_match_submissions_pending error: {e}")
         return {"items": []}
