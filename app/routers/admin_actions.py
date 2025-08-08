@@ -126,6 +126,30 @@ def _map_submission_row_to_dto(row: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+def _get_match_scores(client, match_id: Optional[str]) -> Dict[str, int]:
+    """Fetch scores from matches table when available."""
+    default = {"home": 0, "away": 0}
+    if not match_id:
+        return default
+    try:
+        res = client.table("matches").select("score_a,score_b").eq("id", match_id).single().execute()
+        data = getattr(res, "data", None) or {}
+        home = data.get("score_a") or 0
+        away = data.get("score_b") or 0
+        try:
+            home = int(home)
+        except Exception:
+            home = 0
+        try:
+            away = int(away)
+        except Exception:
+            away = 0
+        return {"home": home, "away": away}
+    except Exception as e:
+        logger.error(f"_get_match_scores error for {match_id}: {e}")
+        return default
+
+
 @router.get("/match-submissions")
 @limiter.limit("60/minute")
 async def list_match_submissions(
@@ -151,7 +175,14 @@ async def list_match_submissions(
         items = []
         for row in rows:
             try:
-                items.append(_map_submission_row_to_dto(row))
+                dto = _map_submission_row_to_dto(row)
+                # Enrich from matches when match_id present
+                mid = row.get("match_id")
+                if mid:
+                    scores = _get_match_scores(client, mid)
+                    dto["matchData"]["homeScore"] = scores["home"]
+                    dto["matchData"]["awayScore"] = scores["away"]
+                items.append(dto)
             except Exception as map_err:
                 logger.error(f"map submission row error: {map_err}; row id={row.get('id')}")
                 continue
@@ -177,7 +208,13 @@ async def list_match_submissions_pending(
         items = []
         for row in rows:
             try:
-                items.append(_map_submission_row_to_dto(row))
+                dto = _map_submission_row_to_dto(row)
+                mid = row.get("match_id")
+                if mid:
+                    scores = _get_match_scores(client, mid)
+                    dto["matchData"]["homeScore"] = scores["home"]
+                    dto["matchData"]["awayScore"] = scores["away"]
+                items.append(dto)
             except Exception as map_err:
                 logger.error(f"map submission row error: {map_err}; row id={row.get('id')}")
                 continue
@@ -202,7 +239,13 @@ async def get_match_submission(
     row = getattr(res, "data", None)
     if not row:
         raise HTTPException(status_code=404, detail="Submission not found")
-    return {"submission": _map_submission_row_to_dto(row)}
+    dto = _map_submission_row_to_dto(row)
+    mid = row.get("match_id")
+    if mid:
+        scores = _get_match_scores(client, mid)
+        dto["matchData"]["homeScore"] = scores["home"]
+        dto["matchData"]["awayScore"] = scores["away"]
+    return {"submission": dto}
 
 
 @router.post("/rosters")
