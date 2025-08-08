@@ -171,7 +171,7 @@ async def list_match_submissions(
     Treat NULL review_status as "pending" for convenience.
     """
     try:
-        client = supabase.get_client()
+        client = supabase.get_client(admin=True)
         res = client.table("match_submissions").select("*").order("created_at", desc=True).execute()
         rows = getattr(res, "data", []) or []
         raw_count = len(rows)
@@ -220,7 +220,7 @@ async def list_match_submissions_pending(
 ):
     """Deterministic endpoint for pending submissions (includes NULL)."""
     try:
-        client = supabase.get_client()
+        client = supabase.get_client(admin=True)
         res = client.table("match_submissions").select("*").order("created_at", desc=True).execute()
         rows = getattr(res, "data", []) or []
         raw_count = len(rows)
@@ -259,7 +259,7 @@ async def get_match_submission(
     _: None = Depends(require_admin_api_token),
 ):
     """Fetch a single match submission by id."""
-    client = supabase.get_client()
+    client = supabase.get_client(admin=True)
     res = (
         client.table("match_submissions").select("*").eq("id", submission_id).single().execute()
     )
