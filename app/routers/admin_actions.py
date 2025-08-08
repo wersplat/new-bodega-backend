@@ -477,7 +477,7 @@ async def review_match_submission(
 
     client = supabase.get_client()
     update = {
-        "status": status_value,
+        "review_status": status_value,
         "review_notes": body.notes or None,
         "reviewed_at": datetime.utcnow().isoformat(),
         "reviewed_by": "admin_api",
