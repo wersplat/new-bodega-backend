@@ -100,14 +100,20 @@ async def list_match_submissions(
     status: Optional[str] = None,
     _: None = Depends(require_admin_api_token),
 ):
-    """List match submissions, optionally filtered by review status."""
+    """List match submissions, optionally filtered by review status.
+
+    Treat NULL review_status as "pending" for convenience.
+    """
     client = supabase.get_client()
-    query = client.table("match_submissions").select("*")
-    if status:
-        query = query.eq("review_status", status)
-    # Newest first
-    res = query.order("created_at", desc=True).execute()
+    res = client.table("match_submissions").select("*").order("created_at", desc=True).execute()
     rows = getattr(res, "data", []) or []
+
+    if status:
+        if status == "pending":
+            rows = [r for r in rows if (r.get("review_status") in (None, "", "pending"))]
+        else:
+            rows = [r for r in rows if r.get("review_status") == status]
+
     items = [_map_submission_row_to_dto(row) for row in rows]
     return {"items": items}
 
