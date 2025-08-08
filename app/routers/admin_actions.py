@@ -366,7 +366,7 @@ async def create_player_rp_transaction(
     body: PlayerRpTransactionRequest,
     _: None = Depends(require_admin_api_token),
 ):
-    client = supabase.get_client()
+    client = supabase.get_client(admin=True)
     # Fetch current player RP
     player_res = (
         client.table("players").select("id,current_rp,peak_rp").eq("id", body.player_id).single().execute()
@@ -482,9 +482,32 @@ async def review_match_submission(
         "reviewed_at": datetime.utcnow().isoformat(),
         "reviewed_by": "admin_api",
     }
-    res = client.table("match_submissions").update(update).eq("id", submission_id).execute()
-    if not getattr(res, "data", None):
+    # Perform update; PostgREST may not return updated rows by default
+    try:
+        client.table("match_submissions").update(update).eq("id", submission_id).execute()
+    except Exception as e:
+        logger.error(f"review_match_submission update error for {submission_id}: {e}")
         raise HTTPException(status_code=500, detail="Failed to review submission")
-    return res.data[0]
+
+    # Fetch updated row to return a stable payload
+    try:
+        get_res = (
+            client.table("match_submissions").select("*").eq("id", submission_id).single().execute()
+        )
+        row = getattr(get_res, "data", None)
+        if row:
+            try:
+                dto = _map_submission_row_to_dto(row)
+            except Exception as map_err:
+                logger.error(
+                    f"review_match_submission map error after update: {map_err}; row id={row.get('id')}"
+                )
+                dto = {"id": row.get("id"), "status": row.get("review_status") or "pending"}
+            return dto
+    except Exception as fetch_err:
+        logger.error(f"review_match_submission fetch error for {submission_id}: {fetch_err}")
+
+    # As a fallback, just acknowledge success
+    return {"success": True, "id": submission_id, "status": status_value}
 
 
