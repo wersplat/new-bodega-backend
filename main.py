@@ -36,6 +36,7 @@ from app.routers import (
     matches,  # Consolidated matches router
     player_stats
 )
+from app.routers import awards as awards_router
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -129,6 +130,7 @@ app.include_router(admin.router, tags=["Admin"])
 app.include_router(admin_actions.router, tags=["Admin"])
 app.include_router(discord.router, tags=["Discord Integration"])
 app.include_router(payments.router, tags=["Payment Integration"])
+app.include_router(awards_router.router, tags=["Awards"]) 
 
 # Add backward compatibility redirects
 
