@@ -2,7 +2,7 @@
 Badge model for player achievements and titles
 """
 
-from sqlalchemy import Column, Integer, String, DateTime, Text, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, Text, ForeignKey, Boolean, BigInteger
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.core.database import Base
@@ -27,17 +27,20 @@ class Badge(Base):
 class PlayerBadge(Base):
     __tablename__ = "player_badges"
     
-    id = Column(Integer, primary_key=True, index=True)
-    player_id = Column(Integer, ForeignKey("players.id"), nullable=False)
-    badge_id = Column(Integer, ForeignKey("badges.id"), nullable=False)
-    awarded_by = Column(Integer, ForeignKey("users.id"), nullable=True)
-    awarded_at = Column(DateTime(timezone=True), server_default=func.now())
-    is_equipped = Column(Boolean, default=False)
+    id = Column(String, primary_key=True, index=True)
+    player_wallet = Column(String, nullable=False)
+    badge_type = Column(String, nullable=False)
+    token_id = Column(BigInteger)
+    tx_hash = Column(String)
+    ipfs_uri = Column(String)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    match_id = Column(BigInteger, nullable=False)
+    league_id = Column(String, ForeignKey("leagues_info.id"))
+    tournament_id = Column(String, ForeignKey("tournaments.id"))
     
     # Relationships
-    player = relationship("Player", back_populates="badges")
-    badge = relationship("Badge", back_populates="player_badges")
-    awarder = relationship("User")
+    league = relationship("LeagueInfo", back_populates="player_badges")
+    tournament = relationship("Tournament", back_populates="player_badges")
     
     def __repr__(self):
-        return f"<PlayerBadge(player_id={self.player_id}, badge_id={self.badge_id})>" 
+        return f"<PlayerBadge(id={self.id}, player_wallet='{self.player_wallet}', badge_type='{self.badge_type}')>" 
