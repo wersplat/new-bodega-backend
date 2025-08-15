@@ -6,7 +6,6 @@ from .league import Tournament, PastChampion, League, LeagueSeason, LeagueType, 
 from .badge import PlayerBadge 
 from .awardRace import AwardsRace
 from .draft_pool import DraftPool
-from .event_results import EventResults
 from .tournament_result import TournamentResult
 from schemas.match import Match
 from .player_rp_transactions import PlayerRPTransaction
@@ -14,7 +13,6 @@ from .ranking_points import RankingPoints
 from .teamsPotTracker import TeamsPotTracker
 from .upcomingMatch import UpcomingMatch
 from .matchSubmission import MatchSubmission
-from .draft_pool import DraftPool
 from .teamRoster import TeamRoster
 
 __all__ = [
@@ -37,5 +35,5 @@ __all__ = [
     'PastChampion', 'League', 'LeagueSeason', 'LeagueType', 'TournamentStatus', 'TournamentTier', 'Console', 'GameYear',
     
     # Other models
-    'PlayerBadge', 'AwardsRace', 'DraftPool', 'EventResults'
+    'PlayerBadge', 'AwardsRace', 'DraftPool', 'TournamentResult'
 ]
