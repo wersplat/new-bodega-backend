@@ -25,7 +25,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 from app.routers import (
     players,  # Consolidated players router
-    events,  # Consolidated events router
+    tournaments,  # Tournaments router
+    leagues,  # Leagues router
     leaderboard_supabase as leaderboard, 
     auth, 
     admin, 
@@ -55,7 +56,7 @@ app = FastAPI(
             "description": "Player profiles and statistics"
         },
         {
-            "name": "Events",
+            "name": "Tournaments",
             "description": "Tournament and league events"
         },
         {
@@ -93,6 +94,10 @@ app = FastAPI(
         {
             "name": "Root",
             "description": "API root endpoints"
+        },
+        {
+            "name": "Leagues",
+            "description": "League management and information"
         }
     ]
 )
@@ -121,7 +126,8 @@ app.add_middleware(
 # Authentication endpoints remain at root
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 app.include_router(players.router, tags=["Players"])
-app.include_router(events.router, tags=["Events"])
+app.include_router(tournaments.router, tags=["Tournaments"])
+app.include_router(leagues.router, tags=["Leagues"])
 app.include_router(leaderboard.router, tags=["Leaderboards"])
 app.include_router(teams.router, tags=["Teams"])
 app.include_router(matches.router, tags=["Matches"])
@@ -145,14 +151,15 @@ async def legacy_api_redirect(path: str):
     path_mapping = {
         "auth": "/auth",
         "players": "/v1/players",
-        "events": "/v1/events",
+        "tournaments": "/v1/tournaments",
         "leaderboard": "/v1/leaderboard",  # Updated to match actual route
         "teams": "/v1/teams",
         "matches": "/v1/matches",
         "player-stats": "/v1/player-stats",
         "admin": "/v1/admin",
         "discord": "/v1/discord",  # Updated to match actual route
-        "payments": "/v1/payments"  # Updated to match actual route
+        "payments": "/v1/payments",  # Updated to match actual route
+        "leagues": "/v1/leagues"
     }
     
     # Extract the first part of the path (the resource)
