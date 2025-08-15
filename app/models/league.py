@@ -27,7 +27,8 @@ class TournamentStatus(enum.Enum):
     REVIEWED = "reviewed"
     APPROVED = "approved"
 
-class EventTier(enum.Enum):
+class TournamentTier(enum.Enum):
+    """Enumeration of tournament tiers."""
     T1 = "T1"
     T2 = "T2"
     T3 = "T3"
@@ -39,17 +40,17 @@ class Console(enum.Enum):
     XBOX = "Xbox"
 
 class GameYear(enum.Enum):
-    2K16 = "2K16"
-    2K17 = "2K17"
-    2K18 = "2K18"
-    2K19 = "2K19"
-    2K20 = "2K20"
-    2K21 = "2K21"
-    2K22 = "2K22"
-    2K23 = "2K23"
-    2K24 = "2K24"
-    2K25 = "2K25"
-    2K26 = "2K26"
+    _2K16 = "2K16"
+    _2K17 = "2K17"
+    _2K18 = "2K18"
+    _2K19 = "2K19"
+    _2K20 = "2K20"
+    _2K21 = "2K21"
+    _2K22 = "2K22"
+    _2K23 = "2K23"
+    _2K24 = "2K24"
+    _2K25 = "2K25"
+    _2K26 = "2K26"
 
 class LeagueEnum(str, Enum):
     """Enumeration of possible leagues."""
@@ -87,7 +88,7 @@ class League(Base):
     tournaments = relationship("Tournament", back_populates="organizer")
     awards_race = relationship("AwardsRace", back_populates="league")
     draft_pool = relationship("DraftPool", back_populates="league")
-    event_results = relationship("EventResult", back_populates="league")
+    tournament_results = relationship("TournamentResult", back_populates="league")
     matches = relationship("Match", back_populates="league")
     player_rp_transactions = relationship("PlayerRPTransaction", back_populates="league")
     ranking_points = relationship("RankingPoints", back_populates="league")
@@ -144,7 +145,7 @@ class Tournament(Base):
     banner_url = Column(String)
     rules_url = Column(String)
     status = Column(Enum(TournamentStatus, name="status"))
-    tier = Column(Enum(EventTier, name="event_tier"))
+    tier = Column(Enum(TournamentTier, name="tournament_tier"))
     max_rp = Column(Integer)
     description = Column(Text)
     decay_days = Column(Integer)
@@ -159,7 +160,7 @@ class Tournament(Base):
     place_team = relationship("Team", foreign_keys=[place])
     awards_race = relationship("AwardsRace", back_populates="tournament")
     draft_pool = relationship("DraftPool", back_populates="tournament")
-    event_results = relationship("EventResult", back_populates="tournament")
+    tournament_results = relationship("TournamentResult", back_populates="tournament")
     matches = relationship("Match", back_populates="tournament")
     player_rp_transactions = relationship("PlayerRPTransaction", back_populates="tournament")
     ranking_points = relationship("RankingPoints", back_populates="tournament")
@@ -170,6 +171,7 @@ class Tournament(Base):
     match_submissions = relationship("MatchSubmission", back_populates="tournament")
     player_badges = relationship("PlayerBadge", back_populates="tournament")
     past_champions = relationship("PastChampion", back_populates="tournament")
+    tournament_groups = relationship("TournamentGroup", back_populates="tournament")
     
     def __repr__(self):
         return f"<Tournament(id={self.id}, name='{self.name}', status='{self.status}')>"
@@ -181,7 +183,7 @@ class PastChampion(Base):
     season = Column(Integer)
     team_id = Column(String, ForeignKey("teams.id"))
     team_name = Column(String)
-    event_tier = Column(Enum(EventTier, name="event_tier"))
+    tournament_tier = Column(Enum(TournamentTier, name="tournament_tier"))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     champion_logo = Column(String)
     lg_logo = Column(String)

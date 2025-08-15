@@ -5,11 +5,11 @@ ALTER TABLE public.matches ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.match_mvp ENABLE ROW LEVEL SECURITY;
 
 -- 2. Add missing indexes for foreign keys to improve query performance
--- Events table foreign keys
-CREATE INDEX IF NOT EXISTS idx_events_region_id ON public.events (region_id);
+-- Tournaments table foreign keys
+CREATE INDEX IF NOT EXISTS idx_tournaments_region_id ON public.tournaments (region_id);
 
 -- Matches table foreign keys
-CREATE INDEX IF NOT EXISTS idx_matches_event_id ON public.matches (event_id);
+CREATE INDEX IF NOT EXISTS idx_matches_tournament_id ON public.matches (tournament_id);
 CREATE INDEX IF NOT EXISTS idx_matches_team_a_id ON public.matches (team_a_id);
 CREATE INDEX IF NOT EXISTS idx_matches_team_b_id ON public.matches (team_b_id);
 CREATE INDEX IF NOT EXISTS idx_matches_winner_id ON public.matches (winner_id);
@@ -30,7 +30,7 @@ CREATE INDEX IF NOT EXISTS idx_players_current_team_id ON public.players (curren
 -- Team rosters foreign keys
 CREATE INDEX IF NOT EXISTS idx_team_rosters_team_id ON public.team_rosters (team_id);
 CREATE INDEX IF NOT EXISTS idx_team_rosters_player_id ON public.team_rosters (player_id);
-CREATE INDEX IF NOT EXISTS idx_team_rosters_event_id ON public.team_rosters (event_id);
+CREATE INDEX IF NOT EXISTS idx_team_rosters_tournament_id ON public.team_rosters (tournament_id);
 
 -- 3. Add updated_at trigger to tables that need it
 CREATE OR REPLACE FUNCTION public.update_timestamp()
@@ -123,75 +123,82 @@ GROUP BY
 ALTER VIEW public.player_performance_view SET (security_invoker = on);
 
 -- 8. Create a function to calculate team standings
-CREATE OR REPLACE FUNCTION public.calculate_team_standings(event_id_param UUID)
+CREATE OR REPLACE FUNCTION public.calculate_team_standings(tournament_id_param UUID)
 RETURNS TABLE (
     team_id UUID,
     team_name TEXT,
-    matches_played INTEGER,
-    wins INTEGER,
-    losses INTEGER,
-    points_for INTEGER,
-    points_against INTEGER,
-    point_differential INTEGER
+    games_played INT,
+    wins INT,
+    losses INT,
+    points_for INT,
+    points_against INT,
+    point_differential INT,
+    win_percentage FLOAT
 ) AS $$
 BEGIN
     RETURN QUERY
-    WITH team_matches AS (
-        -- Team A matches
+    WITH team_a_stats AS (
         SELECT 
-            m.team_a_id AS team_id,
-            t.name AS team_name,
-            COUNT(*) AS matches_played,
-            COUNT(*) FILTER (WHERE m.winner_id = m.team_a_id) AS wins,
-            COUNT(*) FILTER (WHERE m.winner_id != m.team_a_id AND m.winner_id IS NOT NULL) AS losses,
-            SUM(m.score_a) AS points_for,
-            SUM(m.score_b) AS points_against
+            m.team_a_id as team_id,
+            t.name as team_name,
+            COUNT(*) as games_played,
+            SUM(CASE WHEN m.winner_id = m.team_a_id THEN 1 ELSE 0 END) as wins,
+            SUM(CASE WHEN m.winner_id IS NOT NULL AND m.winner_id != m.team_a_id THEN 1 ELSE 0 END) as losses,
+            SUM(m.team_a_score) as points_for,
+            SUM(m.team_b_score) as points_against,
+            SUM(m.team_a_score - m.team_b_score) as point_differential
         FROM 
             public.matches m
         JOIN 
             public.teams t ON m.team_a_id = t.id
         WHERE 
-            m.event_id = event_id_param
+            m.tournament_id = tournament_id_param
         GROUP BY 
             m.team_a_id, t.name
             
         UNION ALL
         
-        -- Team B matches
         SELECT 
-            m.team_b_id AS team_id,
-            t.name AS team_name,
-            COUNT(*) AS matches_played,
-            COUNT(*) FILTER (WHERE m.winner_id = m.team_b_id) AS wins,
-            COUNT(*) FILTER (WHERE m.winner_id != m.team_b_id AND m.winner_id IS NOT NULL) AS losses,
-            SUM(m.score_b) AS points_for,
-            SUM(m.score_a) AS points_against
+            m.team_b_id as team_id,
+            t.name as team_name,
+            COUNT(*) as games_played,
+            SUM(CASE WHEN m.winner_id = m.team_b_id THEN 1 ELSE 0 END) as wins,
+            SUM(CASE WHEN m.winner_id IS NOT NULL AND m.winner_id != m.team_b_id THEN 1 ELSE 0 END) as losses,
+            SUM(m.team_b_score) as points_for,
+            SUM(m.team_a_score) as points_against,
+            SUM(m.team_b_score - m.team_a_score) as point_differential
         FROM 
             public.matches m
         JOIN 
             public.teams t ON m.team_b_id = t.id
         WHERE 
-            m.event_id = event_id_param
+            m.tournament_id = tournament_id_param
         GROUP BY 
             m.team_b_id, t.name
     )
     SELECT 
-        tm.team_id,
-        tm.team_name,
-        SUM(tm.matches_played)::INTEGER AS matches_played,
-        SUM(tm.wins)::INTEGER AS wins,
-        SUM(tm.losses)::INTEGER AS losses,
-        SUM(tm.points_for)::INTEGER AS points_for,
-        SUM(tm.points_against)::INTEGER AS points_against,
-        (SUM(tm.points_for) - SUM(tm.points_against))::INTEGER AS point_differential
+        team_id,
+        team_name,
+        SUM(games_played) as total_games_played,
+        SUM(wins) as total_wins,
+        SUM(losses) as total_losses,
+        SUM(points_for) as total_points_for,
+        SUM(points_against) as total_points_against,
+        SUM(point_differential) as total_point_differential,
+        CASE 
+            WHEN SUM(games_played) > 0 THEN ROUND(SUM(wins)::numeric / SUM(games_played)::numeric, 3)
+            ELSE 0 
+        END as win_percentage
     FROM 
-        team_matches tm
+        team_a_stats
     GROUP BY 
-        tm.team_id, tm.team_name
+        team_id, team_name
     ORDER BY 
-        wins DESC, point_differential DESC;
+        win_percentage DESC,
+        total_point_differential DESC,
+        total_points_for DESC;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql;
 
 -- 9. Add a notification trigger for new match submissions
 CREATE OR REPLACE FUNCTION public.notify_match_submission()
@@ -261,3 +268,95 @@ BEGIN
     );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 11. Rename event_groups to tournament_groups
+ALTER TABLE event_groups RENAME TO tournament_groups;
+
+-- 12. Rename event_group_members to tournament_group_members
+ALTER TABLE event_group_members RENAME TO tournament_group_members;
+
+-- 13. Rename event_results to tournament_results
+ALTER TABLE event_results RENAME TO tournament_results;
+
+-- 14. Update foreign key constraints
+ALTER TABLE tournament_group_members 
+  RENAME CONSTRAINT event_group_members_group_id_fkey TO tournament_group_members_group_id_fkey;
+
+ALTER TABLE tournament_group_members
+  RENAME CONSTRAINT event_group_members_team_id_fkey TO tournament_group_members_team_id_fkey;
+
+ALTER TABLE tournament_groups
+  RENAME CONSTRAINT event_groups_league_season_id_fkey TO tournament_groups_league_season_id_fkey;
+
+ALTER TABLE tournament_groups
+  RENAME CONSTRAINT event_groups_tournament_id_fkey TO tournament_groups_tournament_id_fkey;
+
+ALTER TABLE tournament_results
+  RENAME CONSTRAINT event_results_league_id_fkey TO tournament_results_league_id_fkey;
+
+ALTER TABLE tournament_results
+  RENAME CONSTRAINT event_results_team_id_fkey TO tournament_results_team_id_fkey;
+
+ALTER TABLE tournament_results
+  RENAME CONSTRAINT event_results_tournament_id_fkey TO tournament_results_tournament_id_fkey;
+
+-- 15. Update function parameters to use tournament_id
+CREATE OR REPLACE FUNCTION public.add_tournament_placement_bonus_rp_to_players(
+  p_bonus_amount numeric,
+  p_description text DEFAULT NULL::text,
+  p_tournament_id uuid,
+  p_team_id uuid
+)
+RETURNS void
+LANGUAGE plpgsql
+AS $function$
+-- Implementation here
+$function$;
+
+CREATE OR REPLACE FUNCTION public.add_mvp_bonus_rp(
+  p_description text DEFAULT NULL::text,
+  p_tournament_id uuid,
+  p_mvp_bonus numeric DEFAULT 0
+)
+RETURNS void
+LANGUAGE plpgsql
+AS $function$
+-- Implementation here
+$function$;
+
+-- 16. Update other functions to use tournament_id
+CREATE OR REPLACE FUNCTION public.calculate_defensive_mvp_score(
+  tournament_uuid uuid,
+  player_uuid uuid
+)
+RETURNS numeric
+LANGUAGE plpgsql
+AS $function$
+-- Implementation here
+$function$;
+
+-- Repeat for other functions like calculate_offensive_mvp_score, calculate_rookie_score, etc.
+
+-- 17. Update view and function dependencies
+ALTER VIEW public.group_matches 
+  ALTER COLUMN group_id SET DATA TYPE uuid USING group_id::uuid,
+  ALTER COLUMN group_id SET NOT NULL;
+
+ALTER VIEW public.group_standings 
+  ALTER COLUMN group_id SET DATA TYPE uuid USING group_id::uuid,
+  ALTER COLUMN group_id SET NOT NULL;
+
+-- 18. Drop old functions that are no longer needed
+DROP FUNCTION IF EXISTS public.add_event_placement_bonus_rp_to_players(
+  numeric, text, uuid, uuid
+);
+
+DROP FUNCTION IF EXISTS public.add_mvp_bonus_rp(text, uuid, numeric);
+DROP FUNCTION IF EXISTS public.calculate_defensive_mvp_score(uuid, uuid);
+-- Drop other old functions
+
+-- 19. Update any remaining references in triggers or other database objects
+-- (Add specific updates based on your schema)
+
+-- 20. Update any materialized views or other database objects
+-- (Add specific updates based on your schema)

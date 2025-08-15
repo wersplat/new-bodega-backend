@@ -18,7 +18,7 @@ The following table maps legacy endpoints to their new counterparts:
 |----------------|--------------|-------|
 | `/api/auth/*` | `/auth/*` | Authentication endpoints moved to root level |
 | `/api/players/*` | `/v1/players/*` | Added versioning |
-| `/api/events/*` | `/v1/events/*` | Added versioning |
+| `/api/events/*` | `/v1/tournaments/*` | Renamed to use tournament terminology |
 | `/api/leaderboard/*` | `/v1/leaderboards/*` | Renamed to plural form |
 | `/api/payments/*` | `/v1/integrations/payments/*` | Moved under integrations |
 | `/api/admin/*` | `/v1/admin/*` | Added versioning |
@@ -26,6 +26,18 @@ The following table maps legacy endpoints to their new counterparts:
 | `/api/teams/*` | `/v1/teams/*` | Added versioning |
 | `/api/matches/*` | `/v1/matches/*` | Added versioning |
 | `/api/player-stats/*` | `/v1/player-stats/*` | Added versioning |
+
+## Terminology Changes
+
+The following terminology changes have been made to improve consistency and clarity:
+
+| Old Term | New Term | Notes |
+|----------|----------|-------|
+| Event | Tournament | All references to "event" have been updated to "tournament" |
+| Event ID | Tournament ID | Parameter and field names updated |
+| Event Group | Tournament Group | Groupings within a tournament |
+| Event Tier | Tournament Tier | Tier levels for tournaments |
+| Event Result | Tournament Result | Tournament outcome data |
 
 ## Automatic Redirects
 
@@ -51,6 +63,32 @@ const response = await fetch('/v1/players/123');
 const player = await response.json();
 ```
 
+### JavaScript/TypeScript (Tournament API)
+
+#### Before
+
+```javascript
+// Legacy event API call
+const response = await fetch('/v1/events/123');
+const event = await response.json();
+
+// Legacy event group API call
+const groupResponse = await fetch('/v1/events/123/groups/456');
+const group = await groupResponse.json();
+```
+
+#### After
+
+```javascript
+// New tournament API call
+const response = await fetch('/v1/tournaments/123');
+const tournament = await response.json();
+
+// New tournament group API call
+const groupResponse = await fetch('/v1/tournaments/123/groups/456');
+const group = await groupResponse.json();
+```
+
 ### Python
 
 #### Before
@@ -69,6 +107,26 @@ player = response.json()
 import requests
 response = requests.get('https://api.example.com/v1/players/123')
 player = response.json()
+```
+
+### Python (Tournament API)
+
+#### Before
+
+```python
+# Legacy event API call
+import requests
+response = requests.get('https://api.example.com/v1/events/123')
+event = response.json()
+```
+
+#### After
+
+```python
+# New tournament API call
+import requests
+response = requests.get('https://api.example.com/v1/tournaments/123')
+tournament = response.json()
 ```
 
 ## Benefits of the New API Structure

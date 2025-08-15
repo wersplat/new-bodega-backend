@@ -20,14 +20,14 @@ try:
     response = supabase.table("tournaments").select("tier").limit(10).execute()
     
     if hasattr(response, 'data') and response.data:
-        print("✅ Found the following tier values in existing tournaments:")
+        print("✅ Found the following tournament tier values in existing tournaments:")
         tiers = set()
         for t in response.data:
-            if 'tier' in t:
+            if 'tier' in t and t['tier']:
                 tiers.add(t['tier'])
         
         if tiers:
-            print("Valid tier values:")
+            print("Valid tournament tier values:")
             for tier in sorted(tiers):
                 print(f"- {tier}")
         else:

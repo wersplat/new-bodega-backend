@@ -59,20 +59,26 @@ Team management and rosters.
 | `/v1/teams/{team_id}/players/{player_id}` | POST | Add a player to a team |
 | `/v1/teams/{team_id}/players/{player_id}` | DELETE | Remove a player from a team |
 
-### Events
+### Tournaments
 
-Tournament and league events.
+Tournament management and participation.
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/v1/events` | GET | List all events with optional filtering |
-| `/v1/events` | POST | Create a new event |
-| `/v1/events/{event_id}` | GET | Get a specific event's details |
-| `/v1/events/{event_id}` | PUT | Update an event's details |
-| `/v1/events/{event_id}` | DELETE | Delete an event |
-| `/v1/events/{event_id}/register` | POST | Register for an event |
-| `/v1/events/{event_id}/unregister` | POST | Unregister from an event |
-| `/v1/events/{event_id}/participants` | GET | List all participants in an event |
+| `/v1/tournaments` | GET | List all tournaments with optional filtering |
+| `/v1/tournaments` | POST | Create a new tournament |
+| `/v1/tournaments/{tournament_id}` | GET | Get a specific tournament's details |
+| `/v1/tournaments/{tournament_id}` | PUT | Update a tournament's details |
+| `/v1/tournaments/{tournament_id}` | DELETE | Delete a tournament |
+| `/v1/tournaments/{tournament_id}/register` | POST | Register for a tournament |
+| `/v1/tournaments/{tournament_id}/unregister` | POST | Unregister from a tournament |
+| `/v1/tournaments/{tournament_id}/participants` | GET | List all participants in a tournament |
+| `/v1/tournaments/{tournament_id}/groups` | GET | Get all groups in a tournament |
+| `/v1/tournaments/{tournament_id}/groups` | POST | Create a new group in a tournament |
+| `/v1/tournaments/groups/{group_id}` | GET | Get a specific group's details |
+| `/v1/tournaments/groups/{group_id}/teams` | GET | Get all teams in a tournament group |
+| `/v1/tournaments/groups/{group_id}/teams` | POST | Add a team to a tournament group |
+| `/v1/tournaments/groups/{group_id}/teams/{team_id}` | DELETE | Remove a team from a tournament group |
 
 ### Matches
 
@@ -95,7 +101,7 @@ Player and team rankings.
 |----------|--------|-------------|
 | `/v1/leaderboards/global` | GET | Get the global leaderboard |
 | `/v1/leaderboards/region/{region}` | GET | Get a regional leaderboard |
-| `/v1/leaderboards/event/{event_id}` | GET | Get an event-specific leaderboard |
+| `/v1/leaderboards/tournament/{tournament_id}` | GET | Get a tournament-specific leaderboard |
 | `/v1/leaderboards/tier/{tier}` | GET | Get a tier-specific leaderboard |
 
 ### Player Stats
@@ -206,5 +212,8 @@ For backward compatibility, all legacy endpoints under `/api/*` are automaticall
 ## API Changes and Deprecation Policy
 
 - API changes will be communicated through the API changelog
+- The following endpoints have been deprecated and will be removed in a future version:
+  - `/v1/events/*` - Use `/v1/tournaments/*` instead
+  - `/v1/events/{event_id}/groups/*` - Use `/v1/tournaments/{tournament_id}/groups/*` instead
 - Deprecated endpoints will be marked with a `Deprecated` header
 - Deprecated endpoints will be supported for at least 6 months before removal
