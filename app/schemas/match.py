@@ -16,21 +16,37 @@ class MatchStatus(str, Enum):
     POSTPONED = "postponed"
 
 class MatchStage(str, Enum):
-    GROUP = "group"
-    ROUND_OF_32 = "round_of_32"
-    ROUND_OF_16 = "round_of_16"
-    QUARTERFINALS = "quarterfinals"
+    REGULAR_SEASON = "regular_season"
+    GROUP_PLAY = "group_play"
+    ROUND_1 = "round_1"
+    ROUND_2 = "round_2"
+    ROUND_3 = "round_3"
+    ROUND_4 = "round_4"
     SEMIFINALS = "semifinals"
     FINALS = "finals"
-    THIRD_PLACE = "third_place"
-    EXHIBITION = "exhibition"
-
+    GRAND_FINALS = "grand_finals"
+    L1 = "l1"
+    L2 = "l2"
+    L3 = "l3"
+    L4 = "l4"
+    L5 = "l5"
+    W1 = "w1"
+    W2 = "w2"
+    W3 = "w3"
+    W4 = "w4"
+    LF = "lf"
+    WF = "wf"
+    GRAND_FINALS = "grand_finals"
+    
 class MatchBase(BaseModel):
     """Base match schema with required fields"""
+    id: UUID
     tournament_id: UUID
-    league_id: UUID
+    league_id: Optional[UUID] = None
+    league_season_id: Optional[UUID] = None
     team_a_id: UUID
     team_b_id: UUID
+    winner_id: Optional[UUID] = None
     stage: MatchStage = MatchStage.GROUP
     game_number: int = Field(1, ge=1)
     scheduled_at: Optional[datetime] = None
@@ -80,7 +96,22 @@ class MatchInDB(MatchBase):
 
 class Match(MatchInDB):
     """Public-facing match schema"""
-    pass
+    id: UUID
+    status: MatchStatus = MatchStatus.SCHEDULED
+    score_a: Optional[int] = Field(None, ge=0)
+    score_b: Optional[int] = Field(None, ge=0)
+    winner_id: Optional[UUID] = None
+    played_at: Optional[datetime] = None
+    boxscore_url: Optional[HttpUrl] = None
+    team_a_name: str
+    team_b_name: str
+    winner_name: Optional[str] = None
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    
+    @field_serializer('boxscore_url')
+    def serialize_boxscore_url(self, url: Optional[HttpUrl], _info) -> Optional[str]:
+        return str(url) if url else None
 
 class MatchWithTeams(Match):
     """Match schema with team information"""

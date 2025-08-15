@@ -171,7 +171,7 @@ class Tournament(Base):
     match_submissions = relationship("MatchSubmission", back_populates="tournament")
     player_badges = relationship("PlayerBadge", back_populates="tournament")
     past_champions = relationship("PastChampion", back_populates="tournament")
-    tournament_groups = relationship("TournamentGroup", back_populates="tournament")
+    event_groups = relationship("EventGroup", back_populates="tournament")
     
     def __repr__(self):
         return f"<Tournament(id={self.id}, name='{self.name}', status='{self.status}')>"

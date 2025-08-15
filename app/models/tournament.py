@@ -17,17 +17,17 @@ from app.core.database import Base
 
 class Console(str, Enum):
     """Enumeration of possible console platforms."""
-    PS5 = "PS5"
-    XBOX_SERIES_X = "Xbox Series X"
-    PC = "PC"
+    PLAYSTATION = "PlayStation"
+    XBOX = "Xbox"
+    CROSS_PLAY  = "Cross Play"
 
 class GameYear(str, Enum):
     """Enumeration of NBA 2K game years."""
-    2K22 = "2K22"
-    2K23 = "2K23"
-    2K24 = "2K24"
-    2K25 = "2K25"
-    2K26 = "2K26"
+    K22 = "2K22"
+    K23 = "2K23"
+    K24 = "2K24"
+    K25 = "2K25"
+    K26 = "2K26"
 
 class EventTier(str, Enum):
     """Enumeration of event tiers."""
@@ -38,11 +38,13 @@ class EventTier(str, Enum):
 
 class Status(str, Enum):
     """Enumeration of tournament statuses."""
+    SCHEDULED = "scheduled"
     UPCOMING = "upcoming"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
-    CANCELLED = "cancelled"
-
+    UNDER_REVIEW = "under_review"
+    REVIEWED = "reviewed"
+    APPROVED = "approved"
 class Tournament(Base):
     """
     SQLAlchemy model representing a tournament in the system.

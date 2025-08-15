@@ -35,7 +35,7 @@ from app.routers import (
     payments,
     teams,  # Updated to use refactored teams router
     matches,  # Consolidated matches router
-    player_stats
+    player_stats,
 )
 from app.routers import awards as awards_router
 
