@@ -12,7 +12,7 @@ Endpoints:
     PUT /{match_id} - Update match information
     DELETE /{match_id} - Delete a match
     GET /team/{team_id} - Get matches for a specific team
-    GET /event/{event_id} - Get matches for a specific event
+    GET /tournament/{tournament_id} - Get matches for a specific tournament
 
 Authentication is required for all write operations (POST, PUT, DELETE).
 Rate limiting is applied to all endpoints to prevent abuse.
@@ -52,8 +52,6 @@ UUID_REGEX = r'^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a
 UUID_EXAMPLE = "123e4567-e89b-12d3-a456-426614174000"
 
 # Initialize router with rate limiting
-router = APIRouter(prefix="/matches", tags=["matches"])
-
 router = APIRouter(prefix="/matches", tags=["matches"])
 
 async def get_match_by_id(match_id: str) -> Optional[Dict[str, Any]]:
@@ -108,7 +106,7 @@ async def get_match_by_id(match_id: str) -> Optional[Dict[str, Any]]:
         400: {"description": "Invalid input data or validation error"},
         401: {"description": "Not authenticated"},
         403: {"description": "Insufficient permissions"},
-        404: {"description": "Team(s) or event not found"},
+        404: {"description": "Team(s) or tournament not found"},
         409: {"description": "Conflict with existing data (e.g., teams are the same)"},
         429: {"description": "Rate limit exceeded"},
         500: {"description": "Internal server error"}
@@ -124,7 +122,7 @@ async def create_match(
     Create a new match (admin only).
     
     This endpoint allows administrators to create a new match record with the provided details.
-    The match can be associated with an event and will automatically determine the winner
+    The match can be associated with a tournament and will automatically determine the winner
     based on scores if not explicitly provided.
     
     Args:
@@ -181,19 +179,19 @@ async def create_match(
         team_a = team_a_response.data[0]
         team_b = team_b_response.data[0]
         
-        # Validate event exists if provided
-        if match.event_id:
-            logger.debug(f"Validating event: {match.event_id}")
-            event_response = client.table("events") \
+        # Validate tournament exists if provided
+        if match.tournament_id:
+            logger.debug(f"Validating tournament: {match.tournament_id}")
+            tournament_response = client.table("tournaments") \
                 .select("id, name") \
-                .eq("id", str(match.event_id)) \
+                .eq("id", str(match.tournament_id)) \
                 .execute()
                 
-            if not event_response.data:
-                logger.warning(f"Event not found: {match.event_id}")
+            if not tournament_response.data:
+                logger.warning(f"Tournament not found: {match.tournament_id}")
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
-                    detail=f"Event with ID {match.event_id} not found"
+                    detail=f"Tournament with ID {match.tournament_id} not found"
                 )
         
         # Prepare match data for insertion
@@ -283,9 +281,9 @@ async def get_match(
         False,
         description="Whether to include full team details in the response"
     ),
-    include_event: bool = Query(
+    include_tournament: bool = Query(
         False,
-        description="Whether to include the full event details in the response"
+        description="Whether to include the full tournament details in the response"
     ),
     current_user: Dict[str, Any] = Depends(get_current_active_user)
 ) -> Dict[str, Any]:
@@ -300,7 +298,7 @@ async def get_match(
         request: The incoming request object (for rate limiting)
         match_id: The UUID of the match to retrieve
         include_teams: Whether to include full team details
-        include_event: Whether to include the full event details
+        include_tournament: Whether to include the full tournament details
         current_user: The currently authenticated user
         
     Returns:
@@ -348,26 +346,26 @@ async def get_match(
                 result["team_a"] = None
                 result["team_b"] = None
         
-        # Include event details if requested and match has an event
-        if include_event and match.get("event_id"):
-            logger.debug(f"Fetching event details for match {match_id}")
+        # Include tournament details if requested and match has a tournament
+        if include_tournament and match.get("tournament_id"):
+            logger.debug(f"Fetching tournament details for match {match_id}")
             try:
-                event_response = client.table("events") \
+                tournament_response = client.table("tournaments") \
                     .select("*") \
-                    .eq("id", str(match["event_id"])) \
+                    .eq("id", str(match["tournament_id"])) \
                     .single() \
                     .execute()
                 
-                if hasattr(event_response, 'data') and event_response.data:
-                    result["event"] = event_response.data
+                if hasattr(tournament_response, 'data') and tournament_response.data:
+                    result["tournament"] = tournament_response.data
                 
             except Exception as e:
                 logger.error(
-                    f"Error fetching event details for match {match_id}: {str(e)}",
+                    f"Error fetching tournament details for match {match_id}: {str(e)}",
                     exc_info=True
                 )
-                # Don't fail the request if we can't get event details
-                result["event"] = None
+                # Don't fail the request if we can't get tournament details
+                result["tournament"] = None
         
         logger.info(f"Successfully retrieved match: {match_id}")
         return result
@@ -419,9 +417,9 @@ async def list_matches(
         description="Filter matches by team ID (returns matches where the team is either team A or team B)",
         examples=[UUID_EXAMPLE]
     ),
-    event_id: Optional[UUID] = Query(
+    tournament_id: Optional[UUID] = Query(
         None,
-        description="Filter matches by event ID",
+        description="Filter matches by tournament ID",
         examples=[UUID_EXAMPLE]
     ),
     status: Optional[MatchStatus] = Query(
@@ -463,7 +461,7 @@ async def list_matches(
         skip: Number of records to skip for pagination
         limit: Maximum number of records to return (1-500)
         team_id: Filter matches by team ID
-        event_id: Filter matches by event ID
+        tournament_id: Filter matches by tournament ID
         status: Filter matches by status
         start_date: Filter matches played on or after this date/time
         end_date: Filter matches played on or before this date/time
@@ -479,7 +477,7 @@ async def list_matches(
     """
     try:
         logger.info(
-            f"Listing matches with filters - team_id: {team_id}, event_id: {event_id}, "
+            f"Listing matches with filters - team_id: {team_id}, tournament_id: {tournament_id}, "
             f"status: {status}, start_date: {start_date}, end_date: {end_date}, "
             f"skip: {skip}, limit: {limit}, sort: {sort_by} {sort_order}"
         )
@@ -492,9 +490,9 @@ async def list_matches(
             logger.debug(f"Filtering by team_id: {team_id}")
             query = query.or_(f"team_a_id.eq.{team_id},team_b_id.eq.{team_id}")
         
-        if event_id:
-            logger.debug(f"Filtering by event_id: {event_id}")
-            query = query.eq("event_id", str(event_id))
+        if tournament_id:
+            logger.debug(f"Filtering by tournament_id: {tournament_id}")
+            query = query.eq("tournament_id", str(tournament_id))
             
         if status:
             logger.debug(f"Filtering by status: {status}")
@@ -769,20 +767,20 @@ async def get_team_matches(
     
     return result.data if hasattr(result, 'data') else []
 
-@router.get("/event/{event_id}", response_model=List[MatchSchema])
-async def get_event_matches(
-    event_id: str,
+@router.get("/tournament/{tournament_id}", response_model=List[MatchSchema])
+async def get_tournament_matches(
+    tournament_id: str,
     stage: Optional[str] = None,
     limit: int = Query(100, ge=1, le=200),
     skip: int = Query(0, ge=0)
 ):
     """
-    Get all matches for a specific event, optionally filtered by stage
+    Get matches for a specific tournament
     """
     client = supabase.get_client()
-    query = client.table("matches")\
-        .select("*")\
-        .eq("event_id", event_id)
+    query = client.table("matches") \
+        .select("*") \
+        .eq("tournament_id", tournament_id)
     
     if stage:
         query = query.eq("stage", stage)

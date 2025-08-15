@@ -48,35 +48,30 @@ class PaymentService:
         """
         try:
             session_id = session.get('id')
-            event_id = session.get('metadata', {}).get('event_id')
+            tournament_id = session.get('metadata', {}).get('tournament_id')
             player_id = session.get('metadata', {}).get('player_id')
             
-            if not session_id or not event_id or not player_id:
+            if not session_id or not tournament_id or not player_id:
                 # Log error and return
                 print(f"Missing data in session: {session}")
                 return
             
-            # Update registration status in Supabase
-            registration_result = supabase.get_client().table("event_registrations").select("*").eq("stripe_session_id", session_id).single().execute()
-            
-            if not registration_result.data:
-                # Log error and return
-                print(f"Registration not found for session: {session_id}")
-                return
-            
-            # Update the payment status
-            update_result = supabase.get_client().table("event_registrations").update({"payment_status": "paid"}).eq("stripe_session_id", session_id).execute()
-            
+            # Update registration payment status
+            update_result = supabase.get_client().table("registrations") \
+                .update({"payment_status": "paid"}) \
+                .eq("session_id", session_id) \
+                .execute()
+                
             if not update_result.data:
                 print(f"Failed to update registration payment status for session: {session_id}")
             
-            # Update event participant count
-            event_result = supabase.get_client().table("events").select("*").eq("id", event_id).single().execute()
-            if event_result.data:
-                event = event_result.data
-                update_result = supabase.get_client().table("events").update({"current_participants": event['current_participants'] + 1}).eq("id", event_id).execute()
+            # Update tournament participant count
+            tournament_result = supabase.get_client().table("tournaments").select("*").eq("id", tournament_id).single().execute()
+            if tournament_result.data:
+                tournament = tournament_result.data
+                update_result = supabase.get_client().table("tournaments").update({"current_participants": tournament.get('current_participants', 0) + 1}).eq("id", tournament_id).execute()
                 if not update_result.data:
-                    print(f"Failed to update event participant count for event: {event_id}")
+                    print(f"Failed to update tournament participant count for tournament: {tournament_id}")
         except Exception as e:
             print(f"Error handling payment success: {str(e)}")
     
@@ -94,7 +89,7 @@ class PaymentService:
                 return
             
             # Update registration status in Supabase
-            registration_result = supabase.get_client().table("event_registrations").select("*").eq("stripe_session_id", session_id).single().execute()
+            registration_result = supabase.get_client().table("registrations").select("*").eq("session_id", session_id).single().execute()
             
             if not registration_result.data:
                 # Log error and return
@@ -102,7 +97,7 @@ class PaymentService:
                 return
             
             # Update the payment status
-            update_result = supabase.get_client().table("event_registrations").update({"payment_status": "expired"}).eq("stripe_session_id", session_id).execute()
+            update_result = supabase.get_client().table("registrations").update({"payment_status": "expired"}).eq("session_id", session_id).execute()
             
             if not update_result.data:
                 print(f"Failed to update registration payment status for expired session: {session_id}")

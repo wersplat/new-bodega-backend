@@ -39,8 +39,6 @@ class RosterAddRequest(CamelModel):
 class RankingPointsRequest(CamelModel):
     team_id: str = Field(..., alias="teamId")
     tournament_id: Optional[str] = Field(None, alias="tournamentId")
-    # Deprecated: accept legacy Admin UI payloads using eventId
-    event_id: Optional[str] = Field(None, alias="eventId")
     league_id: Optional[str] = Field(None, alias="leagueId")
     points: int
     source: Optional[str] = None
@@ -350,8 +348,7 @@ async def award_ranking_points(
     data = {
         "id": str(uuid.uuid4()),
         "team_id": body.team_id,
-        # Prefer new tournament_id; fall back to deprecated event_id alias if provided
-        "tournament_id": body.tournament_id or body.event_id,
+        "tournament_id": body.tournament_id,
         "league_id": body.league_id,
         "points": body.points,
         "source": body.source or "manual",
@@ -514,5 +511,3 @@ async def review_match_submission(
 
     # As a fallback, just acknowledge success
     return {"success": True, "id": submission_id, "status": status_value}
-
-

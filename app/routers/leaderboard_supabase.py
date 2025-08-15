@@ -315,27 +315,6 @@ async def get_tier_leaderboard(
         )
 
 @router.get(
-    "/event/{event_id}",
-    response_model=List[Dict],
-    responses={
-        410: {"description": "Deprecated endpoint"}
-    }
-)
-@limiter.limit(settings.RATE_LIMIT_DEFAULT)
-async def get_event_leaderboard(
-    request: Request,
-    event_id: str = Path(..., description="ID of the event to get leaderboard for"),
-    include_stats: bool = Query(False, description="Include detailed player statistics")
-) -> List[Dict[str, Any]]:
-    """
-    Deprecated legacy endpoint that used 'event_id'. Use GET /v1/leaderboard?tournament_id=... instead.
-    """
-    raise HTTPException(
-        status_code=status.HTTP_410_GONE,
-        detail="Deprecated endpoint. Use GET /v1/leaderboard?tournament_id=... instead."
-    )
-
-@router.get(
     "/peak-rp",
     response_model=List[PlayerProfile],
     responses={

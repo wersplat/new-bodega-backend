@@ -76,7 +76,6 @@ class RPHistory(BaseModel):
     old_rp: float = Field(ge=0.0)
     new_rp: float = Field(ge=0.0)
     change_reason: Optional[str] = None
-    event_id: Optional[int] = None
     created_at: datetime
 
 class PlayerWithHistory(Player):

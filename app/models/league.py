@@ -39,30 +39,49 @@ class Console(enum.Enum):
     XBOX = "Xbox"
 
 class GameYear(enum.Enum):
-    K16 = "2K16"
-    K17 = "2K17"
-    K18 = "2K18"
-    K19 = "2K19"
-    K20 = "2K20"
-    K21 = "2K21"
-    K22 = "2K22"
-    K23 = "2K23"
-    K24 = "2K24"
-    K25 = "2K25"
-    K26 = "2K26"
+    2K16 = "2K16"
+    2K17 = "2K17"
+    2K18 = "2K18"
+    2K19 = "2K19"
+    2K20 = "2K20"
+    2K21 = "2K21"
+    2K22 = "2K22"
+    2K23 = "2K23"
+    2K24 = "2K24"
+    2K25 = "2K25"
+    2K26 = "2K26"
 
-class LeagueInfo(Base):
+class LeagueEnum(str, Enum):
+    """Enumeration of possible leagues."""
+    # Add actual league values from the database
+    UPA = "Unified Pro Am Association"
+    UPA_COLLEGE = "UPA College"
+    WR = "WR"
+    MPBA = "MPBA"
+    RISING_STARS = "Rising Stars"
+    STATEN_ISLAND_BASKETBALL_ASSOCIATION = "Staten Island Basketball Association"
+    HALL_OF_FAME_LEAGUE = "Hall Of Fame League"
+    DUNK_LEAGUE = "Dunk League"
+    ROAD_TO_25K = "Road to 25K"
+    # Add other leagues as needed
+
+class League(Base):
+    """
+    SQLAlchemy model representing a league in the system.
+    
+    This model maps to the 'leagues_info' table in the database.
+    """
     __tablename__ = "leagues_info"
     
     id = Column(String, primary_key=True, index=True)
-    league = Column(Enum(LeagueType, name="leagues"), unique=True, nullable=False)
-    lg_logo_url = Column(String)
-    lg_url = Column(String)
-    lg_discord = Column(String)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    twitter_id = Column(String)
-    twitch_url = Column(String)
+    league = Column(String, nullable=True)  # Uses LeagueEnum
+    lg_discord = Column(String, nullable=True)
+    lg_logo_url = Column(String, nullable=True)
+    lg_url = Column(String, nullable=True)
     sponsor_info = Column(Text)
+    twitch_url = Column(String, nullable=True)
+    twitter_id = Column(String, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     # Relationships
     tournaments = relationship("Tournament", back_populates="organizer")
@@ -81,7 +100,30 @@ class LeagueInfo(Base):
     past_champions = relationship("PastChampion", back_populates="league")
     
     def __repr__(self):
-        return f"<LeagueInfo(id={self.id}, league='{self.league}')>"
+        return f"<League {self.league} ({self.id})>"
+
+class LeagueSeason(Base):
+    """
+    SQLAlchemy model representing a league season.
+    
+    This model maps to the 'league_seasons' table in the database.
+    """
+    __tablename__ = "league_seasons"
+    
+    id = Column(String, primary_key=True, index=True)
+    league_id = Column(String, ForeignKey("leagues_info.id"), nullable=False)
+    league_name = Column(String, ForeignKey("leagues_info.league"), nullable=False)
+    season_number = Column(String, nullable=False)
+    start_date = Column(DateTime, nullable=True)  
+    end_date = Column(DateTime, nullable=True)    
+    is_current = Column(Boolean, default=False)
+    
+    # Relationships
+    league_info = relationship("League", foreign_keys=[league_id])
+    league_name_rel = relationship("League", foreign_keys=[league_name])
+    
+    def __repr__(self):
+        return f"<LeagueSeason {self.league_name} - {self.season_number}>"
 
 class Tournament(Base):
     __tablename__ = "tournaments"
@@ -111,7 +153,7 @@ class Tournament(Base):
     processed_at = Column(DateTime(timezone=True))
     
     # Relationships
-    organizer = relationship("LeagueInfo", back_populates="tournaments")
+    organizer = relationship("League", back_populates="tournaments")
     champion_team = relationship("Team", foreign_keys=[champion])
     runner_up_team = relationship("Team", foreign_keys=[runner_up])
     place_team = relationship("Team", foreign_keys=[place])
@@ -154,7 +196,7 @@ class PastChampion(Base):
     # Relationships
     team = relationship("Team")
     tournament = relationship("Tournament", back_populates="past_champions")
-    league = relationship("LeagueInfo", back_populates="past_champions")
+    league = relationship("League", back_populates="past_champions")
     
     def __repr__(self):
         return f"<PastChampion(id={self.id}, team_name='{self.team_name}', season={self.season})>"
