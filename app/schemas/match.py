@@ -28,6 +28,7 @@ class MatchStage(str, Enum):
 class MatchBase(BaseModel):
     """Base match schema with required fields"""
     tournament_id: UUID
+    league_id: UUID
     team_a_id: UUID
     team_b_id: UUID
     stage: MatchStage = MatchStage.GROUP

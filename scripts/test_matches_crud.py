@@ -25,38 +25,25 @@ supabase_key = SUPABASE_SERVICE_ROLE_KEY or SUPABASE_KEY
 # Create a Supabase client with the appropriate key
 supabase = create_client(SUPABASE_URL, supabase_key)
 
-def get_or_create_test_region() -> str:
-    """Get an existing region ID or create a test region"""
-    # First, try to get an existing region
-    response = supabase.table("regions").select("id").limit(1).execute()
-    if hasattr(response, 'data') and response.data:
-        return response.data[0]['id']
-    
-    # If no regions exist, create a test region
-    region_data = {
+def create_test_league() -> Dict[str, Any]:
+    """Create a minimal league record in leagues_info and return it"""
+    league_data = {
         "id": str(uuid.uuid4()),
-        "name": "Test Region",
-        "code": "test-region"
+        # league column is nullable; avoid enum coupling by leaving it null
     }
-    response = supabase.table("regions").insert(region_data).execute()
-    if hasattr(response, 'data') and response.data:
-        return response.data[0]['id']
-    
-    raise Exception("Failed to get or create a test region")
+    supabase.table("leagues_info").insert(league_data).execute()
+    return league_data
 
 def create_test_teams() -> Tuple[Dict[str, Any], Dict[str, Any]]:
-    """Create two test teams for the match"""
-    region_id = get_or_create_test_region()
-    
+    """Create two test teams for the match using current teams schema"""
     team1_data = {
         "id": str(uuid.uuid4()),
         "name": f"Team Alpha {str(uuid.uuid4())[:8]}",
-        "region_id": region_id,
         "logo_url": "https://example.com/team1.png",
         "current_rp": 1000,
         "elo_rating": 1500,
         "global_rank": 1,
-        "leaderboard_tier": 1,
+        "leaderboard_tier": "1",
         "player_rank_score": 85.5,
         "money_won": 0
     }
@@ -64,12 +51,11 @@ def create_test_teams() -> Tuple[Dict[str, Any], Dict[str, Any]]:
     team2_data = {
         "id": str(uuid.uuid4()),
         "name": f"Team Beta {str(uuid.uuid4())[:8]}",
-        "region_id": region_id,
         "logo_url": "https://example.com/team2.png",
         "current_rp": 900,
         "elo_rating": 1450,
         "global_rank": 2,
-        "leaderboard_tier": 1,
+        "leaderboard_tier": "1",
         "player_rank_score": 82.0,
         "money_won": 0
     }
@@ -78,26 +64,22 @@ def create_test_teams() -> Tuple[Dict[str, Any], Dict[str, Any]]:
     supabase.table("teams").insert([team1_data, team2_data]).execute()
     return team1_data, team2_data
 
-def create_test_event() -> Dict[str, Any]:
-    """Create a test event for the match"""
-    region_id = get_or_create_test_region()
-    event_data = {
+def create_test_tournament() -> Dict[str, Any]:
+    """Create a test tournament for the match"""
+    tournament_data = {
         "id": str(uuid.uuid4()),
-        "name": f"Test Event {str(uuid.uuid4())[:8]}",
-        "type": "tournament",
-        "is_global": False,
-        "region_id": region_id,
+        "name": f"Test Tournament {str(uuid.uuid4())[:8]}",
         "start_date": (datetime.now(timezone.utc) + timedelta(days=1)).isoformat(),
         "end_date": (datetime.now(timezone.utc) + timedelta(days=2)).isoformat(),
         "status": "upcoming",
         "tier": "T1"
     }
     
-    # Insert event
-    supabase.table("events").insert(event_data).execute()
-    return event_data
+    # Insert tournament
+    supabase.table("tournaments").insert(tournament_data).execute()
+    return tournament_data
 
-def create_test_match_data(team1_id: str, team2_id: str, event_id: str) -> Dict[str, Any]:
+def create_test_match_data(team1_id: str, team2_id: str, tournament_id: str, league_id: str) -> Dict[str, Any]:
     """Create test match data that matches the actual schema"""
     now = datetime.now(timezone.utc)
     
@@ -110,12 +92,13 @@ def create_test_match_data(team1_id: str, team2_id: str, event_id: str) -> Dict[
     
     return {
         "id": str(uuid.uuid4()),
-        "event_id": event_id,
+        "tournament_id": tournament_id,
+        "league_id": league_id,
         "team_a_id": team1_id,
         "team_b_id": team2_id,
         "team_a_name": team1_name,
         "team_b_name": team2_name,
-        "stage": "Group Play",
+        "stage": "group",
         "game_number": 1,
         "score_a": 0,
         "score_b": 0,
@@ -129,8 +112,9 @@ def test_matches_crud():
     
     # Create test data
     team1, team2 = create_test_teams()
-    event = create_test_event()
-    test_match = create_test_match_data(team1["id"], team2["id"], event["id"])
+    tournament = create_test_tournament()
+    league = create_test_league()
+    test_match = create_test_match_data(team1["id"], team2["id"], tournament["id"], league["id"])
     match_id = test_match["id"]
     
     try:
@@ -173,11 +157,12 @@ def test_matches_crud():
         print("\n🔍 Testing QUERY matches...")
         response = supabase.table("matches") \
                          .select("*") \
-                         .eq("event_id", event["id"]) \
+                         .eq("tournament_id", tournament["id"]) \
+                         .eq("league_id", league["id"]) \
                          .limit(5) \
                          .execute()
         matches = response.data if hasattr(response, 'data') else []
-        print(f"✅ Found {len(matches)} matches for event {event['name']}")
+        print(f"✅ Found {len(matches)} matches for tournament {tournament['name']}")
         
         # Test DELETE
         print("\n🗑️  Testing DELETE match...")
@@ -208,7 +193,8 @@ def test_matches_crud():
         # Clean up test data
         try:
             supabase.table("teams").delete().in_("id", [team1["id"], team2["id"]]).execute()
-            supabase.table("events").delete().eq("id", event["id"]).execute()
+            supabase.table("tournaments").delete().eq("id", tournament["id"]).execute()
+            supabase.table("leagues_info").delete().eq("id", league["id"]).execute()
         except Exception as cleanup_error:
             print(f"⚠️  Cleanup error: {cleanup_error}")
 

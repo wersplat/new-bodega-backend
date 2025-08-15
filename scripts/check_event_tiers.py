@@ -16,24 +16,24 @@ if not supabase_url or not supabase_key:
 supabase = create_client(supabase_url, supabase_key)
 
 try:
-    # Get a sample of events to see what tier values are used
-    response = supabase.table("events").select("tier").limit(10).execute()
+    # Get a sample of tournaments to see what tier values are used
+    response = supabase.table("tournaments").select("tier").limit(10).execute()
     
     if hasattr(response, 'data') and response.data:
-        print("✅ Found the following tier values in existing events:")
+        print("✅ Found the following tier values in existing tournaments:")
         tiers = set()
-        for event in response.data:
-            if 'tier' in event:
-                tiers.add(event['tier'])
+        for t in response.data:
+            if 'tier' in t:
+                tiers.add(t['tier'])
         
         if tiers:
             print("Valid tier values:")
             for tier in sorted(tiers):
                 print(f"- {tier}")
         else:
-            print("No tier values found in existing events")
+            print("No tier values found in existing tournaments")
     else:
-        print("❌ No events found in the database")
+        print("❌ No tournaments found in the database")
         
 except Exception as e:
-    print(f"❌ Error querying events: {e}")
+    print(f"❌ Error querying tournaments: {e}")

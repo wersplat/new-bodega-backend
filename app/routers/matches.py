@@ -117,7 +117,7 @@ def get_match_by_id(match_id: str) -> Dict[str, Any]:
         400: {"description": "Invalid input data"},
         401: {"description": "Not authenticated"},
         403: {"description": "Insufficient permissions"},
-        404: {"description": "Team(s) or event not found"},
+        404: {"description": "Team(s), tournament, or league not found"},
         409: {"description": "Conflict with existing data"},
         429: {"description": "Rate limit exceeded"},
         500: {"description": "Internal server error"}
@@ -133,7 +133,7 @@ async def create_match(
     Create a new match (Admin only).
     
     This endpoint allows administrators to create a new match between two teams,
-    optionally associated with a tournament.
+    associated with a tournament and a league.
     """
     try:
         logger.info(f"Creating new match between teams {match.team_a_id} and {match.team_b_id}")
@@ -177,19 +177,30 @@ async def create_match(
         team_b = team_b_response.data[0]
         
         # Validate tournament exists
-        if match.tournament_id:
-            logger.debug(f"Validating tournament: {match.tournament_id}")
-            tournament_response = client.table("tournaments") \
-                .select("id, name") \
-                .eq("id", str(match.tournament_id)) \
-                .execute()
-            
-            if not tournament_response.data:
-                logger.warning(f"Tournament not found: {match.tournament_id}")
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail=f"Tournament with ID {match.tournament_id} not found"
-                )
+        logger.debug(f"Validating tournament: {match.tournament_id}")
+        tournament_response = client.table("tournaments") \
+            .select("id, name") \
+            .eq("id", str(match.tournament_id)) \
+            .execute()
+        if not tournament_response.data:
+            logger.warning(f"Tournament not found: {match.tournament_id}")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Tournament with ID {match.tournament_id} not found"
+            )
+
+        # Validate league exists
+        logger.debug(f"Validating league: {match.league_id}")
+        league_response = client.table("leagues_info") \
+            .select("id, league") \
+            .eq("id", str(match.league_id)) \
+            .execute()
+        if not league_response.data:
+            logger.warning(f"League not found: {match.league_id}")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"League with ID {match.league_id} not found"
+            )
         
         # Prepare match data for insertion
         match_data = match.model_dump()
@@ -243,6 +254,11 @@ async def list_matches(
         description="Filter matches by tournament ID",
         pattern=UUID_PATTERN
     ),
+    league_id: Optional[str] = Query(
+        None,
+        description="Filter matches by league ID",
+        pattern=UUID_PATTERN
+    ),
     team_id: Optional[str] = Query(
         None,
         description="Filter matches by team ID (returns matches where the team is either team A or team B)",
@@ -286,7 +302,7 @@ async def list_matches(
     List matches with filtering, sorting, and pagination.
     
     Returns a paginated list of matches that match the specified criteria.
-    Supports filtering by status, event, team, stage, and date range.
+    Supports filtering by status, tournament, league, team, stage, and date range.
     """
     try:
         logger.info("Listing matches with filters")
@@ -299,6 +315,8 @@ async def list_matches(
             query = query.eq("status", status.value)
         if tournament_id:
             query = query.eq("tournament_id", tournament_id)
+        if league_id:
+            query = query.eq("league_id", league_id)
         if team_id:
             query = query.or_(f"team_a_id.eq.{team_id},team_b_id.eq.{team_id}")
         if stage:
@@ -382,6 +400,10 @@ async def get_match(
         False,
         description="Whether to include tournament details in the response"
     ),
+    include_league: bool = Query(
+        False,
+        description="Whether to include league details in the response"
+    ),
     include_stats: bool = Query(
         False,
         description="Whether to include player statistics in the response"
@@ -447,6 +469,14 @@ async def get_match(
                 .eq("id", match["tournament_id"]) \
                 .execute()
             match["tournament"] = tournament.data[0] if tournament.data else None
+
+        # Include league details if requested
+        if include_league and match.get("league_id"):
+            league = client.table("leagues_info") \
+                .select("*") \
+                .eq("id", match["league_id"]) \
+                .execute()
+            match["league"] = league.data[0] if league.data else None
         
         # Include player statistics if requested
         if include_stats:

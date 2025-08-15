@@ -1,8 +1,12 @@
 """
-Tests for event schemas and models
+Legacy tests for events schema (deprecated).
+This suite is skipped because the backend has migrated to tournaments/leagues.
 """
 
 import pytest
+
+# Skip entire module until tournaments tests replace this file
+pytestmark = pytest.mark.skip(reason="events schema deprecated; replace with tournaments tests")
 from datetime import date, datetime, timezone
 from uuid import UUID, uuid4
 from typing import Optional

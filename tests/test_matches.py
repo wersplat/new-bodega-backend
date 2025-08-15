@@ -22,7 +22,8 @@ from app.schemas.match import (
 
 # Test data
 TEST_MATCH_ID = uuid4()
-TEST_EVENT_ID = uuid4()
+TEST_TOURNAMENT_ID = uuid4()
+TEST_LEAGUE_ID = uuid4()
 TEST_TEAM_A_ID = uuid4()
 TEST_TEAM_B_ID = uuid4()
 TEST_WINNER_ID = uuid4()
@@ -33,7 +34,8 @@ def test_match_base():
     scheduled_time = datetime.now(timezone.utc) + timedelta(days=1)
     
     match_data = {
-        "event_id": str(TEST_EVENT_ID),
+        "tournament_id": str(TEST_TOURNAMENT_ID),
+        "league_id": str(TEST_LEAGUE_ID),
         "team_a_id": str(TEST_TEAM_A_ID),
         "team_b_id": str(TEST_TEAM_B_ID),
         "stage": MatchStage.QUARTERFINALS,
@@ -43,7 +45,8 @@ def test_match_base():
     
     match = MatchBase(**match_data)
     
-    assert match.event_id == TEST_EVENT_ID
+    assert match.tournament_id == TEST_TOURNAMENT_ID
+    assert match.league_id == TEST_LEAGUE_ID
     assert match.team_a_id == TEST_TEAM_A_ID
     assert match.team_b_id == TEST_TEAM_B_ID
     assert match.stage == MatchStage.QUARTERFINALS
@@ -53,7 +56,8 @@ def test_match_base():
 def test_match_create():
     """Test creating a new match"""
     match_data = {
-        "event_id": str(TEST_EVENT_ID),
+        "tournament_id": str(TEST_TOURNAMENT_ID),
+        "league_id": str(TEST_LEAGUE_ID),
         "team_a_id": str(TEST_TEAM_A_ID),
         "team_b_id": str(TEST_TEAM_B_ID),
         "team_a_name": "Team Alpha",
@@ -74,7 +78,8 @@ def test_match_create_validation():
     # Test same team for both sides
     with pytest.raises(ValidationError):
         MatchCreate(
-            event_id=str(TEST_EVENT_ID),
+            tournament_id=str(TEST_TOURNAMENT_ID),
+            league_id=str(TEST_LEAGUE_ID),
             team_a_id=str(TEST_TEAM_A_ID),
             team_b_id=str(TEST_TEAM_A_ID),  # Same as team_a_id
             team_a_name="Team A",
@@ -84,7 +89,8 @@ def test_match_create_validation():
     # Test invalid game number
     with pytest.raises(ValidationError):
         MatchCreate(
-            event_id=str(TEST_EVENT_ID),
+            tournament_id=str(TEST_TOURNAMENT_ID),
+            league_id=str(TEST_LEAGUE_ID),
             team_a_id=str(TEST_TEAM_A_ID),
             team_b_id=str(TEST_TEAM_B_ID),
             team_a_name="Team A",
@@ -122,7 +128,8 @@ def test_match_in_db():
     
     match_data = {
         "id": TEST_MATCH_ID,
-        "event_id": str(TEST_EVENT_ID),
+        "tournament_id": str(TEST_TOURNAMENT_ID),
+        "league_id": str(TEST_LEAGUE_ID),
         "team_a_id": str(TEST_TEAM_A_ID),
         "team_b_id": str(TEST_TEAM_B_ID),
         "winner_id": str(TEST_TEAM_A_ID),
@@ -145,7 +152,7 @@ def test_match_in_db():
     
     # Test required fields
     assert match.id == TEST_MATCH_ID
-    assert match.event_id == TEST_EVENT_ID
+    assert match.tournament_id == TEST_TOURNAMENT_ID
     assert match.team_a_id == TEST_TEAM_A_ID
     assert match.team_b_id == TEST_TEAM_B_ID
     assert match.winner_id == TEST_TEAM_A_ID
@@ -166,7 +173,8 @@ def test_match_with_teams():
     """Test match schema with team information"""
     match_data = {
         "id": TEST_MATCH_ID,
-        "event_id": str(TEST_EVENT_ID),
+        "tournament_id": str(TEST_TOURNAMENT_ID),
+        "league_id": str(TEST_LEAGUE_ID),
         "team_a_id": str(TEST_TEAM_A_ID),
         "team_b_id": str(TEST_TEAM_B_ID),
         "team_a_name": "Team Alpha",
@@ -189,7 +197,8 @@ def test_match_with_details():
     """Test match schema with team and player details"""
     match_data = {
         "id": TEST_MATCH_ID,
-        "event_id": str(TEST_EVENT_ID),
+        "tournament_id": str(TEST_TOURNAMENT_ID),
+        "league_id": str(TEST_LEAGUE_ID),
         "team_a_id": str(TEST_TEAM_A_ID),
         "team_b_id": str(TEST_TEAM_B_ID),
         "team_a_name": "Team Alpha",
@@ -206,7 +215,7 @@ def test_match_with_details():
             {"id": str(uuid4()), "gamertag": "Player3", "position": "SF"},
             {"id": str(uuid4()), "gamertag": "Player4", "position": "PF"}
         ],
-        "event": {"id": str(TEST_EVENT_ID), "name": "Championship Finals"}
+        "tournament": {"id": str(TEST_TOURNAMENT_ID), "name": "Championship Finals"}
     }
     
     match = MatchWithDetails(**match_data)
@@ -214,7 +223,7 @@ def test_match_with_details():
     assert len(match.team_a_players) == 2
     assert len(match.team_b_players) == 2
     assert match.team_a_players[0]["position"] == "PG"
-    assert match.event["name"] == "Championship Finals"
+    assert match.tournament["name"] == "Championship Finals"
     assert match.stage == MatchStage.FINALS
 
 def test_match_result():

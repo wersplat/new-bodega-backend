@@ -6,7 +6,7 @@ with support for filtering, sorting, and pagination.
 
 Endpoint:
 - GET /: Get leaderboard with comprehensive filtering options
-  - Filter by: tier, region, event, min_games
+  - Filter by: tier, region, tournament (event_id), league_id, min_games
   - Sort by: RP, peak RP, wins, win rate
   - Pagination support
 """
@@ -62,6 +62,7 @@ async def get_leaderboard(
     tier: Optional[PlayerTier] = Query(None, description="Filter by player tier"),
     region: Optional[str] = Query(None, description="Filter by region code (e.g., 'NA', 'EU')"),
     event_id: Optional[str] = Query(None, description="Filter by tournament ID (back-compat param name: event_id)"),
+    league_id: Optional[str] = Query(None, description="Filter by league (leagues_info.id)"),
     min_games: Optional[int] = Query(None, ge=1, description="Minimum number of games played"),
     
     # Sorting
@@ -83,7 +84,7 @@ async def get_leaderboard(
     Get leaderboard with comprehensive filtering and sorting options.
     
     This endpoint provides a unified way to query player rankings with support for:
-    - Filtering by tier, region, event, and minimum games played
+    - Filtering by tier, region, tournament (via event_id), league_id, and minimum games played
     - Sorting by RP, peak RP, wins, or win rate
     - Pagination and top-N shortcuts
     
@@ -93,7 +94,8 @@ async def get_leaderboard(
         offset: Pagination offset
         tier: Filter by player tier
         region: Filter by region code
-        event_id: Filter by specific tournament (back-compat param name)
+        event_id: Filter by specific tournament (back-compat param name). Mutually exclusive with league_id.
+        league_id: Filter by specific league (leagues_info.id). Mutually exclusive with event_id.
         min_games: Minimum number of games played
         sort_by: Field to sort the leaderboard by
         descending: Whether to sort in descending order
@@ -114,12 +116,19 @@ async def get_leaderboard(
         logger.info(
             f"Fetching leaderboard - sort_by: {sort_by}, "
             f"descending: {descending}, tier: {tier}, region: {region}, "
-            f"tournament(event_id): {event_id}, min_games: {min_games}, "
+            f"tournament(event_id): {event_id}, league_id: {league_id}, min_games: {min_games}, "
             f"limit: {limit}, offset: {offset}"
         )
         
         client = supabase.get_client()
         
+        # Validate mutually exclusive filters
+        if event_id and league_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Provide either event_id (tournament filter) or league_id, not both."
+            )
+
         # Base query - select only necessary fields for better performance
         query = client.table("players").select(
             "id, gamertag, avatar_url, player_rp, player_rank_score, "
@@ -136,9 +145,11 @@ async def get_leaderboard(
         if min_games:
             query = query.gte("total_games", min_games)
             
-        # Handle tournament-specific leaderboard (back-compat: event_id param)
+        # Handle tournament- and league-specific filtering
+        team_ids_filter: Optional[List[str]] = None
+
+        # Tournament (back-compat: event_id param)
         if event_id:
-            # Join-based filter: get participating team_ids from event_results for this tournament
             try:
                 teams_resp = (
                     client.table("event_results")
@@ -146,18 +157,41 @@ async def get_leaderboard(
                     .eq("tournament_id", event_id)
                     .execute()
                 )
-                team_ids = sorted({row.get("team_id") for row in (teams_resp.data or []) if row.get("team_id")})
+                tournament_team_ids = sorted({row.get("team_id") for row in (teams_resp.data or []) if row.get("team_id")})
             except Exception as e:
                 logger.error(f"Failed to fetch teams for tournament {event_id}: {str(e)}", exc_info=True)
                 raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                     detail="Error applying tournament filter")
+            if team_ids_filter is None:
+                team_ids_filter = tournament_team_ids
+            else:
+                # Intersect if we already have a filter from another source
+                team_ids_filter = sorted(list(set(team_ids_filter).intersection(set(tournament_team_ids))))
 
-            if not team_ids:
-                # No teams participated in this tournament; no players to show
-                return []
+        # League filter
+        if league_id:
+            try:
+                lg_resp = (
+                    client.table("event_results")
+                    .select("team_id")
+                    .eq("league_id", league_id)
+                    .execute()
+                )
+                league_team_ids = sorted({row.get("team_id") for row in (lg_resp.data or []) if row.get("team_id")})
+            except Exception as e:
+                logger.error(f"Failed to fetch teams for league {league_id}: {str(e)}", exc_info=True)
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                    detail="Error applying league filter")
+            if team_ids_filter is None:
+                team_ids_filter = league_team_ids
+            else:
+                team_ids_filter = sorted(list(set(team_ids_filter).intersection(set(league_team_ids))))
 
-            # Filter players by participating teams (players.current_team_id per schema)
-            query = query.in_("current_team_id", team_ids)
+        # Apply combined team filter, if any
+        if team_ids_filter is not None:
+            if not team_ids_filter:
+                return []  # No teams match the filters
+            query = query.in_("current_team_id", team_ids_filter)
             
         # Apply sorting
         sort_field = sort_by.value if hasattr(sort_by, 'value') else sort_by
