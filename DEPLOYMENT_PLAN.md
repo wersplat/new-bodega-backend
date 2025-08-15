@@ -45,8 +45,6 @@ Run the following migration script in the specified order:
    -- For tournament_group_members
    ALTER TABLE tournament_group_members
      RENAME CONSTRAINT event_group_members_pkey TO tournament_group_members_pkey;
-   
-   
    ```
 
 3. **Update Indexes**

@@ -137,7 +137,6 @@ app.include_router(admin_actions.router, tags=["Admin"])
 app.include_router(discord.router, tags=["Discord Integration"])
 app.include_router(payments.router, tags=["Payment Integration"])
 app.include_router(awards_router.router, tags=["Awards"]) 
-
 # Add backward compatibility redirects
 
 @app.get("/api/{path:path}", include_in_schema=False)
