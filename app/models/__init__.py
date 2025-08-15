@@ -2,7 +2,7 @@
 from .user import User
 from .player import Player, PlayerStats, MatchMVP
 from .team import Team, TeamMatchStats, MatchPoints, TournamentGroup, TournamentGroupMember, GroupMatch, GroupStanding
-from .league import LeagueInfo, Tournament, PastChampion, League, LeagueSeason
+from .league import Tournament, PastChampion, League, LeagueSeason, LeagueType, TournamentStatus, TournamentTier, Console, GameYear
 from .badge import PlayerBadge 
 from .awardRace import AwardsRace
 from .draft_pool import DraftPool
@@ -34,7 +34,7 @@ __all__ = [
     'UpcomingMatch', 'MatchSubmission',
     
     # League models
-    'LeagueInfo', 'PastChampion', 'League', 'LeagueSeason',
+    'PastChampion', 'League', 'LeagueSeason', 'LeagueType', 'TournamentStatus', 'TournamentTier', 'Console', 'GameYear',
     
     # Other models
     'PlayerBadge', 'AwardsRace', 'DraftPool', 'EventResults'
