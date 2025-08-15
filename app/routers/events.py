@@ -20,7 +20,7 @@ from app.core.supabase import supabase
 # Initialize router with rate limiting and explicit prefix
 router = APIRouter(
     prefix="/v1/events",
-    tags=["Events"],
+    tags=["Tournaments"],
     responses={404: {"description": "Not found"}},
 )
 
@@ -85,11 +85,11 @@ class TournamentBase(BaseModel):
                 data[field] = value.value
         return data
     
-    name: str = Field(..., min_length=3, max_length=200, description="Event name")
-    description: Optional[str] = Field(None, description="Event description")
-    tier: EventTier = Field(..., description="Competitive tier of the event")
-    start_date: datetime = Field(..., description="When the event starts")
-    end_date: datetime = Field(..., description="When the event ends")
+    name: str = Field(..., min_length=3, max_length=200, description="Tournament name")
+    description: Optional[str] = Field(None, description="Tournament description")
+    tier: EventTier = Field(..., description="Competitive tier of the tournament")
+    start_date: datetime = Field(..., description="When the tournament starts")
+    end_date: datetime = Field(..., description="When the tournament ends")
     registration_deadline: Optional[datetime] = Field(
         None, 
         description="Deadline for registration"
@@ -101,18 +101,18 @@ class TournamentBase(BaseModel):
     )
     is_global: bool = Field(
         False, 
-        description="Whether this is a global event (not region-specific)"
+        description="Whether this is a global tournament (not region-specific)"
     )
     regions_id: Optional[str] = Field(
         None,
-        description="Region ID for regional events",
+        description="Region ID for regional tournaments",
         pattern=UUID_PATTERN,
         examples=[UUID_EXAMPLE]
     )
-    season_number: int = Field(1, ge=1, description="Season number for the event")
+    season_number: int = Field(1, ge=1, description="Season number for the tournament")
     status: TournamentStatus = Field(TournamentStatus.SCHEDULED, description="Current tournament status")
-    rules_url: Optional[HttpUrl] = Field(None, description="URL to event rules")
-    banner_url: Optional[HttpUrl] = Field(None, description="URL to event banner image")
+    rules_url: Optional[HttpUrl] = Field(None, description="URL to tournament rules")
+    banner_url: Optional[HttpUrl] = Field(None, description="URL to tournament banner image")
     prize_pool: Optional[float] = Field(None, ge=0, description="Total prize pool in USD")
     registration_fee: Optional[float] = Field(None, ge=0, description="Registration fee in USD")
 
@@ -152,10 +152,10 @@ class TournamentUpdate(BaseModel):
 
 class TournamentResponse(TournamentBase):
     """Complete tournament model for API responses."""
-    id: str = Field(..., description="Unique identifier for the event")
-    created_at: datetime = Field(..., description="When the event was created")
-    updated_at: datetime = Field(..., description="When the event was last updated")
-    created_by: Optional[str] = Field(None, description="ID of the user who created the event")
+    id: str = Field(..., description="Unique identifier for the tournament")
+    created_at: datetime = Field(..., description="When the tournament was created")
+    updated_at: datetime = Field(..., description="When the tournament was last updated")
+    created_by: Optional[str] = Field(None, description="ID of the user who created the tournament")
     
     model_config = ConfigDict(
         from_attributes=True,  # Replaces orm_mode=True
@@ -182,7 +182,7 @@ class TournamentResponse(TournamentBase):
 class TournamentListResponse(BaseModel):
     """Paginated list of tournaments with metadata."""
     items: List[TournamentResponse] = Field(..., description="List of tournaments")
-    total: int = Field(..., description="Total number of events matching the query")
+    total: int = Field(..., description="Total number of tournaments matching the query")
     page: int = Field(..., description="Current page number")
     size: int = Field(..., description="Number of items per page")
     has_more: bool = Field(..., description="Whether there are more items available")
@@ -280,7 +280,7 @@ async def create_tournament(
         )
 
 @router.get(
-    "/{event_id}",
+    "/{tournament_id}",
     response_model=TournamentResponse,
     responses={
         200: {"description": "Tournament details retrieved successfully"},
@@ -291,8 +291,8 @@ async def create_tournament(
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_tournament(
     request: Request,
-    event_id: str = Path(..., 
-                        description="The UUID of the event to retrieve",
+    tournament_id: str = Path(..., 
+                        description="The UUID of the tournament to retrieve",
                         examples=[UUID_EXAMPLE], 
                         pattern=UUID_PATTERN),
 ) -> Dict[str, Any]:
@@ -302,18 +302,18 @@ async def get_tournament(
     This endpoint retrieves detailed information about a specific tournament.
     """
     try:
-        tournament = await get_tournament_by_id(event_id)
+        tournament = await get_tournament_by_id(tournament_id)
         if not tournament:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Tournament with ID {event_id} not found"
+                detail=f"Tournament with ID {tournament_id} not found"
             )
         return tournament
         
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error retrieving tournament {event_id}: {str(e)}", exc_info=True)
+        logger.error(f"Error retrieving tournament {tournament_id}: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred while retrieving the tournament"
@@ -453,7 +453,7 @@ async def list_tournaments(
         )
 
 @router.put(
-    "/{event_id}",
+    "/{tournament_id}",
     response_model=TournamentResponse,
     responses={
         200: {"description": "Tournament updated successfully"},
@@ -468,8 +468,8 @@ async def list_tournaments(
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def update_tournament(
     request: Request,
-    event_id: str = Path(..., 
-                        description="The UUID of the event to update",
+    tournament_id: str = Path(..., 
+                        description="The UUID of the tournament to update",
                         examples=[UUID_EXAMPLE], 
                         pattern=UUID_PATTERN),
     tournament_update: TournamentUpdate = Body(..., description="Tournament data to update"),
@@ -483,11 +483,11 @@ async def update_tournament(
     """
     try:
         # Check if tournament exists
-        existing_tournament = await get_tournament_by_id(event_id)
+        existing_tournament = await get_tournament_by_id(tournament_id)
         if not existing_tournament:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Tournament with ID {event_id} not found"
+                detail=f"Tournament with ID {tournament_id} not found"
             )
         
         # Check for name/date conflict if name or dates are being updated
@@ -495,7 +495,7 @@ async def update_tournament(
             client = supabase.get_client()
             query = client.table("tournaments")\
                 .select("*")\
-                .neq("id", event_id)
+                .neq("id", tournament_id)
                 
             if tournament_update.name:
                 query = query.ilike("name", tournament_update.name)
@@ -523,25 +523,25 @@ async def update_tournament(
             return existing_tournament
         
         # Update tournament
-        updated_tournament = supabase.update("tournaments", event_id, update_data)
+        updated_tournament = supabase.update("tournaments", tournament_id, update_data)
         
         return updated_tournament
         
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error updating tournament {event_id}: {str(e)}", exc_info=True)
+        logger.error(f"Error updating tournament {tournament_id}: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred while updating the tournament"
         )
 
 @router.delete(
-    "/{event_id}",
+    "/{tournament_id}",
     status_code=status.HTTP_204_NO_CONTENT,
     responses={
         204: {"description": "Tournament deleted successfully"},
-        400: {"description": "Cannot delete event with participants"},
+        400: {"description": "Cannot delete tournament with participants"},
         401: {"description": "Not authenticated"},
         403: {"description": "Insufficient permissions"},
         404: {"description": "Tournament not found"},
@@ -551,8 +551,8 @@ async def update_tournament(
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def delete_tournament(
     request: Request,
-    event_id: str = Path(..., 
-                        description="The UUID of the event to delete",
+    tournament_id: str = Path(..., 
+                        description="The UUID of the tournament to delete",
                         examples=[UUID_EXAMPLE], 
                         pattern=UUID_PATTERN),
     force: bool = Query(
@@ -569,22 +569,22 @@ async def delete_tournament(
     """
     try:
         # Check if tournament exists
-        tournament = await get_tournament_by_id(event_id)
+        tournament = await get_tournament_by_id(tournament_id)
         if not tournament:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Tournament with ID {event_id} not found"
+                detail=f"Tournament with ID {tournament_id} not found"
             )
         
         # Delete tournament
-        supabase.delete("tournaments", event_id)
+        supabase.delete("tournaments", tournament_id)
         
         return None
         
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error deleting tournament {event_id}: {str(e)}", exc_info=True)
+        logger.error(f"Error deleting tournament {tournament_id}: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred while deleting the tournament"

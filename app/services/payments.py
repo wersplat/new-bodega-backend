@@ -17,105 +17,16 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 class PaymentService:
     @staticmethod
     async def create_checkout_session(
-        event_id: str,
+        tournament_id: str,
         player_id: str
     ) -> dict:
         """
-        Create Stripe checkout session for event registration
+        Temporarily disabled: tournament registration payments are disabled during refactor
         """
-        # Get event details
-        event_result = supabase.get_client().table("events").select("*").eq("id", event_id).single().execute()
-        if not event_result.data:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Event not found"
-            )
-        
-        event = event_result.data
-        
-        # Get player details
-        player_result = supabase.get_client().table("players").select("*").eq("id", player_id).single().execute()
-        if not player_result.data:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Player not found"
-            )
-        
-        player = player_result.data
-        
-        # Check if already registered
-        existing_registration_result = supabase.get_client().table("event_registrations").select("*").eq("event_id", event_id).eq("player_id", player_id).execute()
-        
-        if existing_registration_result.data and len(existing_registration_result.data) > 0:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Already registered for this event"
-            )
-        
-        try:
-            # Create Stripe checkout session
-            checkout_session = stripe.checkout.Session.create(
-                payment_method_types=['card'],
-                line_items=[{
-                    'price_data': {
-                        'currency': 'usd',
-                        'product_data': {
-                            'name': f"Event Registration: {event['name']}",
-                            'description': f"Registration for {player['gamertag']} in {event['name']}",
-                        },
-                        'unit_amount': int(float(event['entry_fee']) * 100),  # Convert to cents
-                    },
-                    'quantity': 1,
-                }],
-                mode='payment',
-                success_url=f"{settings.CORS_ORIGINS_LIST[0]}/payment/success?session_id={{CHECKOUT_SESSION_ID}}",
-                cancel_url=f"{settings.CORS_ORIGINS_LIST[0]}/payment/cancel",
-                metadata={
-                    'event_id': str(event_id),
-                    'player_id': str(player_id),
-                    'gamertag': player['gamertag'],
-                    'event_name': event['name']
-                }
-            )
-            
-            # Create pending registration in Supabase
-            registration_data = {
-                "id": str(uuid.uuid4()),
-                "event_id": event_id,
-                "player_id": player_id,
-                "payment_status": "pending",
-                "stripe_session_id": checkout_session.id,
-                "is_confirmed": False,
-                "created_at": datetime.now().isoformat()
-            }
-            
-            registration_result = supabase.get_client().table("event_registrations").insert(registration_data).execute()
-            
-            if not registration_result.data:
-                # If registration creation fails, we should handle this case
-                raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail="Failed to create registration record"
-                )
-            
-            return {
-                'session_id': checkout_session.id,
-                'checkout_url': checkout_session.url,
-                'amount': event['entry_fee']
-            }
-            
-        except stripe.error.StripeError as e:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Payment error: {str(e)}"
-            )
-        except Exception as e:
-            if isinstance(e, HTTPException):
-                raise e
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Error creating checkout session: {str(e)}"
-            )
+        raise HTTPException(
+            status_code=status.HTTP_410_GONE,
+            detail="Tournament registration payments temporarily disabled during refactor"
+        )
     
     @staticmethod
     async def handle_webhook(
@@ -123,40 +34,12 @@ class PaymentService:
         sig_header: str
     ) -> dict:
         """
-        Handle Stripe webhook events
+        Temporarily disabled: Stripe webhook processing is disabled during refactor
         """
-        try:
-            event = stripe.Webhook.construct_event(
-                payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
-            )
-        except ValueError as e:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid payload"
-            )
-        except stripe.error.SignatureVerificationError as e:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid signature"
-            )
-        
-        try:
-            # Handle the event
-            if event['type'] == 'checkout.session.completed':
-                session = event['data']['object']
-                await PaymentService._handle_payment_success(session)
-            elif event['type'] == 'checkout.session.expired':
-                session = event['data']['object']
-                await PaymentService._handle_payment_expired(session)
-            
-            return {'status': 'success'}
-        except Exception as e:
-            if isinstance(e, HTTPException):
-                raise e
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Error processing webhook: {str(e)}"
-            )
+        raise HTTPException(
+            status_code=status.HTTP_410_GONE,
+            detail="Stripe webhook processing temporarily disabled during payments refactor"
+        )
     
     @staticmethod
     async def _handle_payment_success(session: dict):
@@ -231,68 +114,9 @@ class PaymentService:
         registration_id: str
     ) -> dict:
         """
-        Process refund for event registration
+        Temporarily disabled: refunds are disabled during refactor
         """
-        try:
-            # Get registration from Supabase
-            registration_result = supabase.get_client().table("event_registrations").select("*").eq("id", registration_id).single().execute()
-            
-            if not registration_result.data:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Registration not found"
-                )
-            
-            registration = registration_result.data
-            
-            if registration["payment_status"] != 'paid':
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Cannot refund unpaid registration"
-                )
-            
-            # Get event details
-            event_result = supabase.get_client().table("events").select("*").eq("id", registration["event_id"]).single().execute()
-            if not event_result.data:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Event not found"
-                )
-            
-            try:
-                # Get payment intent from session
-                session = stripe.checkout.Session.retrieve(registration["stripe_session_id"])
-                payment_intent = session.payment_intent
-                
-                # Process refund
-                refund = stripe.Refund.create(
-                    payment_intent=payment_intent,
-                    reason="requested_by_customer"
-                )
-                
-                # Update registration status in Supabase
-                update_result = supabase.get_client().table("event_registrations").update({"payment_status": "refunded"}).eq("id", registration_id).execute()
-                
-                if not update_result.data:
-                    raise HTTPException(
-                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                        detail="Failed to update registration status"
-                    )
-                
-                return {
-                    'status': 'success',
-                    'refund_id': refund.id
-                }
-                
-            except stripe.error.StripeError as e:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Refund error: {str(e)}"
-                )
-        except Exception as e:
-            if isinstance(e, HTTPException):
-                raise e
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Error processing refund: {str(e)}"
-            )
+        raise HTTPException(
+            status_code=status.HTTP_410_GONE,
+            detail="Refunds temporarily disabled during payments refactor"
+        )

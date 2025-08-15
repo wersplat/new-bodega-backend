@@ -6,7 +6,7 @@ with support for filtering, sorting, and pagination.
 
 Endpoint:
 - GET /: Get leaderboard with comprehensive filtering options
-  - Filter by: tier, region, tournament (event_id), league_id, min_games
+  - Filter by: tier, region, tournament_id, league_id, min_games
   - Sort by: RP, peak RP, wins, win rate
   - Pagination support
 """
@@ -61,7 +61,7 @@ async def get_leaderboard(
     # Filtering
     tier: Optional[PlayerTier] = Query(None, description="Filter by player tier"),
     region: Optional[str] = Query(None, description="Filter by region code (e.g., 'NA', 'EU')"),
-    event_id: Optional[str] = Query(None, description="Filter by tournament ID (back-compat param name: event_id)"),
+    tournament_id: Optional[str] = Query(None, description="Filter by tournament ID"),
     league_id: Optional[str] = Query(None, description="Filter by league (leagues_info.id)"),
     min_games: Optional[int] = Query(None, ge=1, description="Minimum number of games played"),
     
@@ -84,7 +84,7 @@ async def get_leaderboard(
     Get leaderboard with comprehensive filtering and sorting options.
     
     This endpoint provides a unified way to query player rankings with support for:
-    - Filtering by tier, region, tournament (via event_id), league_id, and minimum games played
+    - Filtering by tier, region, tournament_id, league_id, and minimum games played
     - Sorting by RP, peak RP, wins, or win rate
     - Pagination and top-N shortcuts
     
@@ -94,8 +94,8 @@ async def get_leaderboard(
         offset: Pagination offset
         tier: Filter by player tier
         region: Filter by region code
-        event_id: Filter by specific tournament (back-compat param name). Mutually exclusive with league_id.
-        league_id: Filter by specific league (leagues_info.id). Mutually exclusive with event_id.
+        tournament_id: Filter by specific tournament. Mutually exclusive with league_id.
+        league_id: Filter by specific league (leagues_info.id). Mutually exclusive with tournament_id.
         min_games: Minimum number of games played
         sort_by: Field to sort the leaderboard by
         descending: Whether to sort in descending order
@@ -116,17 +116,24 @@ async def get_leaderboard(
         logger.info(
             f"Fetching leaderboard - sort_by: {sort_by}, "
             f"descending: {descending}, tier: {tier}, region: {region}, "
-            f"tournament(event_id): {event_id}, league_id: {league_id}, min_games: {min_games}, "
+            f"tournament_id: {tournament_id}, league_id: {league_id}, min_games: {min_games}, "
             f"limit: {limit}, offset: {offset}"
         )
         
         client = supabase.get_client()
         
+        # Back-compat: accept 'event_id' query param as alias for 'tournament_id'
+        if not tournament_id:
+            legacy_event_id = request.query_params.get("event_id")
+            if legacy_event_id:
+                tournament_id = legacy_event_id
+                logger.info("Using deprecated query parameter 'event_id' as alias for 'tournament_id'")
+
         # Validate mutually exclusive filters
-        if event_id and league_id:
+        if tournament_id and league_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Provide either event_id (tournament filter) or league_id, not both."
+                detail="Provide either tournament_id or league_id, not both."
             )
 
         # Base query - select only necessary fields for better performance
@@ -148,18 +155,18 @@ async def get_leaderboard(
         # Handle tournament- and league-specific filtering
         team_ids_filter: Optional[List[str]] = None
 
-        # Tournament (back-compat: event_id param)
-        if event_id:
+        # Tournament filter
+        if tournament_id:
             try:
                 teams_resp = (
                     client.table("event_results")
                     .select("team_id")
-                    .eq("tournament_id", event_id)
+                    .eq("tournament_id", tournament_id)
                     .execute()
                 )
                 tournament_team_ids = sorted({row.get("team_id") for row in (teams_resp.data or []) if row.get("team_id")})
             except Exception as e:
-                logger.error(f"Failed to fetch teams for tournament {event_id}: {str(e)}", exc_info=True)
+                logger.error(f"Failed to fetch teams for tournament {tournament_id}: {str(e)}", exc_info=True)
                 raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                     detail="Error applying tournament filter")
             if team_ids_filter is None:
@@ -311,11 +318,7 @@ async def get_tier_leaderboard(
     "/event/{event_id}",
     response_model=List[Dict],
     responses={
-        200: {"description": "Event leaderboard retrieved successfully"},
-        400: {"description": "Invalid event ID"},
-        404: {"description": "Event not found"},
-        429: {"description": "Rate limit exceeded"},
-        500: {"description": "Internal server error"}
+        410: {"description": "Deprecated endpoint"}
     }
 )
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
@@ -325,103 +328,12 @@ async def get_event_leaderboard(
     include_stats: bool = Query(False, description="Include detailed player statistics")
 ) -> List[Dict[str, Any]]:
     """
-    Get leaderboard for a specific event (backed by tournaments in new schema).
-    
-    This endpoint retrieves the leaderboard for a specific event, showing player rankings
-    and statistics for that event. It uses an optimized database function to efficiently
-    calculate and return the results.
-    
-    Args:
-        request: The FastAPI request object (used for rate limiting)
-        event_id: The unique identifier of the event
-        include_stats: Whether to include detailed player statistics
-        
-    Returns:
-        List[Dict[str, Any]]: List of player entries in the event leaderboard
-        
-    Raises:
-        HTTPException: If the event is not found or there's an error retrieving the leaderboard
+    Deprecated legacy endpoint that used 'event_id'. Use GET /v1/leaderboard?tournament_id=... instead.
     """
-    try:
-        logger.info(f"Fetching leaderboard for tournament (event) {event_id}")
-        
-        # Validate event_id format
-        try:
-            # This will raise a ValueError if the event_id is not a valid UUID
-            uuid.UUID(event_id)
-        except ValueError:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid event ID format. Must be a valid UUID."
-            )
-        
-        client = supabase.get_client()
-        
-        # First get the tournament (backing the legacy 'event') to verify it exists and get basic info
-        event_result = (
-            client.table("tournaments")
-            .select("id, name, start_date, end_date, status")
-            .eq("id", event_id)
-            .single()
-            .execute()
-        )
-        
-        if not hasattr(event_result, 'data') or not event_result.data:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Event with ID {event_id} not found"
-            )
-        
-        event = event_result.data
-        logger.debug(f"Found tournament: {event.get('name')} (ID: {event_id})")
-        
-        # Determine which fields to select based on include_stats
-        select_fields = [
-            "player_id", "gamertag", "avatar_url", "total_points", "rank",
-            "matches_played", "wins", "losses", "win_rate"
-        ]
-        
-        if include_stats:
-            select_fields.extend([
-                "kills", "deaths", "assists", "kd_ratio", "damage_dealt",
-                "damage_taken", "healing_done", "objectives_completed"
-            ])
-        
-        # Get event standings with player details using the RPC function
-        result = client.rpc(
-            'get_event_standings',
-            {
-                'p_event_id': event_id,
-                'p_include_stats': include_stats
-            }
-        ).execute()
-        
-        leaderboard = result.data if hasattr(result, 'data') else []
-        
-        # Add event information to each entry
-        for entry in leaderboard:
-            entry["event_id"] = event_id
-            entry["event_name"] = event.get("name")
-            
-            # Calculate rank percentage if we have enough data
-            if "rank" in entry and "total_players" in event:
-                total_players = event["total_players"] or 1  # Avoid division by zero
-                entry["rank_percentile"] = min(100, round((entry["rank"] / total_players) * 100, 2))
-        
-        logger.info(f"Retrieved leaderboard for event {event_id} with {len(leaderboard)} entries")
-        return leaderboard
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(
-            f"Error retrieving leaderboard for event {event_id}: {str(e)}",
-            exc_info=True
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="An error occurred while retrieving the event leaderboard"
-        )
+    raise HTTPException(
+        status_code=status.HTTP_410_GONE,
+        detail="Deprecated endpoint. Use GET /v1/leaderboard?tournament_id=... instead."
+    )
 
 @router.get(
     "/peak-rp",

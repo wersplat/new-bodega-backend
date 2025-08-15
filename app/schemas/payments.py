@@ -9,4 +9,4 @@ class CreatePaymentSessionRequest(BaseModel):
     """
     Request schema for creating a payment session
     """
-    event_id: str = Field(..., description="ID of the event to register for")
+    tournament_id: str = Field(..., description="ID of the tournament to register for")
