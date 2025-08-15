@@ -13,7 +13,8 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.models.league import League, LeagueSeason, LeagueEnum, Console, GameYear
-from app.core.auth import get_current_active_user, User
+from app.core.auth import get_current_active_user
+from app.schemas.user import User
 
 router = APIRouter(
     prefix="/leagues",

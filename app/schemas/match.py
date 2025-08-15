@@ -36,7 +36,6 @@ class MatchStage(str, Enum):
     W4 = "w4"
     LF = "lf"
     WF = "wf"
-    GRAND_FINALS = "grand_finals"
     
 class MatchBase(BaseModel):
     """Base match schema with required fields"""
@@ -47,7 +46,7 @@ class MatchBase(BaseModel):
     team_a_id: UUID
     team_b_id: UUID
     winner_id: Optional[UUID] = None
-    stage: MatchStage = MatchStage.GROUP
+    stage: MatchStage = MatchStage.GROUP_PLAY
     game_number: int = Field(1, ge=1)
     scheduled_at: Optional[datetime] = None
 
