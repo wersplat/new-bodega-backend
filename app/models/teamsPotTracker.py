@@ -1,48 +1,41 @@
 """
 Teams Pot Tracker Model
 
-This module defines the SQLAlchemy model for tracking team prize money in tournaments.
+This module defines the SQLAlchemy model for tracking team pot winnings.
 """
-
-from sqlalchemy import Column, Integer, ForeignKey, DateTime
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.sql import func
+from sqlalchemy import Column, String, ForeignKey, Integer, DateTime, Numeric
 from sqlalchemy.orm import relationship
-from app.core.database import Base
 
+from app.core.database import Base
 
 class TeamsPotTracker(Base):
     """
-    SQLAlchemy model representing team prize money tracking in tournaments.
-    
-    This model tracks the prize money earned by teams in various tournaments.
+    SQLAlchemy model for tracking team pot winnings.
     """
-    __tablename__ = 'teams_pot_tracker'
+    __tablename__ = "teams_pot_tracker"
     
-    id = Column(UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid())
-    team_id = Column(UUID(as_uuid=True), ForeignKey('teams.id', onupdate='CASCADE'), nullable=True)
-    placement = Column(Integer, nullable=True)
-    prize_amount = Column(Integer, nullable=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    league_id = Column(UUID(as_uuid=True), ForeignKey('leagues_info.id', onupdate='CASCADE', ondelete='SET NULL'), nullable=True)
-    tournament_id = Column(UUID(as_uuid=True), ForeignKey('tournaments.id', onupdate='CASCADE', ondelete='SET NULL'), nullable=True)
+    id = Column(String, primary_key=True, index=True)
+    team_id = Column(String, ForeignKey("teams.id"), nullable=False)
+    league_id = Column(String, ForeignKey("leagues_info.id"), nullable=True)
+    tournament_id = Column(String, ForeignKey("tournaments.id"), nullable=True)
+    amount = Column(Numeric(10, 2), default=0.0, nullable=False)
+    last_updated = Column(DateTime, nullable=True)
     
     # Relationships
-    team = relationship('Team', back_populates='pot_tracker_entries')
-    league = relationship('LeagueInfo', back_populates='pot_tracker_entries')
-    tournament = relationship('Tournament', back_populates='pot_tracker_entries')
+    team = relationship("Team", back_populates="teams_pot_tracker")
+    league = relationship("League", back_populates="teams_pot_tracker")
+    tournament = relationship("Tournament", back_populates="teams_pot_tracker")
     
     def __repr__(self):
-        return f"<TeamsPotTracker(id={self.id}, team_id={self.team_id}, placement={self.placement}, prize_amount={self.prize_amount})>"
+        return f"<TeamsPotTracker(id={self.id}, team_id={self.team_id}, amount={self.amount})>"
     
     def to_dict(self):
-        """Convert the model instance to a dictionary."""
+        """Convert the pot tracker to a dictionary."""
         return {
-            'id': str(self.id),
-            'team_id': str(self.team_id) if self.team_id else None,
-            'placement': self.placement,
-            'prize_amount': self.prize_amount,
-            'created_at': self.created_at.isoformat() if self.created_at else None,
-            'league_id': str(self.league_id) if self.league_id else None,
-            'tournament_id': str(self.tournament_id) if self.tournament_id else None
+            'id': self.id,
+            'team_id': self.team_id,
+            'league_id': self.league_id,
+            'tournament_id': self.tournament_id,
+            'amount': float(self.amount) if self.amount is not None else 0.0,
+            'last_updated': self.last_updated.isoformat() if self.last_updated else None
         }

@@ -3,100 +3,126 @@ Tournament Model
 
 This module defines the SQLAlchemy model for tournaments in the system.
 """
-
 from datetime import datetime
 from enum import Enum
-from typing import Optional, Dict, Any
-from uuid import UUID, uuid4
-
-from sqlalchemy import Column, String, ForeignKey, Integer, Boolean, Text, DateTime, JSON
-from sqlalchemy.dialects.postgresql import UUID as PGUUID, JSONB
+from sqlalchemy import Column, String, DateTime, Text, Boolean, ForeignKey, Integer, Numeric, Enum as SQLAlchemyEnum
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base
 
-class Console(str, Enum):
-    """Enumeration of possible console platforms."""
-    PLAYSTATION = "PlayStation"
-    XBOX = "Xbox"
-    CROSS_PLAY  = "Cross Play"
-
-class GameYear(str, Enum):
-    """Enumeration of NBA 2K game years."""
-    K22 = "2K22"
-    K23 = "2K23"
-    K24 = "2K24"
-    K25 = "2K25"
-    K26 = "2K26"
-
-class EventTier(str, Enum):
-    """Enumeration of event tiers."""
-    T1 = "T1"
-    T2 = "T2"
-    T3 = "T3"
-    T4 = "T4"
-
-class Status(str, Enum):
-    """Enumeration of tournament statuses."""
-    SCHEDULED = "scheduled"
+class TournamentStatus(str, Enum):
+    DRAFT = "draft"
     UPCOMING = "upcoming"
+    REGISTRATION_OPEN = "registration_open"
+    REGISTRATION_CLOSED = "registration_closed"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
-    UNDER_REVIEW = "under_review"
-    REVIEWED = "reviewed"
-    APPROVED = "approved"
+    CANCELLED = "cancelled"
+    POSTPONED = "postponed"
+
+class TournamentTier(str, Enum):
+    T1 = "t1"
+    T2 = "t2"
+    T3 = "t3"
+    T4 = "t4"
+    OPEN = "open"
+    INVITATIONAL = "invitational"
+    QUALIFIER = "qualifier"
+    MAJOR = "major"
+    MINOR = "minor"
+
 class Tournament(Base):
     """
     SQLAlchemy model representing a tournament in the system.
-    
-    This model maps to the 'tournaments' table in the database.
     """
     __tablename__ = "tournaments"
     
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4, index=True)
-    name = Column(String, nullable=True)
+    id = Column(String, primary_key=True, index=True)
+    name = Column(String, nullable=False, index=True)
+    short_name = Column(String(10), nullable=True)
     description = Column(Text, nullable=True)
-    status = Column(String, nullable=True)  # Uses Status enum
-    tier = Column(String, nullable=True)    # Uses EventTier enum
-    console = Column(String, nullable=True)  # Uses Console enum
-    game_year = Column(String, nullable=True)  # Uses GameYear enum
-    
-    # Tournament dates
-    start_date = Column(DateTime, nullable=True)
-    end_date = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, nullable=False)
-    processed_at = Column(DateTime, nullable=True)
-    
-    # Organizer information
-    organizer_id = Column(PGUUID(as_uuid=True), ForeignKey("leagues_info.id"), nullable=True)
-    organizer_logo_url = Column(String, ForeignKey("leagues_info.lg_logo_url"), nullable=True)
     
     # Tournament details
+    logo_url = Column(String, nullable=True)
     banner_url = Column(String, nullable=True)
     rules_url = Column(String, nullable=True)
-    place = Column(String, ForeignKey("teams.id"), nullable=True)
-    prize_pool = Column(Integer, nullable=True)
-    max_rp = Column(Integer, nullable=True)
-    decay_days = Column(Integer, nullable=True)
     
-    # Championship details
-    champion = Column(String, ForeignKey("teams.id"), nullable=True)
-    runner_up = Column(String, ForeignKey("teams.id"), nullable=True)
+    # Tournament configuration
+    status = Column(SQLAlchemyEnum(TournamentStatus), default=TournamentStatus.DRAFT, nullable=False)
+    tier = Column(SQLAlchemyEnum(TournamentTier), nullable=False)
+    is_team_based = Column(Boolean, default=True, nullable=False)
+    is_public = Column(Boolean, default=True, nullable=False)
+    max_teams = Column(Integer, nullable=True)
+    min_teams = Column(Integer, default=2, nullable=False)
     
-    # Sponsor information
-    sponsor = Column(String, ForeignKey("sponsor_info.sponsor_name"), nullable=True)
-    sponsor_logo = Column(String, ForeignKey("sponsor_info.sponsor_logo"), nullable=True)
+    # Tournament schedule
+    registration_start = Column(DateTime, nullable=True)
+    registration_end = Column(DateTime, nullable=True)
+    check_in_start = Column(DateTime, nullable=True)
+    check_in_end = Column(DateTime, nullable=True)
+    start_date = Column(DateTime, nullable=False)
+    end_date = Column(DateTime, nullable=True)
+    
+    # Game settings
+    game_title = Column(String, nullable=False)
+    platform = Column(String, nullable=False)
+    region = Column(String, nullable=True)
+    
+    # Prize pool
+    prize_pool = Column(Numeric(12, 2), default=0.0, nullable=False)
+    currency = Column(String(3), default="USD", nullable=False)
+    
+    # External references
+    league_id = Column(String, ForeignKey("leagues_info.id"), nullable=True)
+    organizer_id = Column(String, ForeignKey("users.id"), nullable=True)
+    
+    # Timestamps
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, onupdate=datetime.utcnow, nullable=True)
     
     # Relationships
-    organizer = relationship("League", foreign_keys=[organizer_id])
-    organizer_logo = relationship("League", foreign_keys=[organizer_logo_url])
-    
-    champion_team = relationship("Team", foreign_keys=[champion])
-    runner_up_team = relationship("Team", foreign_keys=[runner_up])
-    place_team = relationship("Team", foreign_keys=[place])
-    
-    sponsor_info = relationship("SponsorInfo", foreign_keys=[sponsor])
-    sponsor_logo_info = relationship("SponsorInfo", foreign_keys=[sponsor_logo])
+    league = relationship("League", back_populates="tournaments")
+    organizer = relationship("User", back_populates="organized_tournaments")
+    tournament_groups = relationship("TournamentGroup", back_populates="tournament")
+    matches = relationship("Match", back_populates="tournament")
+    tournament_results = relationship("TournamentResult", back_populates="tournament")
+    rp_transactions = relationship("PlayerRPTransaction", back_populates="tournament")
+    pot_tracker_entries = relationship("TeamsPotTracker", back_populates="tournament")
+    match_submissions = relationship("MatchSubmission", back_populates="tournament")
+    upcoming_matches = relationship("UpcomingMatch", back_populates="tournament")
     
     def __repr__(self):
-        return f"<Tournament {self.name} ({self.status})>"
+        return f"<Tournament(id={self.id}, name='{self.name}')>"
+    
+    def to_dict(self):
+        """Convert the tournament to a dictionary."""
+        return {
+            'id': self.id,
+            'name': self.name,
+            'short_name': self.short_name,
+            'description': self.description,
+            'logo_url': self.logo_url,
+            'banner_url': self.banner_url,
+            'rules_url': self.rules_url,
+            'status': self.status.value if self.status else None,
+            'tier': self.tier.value if self.tier else None,
+            'is_team_based': self.is_team_based,
+            'is_public': self.is_public,
+            'max_teams': self.max_teams,
+            'min_teams': self.min_teams,
+            'registration_start': self.registration_start.isoformat() if self.registration_start else None,
+            'registration_end': self.registration_end.isoformat() if self.registration_end else None,
+            'check_in_start': self.check_in_start.isoformat() if self.check_in_start else None,
+            'check_in_end': self.check_in_end.isoformat() if self.check_in_end else None,
+            'start_date': self.start_date.isoformat() if self.start_date else None,
+            'end_date': self.end_date.isoformat() if self.end_date else None,
+            'game_title': self.game_title,
+            'platform': self.platform,
+            'region': self.region,
+            'prize_pool': float(self.prize_pool) if self.prize_pool else 0.0,
+            'currency': self.currency,
+            'league_id': self.league_id,
+            'organizer_id': self.organizer_id,
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None
+        }

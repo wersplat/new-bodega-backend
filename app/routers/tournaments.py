@@ -23,22 +23,22 @@ router = APIRouter(
 
 # Pydantic models for request/response
 class TournamentBase(BaseModel):
-    name: str
+    name: Optional[str] = None
     description: Optional[str] = None
-    status: Status
-    tier: EventTier
-    console: Console
-    game_year: GameYear
-    start_date: datetime
-    end_date: datetime
+    status: Status = Status.SCHEDULED
+    tier: EventTier = EventTier.T1
+    console: Console = Console.CROSS_PLAY
+    game_year: GameYear = GameYear._2K24
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
     organizer_id: Optional[UUID] = None
     organizer_logo_url: Optional[str] = None
     banner_url: Optional[str] = None
     rules_url: Optional[str] = None
     place: Optional[UUID] = None
-    prize_pool: Optional[int] = None
-    max_rp: Optional[int] = None
-    decay_days: Optional[int] = None
+    prize_pool: Optional[int] = 0
+    max_rp: Optional[int] = 0
+    decay_days: Optional[int] = 30
     champion: Optional[UUID] = None
     runner_up: Optional[UUID] = None
     sponsor: Optional[str] = None
@@ -48,8 +48,34 @@ class TournamentBase(BaseModel):
         orm_mode = True
         use_enum_values = True
 
-class TournamentCreate(TournamentBase):
-    pass
+class TournamentCreate(BaseModel):
+    name: str = Field(..., description="Name of the tournament")
+    description: Optional[str] = None
+    status: Status = Status.SCHEDULED
+    tier: EventTier = EventTier.T1
+    console: Console = Console.CROSS_PLAY
+    game_year: GameYear = GameYear._2K24
+    start_date: datetime = Field(..., description="Start date of the tournament")
+    end_date: datetime = Field(..., description="End date of the tournament")
+    organizer_id: Optional[UUID] = None
+    organizer_logo_url: Optional[str] = None
+    banner_url: Optional[str] = None
+    rules_url: Optional[str] = None
+    prize_pool: int = 0
+    max_rp: int = 0
+    decay_days: int = 30
+    sponsor: Optional[str] = None
+    sponsor_logo: Optional[str] = None
+
+    @validator('end_date')
+    def validate_dates(cls, v, values):
+        if 'start_date' in values and v < values['start_date']:
+            raise ValueError('End date must be after start date')
+        return v
+
+    class Config:
+        orm_mode = True
+        use_enum_values = True
 
 class TournamentUpdate(BaseModel):
     name: Optional[str] = None
@@ -98,17 +124,24 @@ async def create_tournament(
             detail="Not enough permissions"
         )
     
-    db_tournament = Tournament(
-        **tournament.dict(),
-        id=uuid4(),
-        created_at=datetime.utcnow()
-    )
-    
-    db.add(db_tournament)
-    db.commit()
-    db.refresh(db_tournament)
-    
-    return db_tournament
+    try:
+        db_tournament = Tournament(
+            **tournament.dict(exclude_unset=True),
+            id=uuid4(),
+            created_at=datetime.utcnow()
+        )
+        
+        db.add(db_tournament)
+        db.commit()
+        db.refresh(db_tournament)
+        
+        return db_tournament
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Error creating tournament: {str(e)}"
+        )
 
 @router.get("/", response_model=List[TournamentResponse])
 async def list_tournaments(

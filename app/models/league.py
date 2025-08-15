@@ -52,6 +52,12 @@ class GameYear(enum.Enum):
     _2K25 = "2K25"
     _2K26 = "2K26"
 
+class LeagueStatus(str, Enum):
+    UPCOMING = "upcoming"
+    ONGOING = "ongoing"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"
+
 class LeagueEnum(str, Enum):
     """Enumeration of possible leagues."""
     # Add actual league values from the database
@@ -75,17 +81,47 @@ class League(Base):
     __tablename__ = "leagues_info"
     
     id = Column(String, primary_key=True, index=True)
-    league = Column(String, nullable=True)  # Uses LeagueEnum
-    lg_discord = Column(String, nullable=True)
-    lg_logo_url = Column(String, nullable=True)
-    lg_url = Column(String, nullable=True)
-    sponsor_info = Column(Text)
-    twitch_url = Column(String, nullable=True)
-    twitter_id = Column(String, nullable=True)
+    name = Column(String, nullable=False, index=True)
+    short_name = Column(String(10), nullable=True)
+    description = Column(Text, nullable=True)
+    
+    # League details
+    logo_url = Column(String, nullable=True)
+    banner_url = Column(String, nullable=True)
+    website_url = Column(String, nullable=True)
+    
+    # League configuration
+    status = Column(String, default=LeagueStatus.UPCOMING, nullable=False)
+    is_featured = Column(Boolean, default=False, nullable=False)
+    is_public = Column(Boolean, default=True, nullable=False)
+    
+    # League schedule
+    registration_start = Column(DateTime, nullable=True)
+    registration_end = Column(DateTime, nullable=True)
+    season_start = Column(DateTime, nullable=True)
+    season_end = Column(DateTime, nullable=True)
+    
+    # Prize pool
+    total_prize_pool = Column(Float, default=0.0, nullable=False)
+    currency = Column(String(3), default="USD", nullable=False)
+    
+    # Game settings
+    game_title = Column(String, nullable=False)
+    platform = Column(String, nullable=False)  # e.g., "PC", "PlayStation", "Xbox"
+    region = Column(String, nullable=True)  # e.g., "NA", "EU", "Global"
+    
+    # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
     # Relationships
+    league_teams = relationship("LeagueTeam", back_populates="league")
     tournaments = relationship("Tournament", back_populates="league")
+    ranking_points = relationship("RankingPoints", back_populates="league")
+    rp_transactions = relationship("PlayerRPTransaction", back_populates="league")
+    pot_tracker_entries = relationship("TeamsPotTracker", back_populates="league")
+    match_submissions = relationship("MatchSubmission", back_populates="league")
+    upcoming_matches = relationship("UpcomingMatch", back_populates="league")
     awards_race = relationship("AwardsRace", back_populates="league")
     draft_pool = relationship("DraftPool", back_populates="league")
     event_results = relationship("TournamentResult", back_populates="league")
@@ -101,7 +137,33 @@ class League(Base):
     past_champions = relationship("PastChampion", back_populates="league")
     
     def __repr__(self):
-        return f"<League {self.league} ({self.id})>"
+        return f"<League(id={self.id}, name='{self.name}')>"
+    
+    def to_dict(self):
+        """Convert the league to a dictionary."""
+        return {
+            'id': self.id,
+            'name': self.name,
+            'short_name': self.short_name,
+            'description': self.description,
+            'logo_url': self.logo_url,
+            'banner_url': self.banner_url,
+            'website_url': self.website_url,
+            'status': self.status,
+            'is_featured': self.is_featured,
+            'is_public': self.is_public,
+            'registration_start': self.registration_start.isoformat() if self.registration_start else None,
+            'registration_end': self.registration_end.isoformat() if self.registration_end else None,
+            'season_start': self.season_start.isoformat() if self.season_start else None,
+            'season_end': self.season_end.isoformat() if self.season_end else None,
+            'total_prize_pool': float(self.total_prize_pool) if self.total_prize_pool else 0.0,
+            'currency': self.currency,
+            'game_title': self.game_title,
+            'platform': self.platform,
+            'region': self.region,
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None
+        }
 
 class LeagueSeason(Base):
     """
