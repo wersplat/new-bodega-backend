@@ -1,31 +1,31 @@
 -- Migration to rename event-related tables to use tournament terminology
 
 -- 1. Rename tables
-ALTER TABLE event_groups RENAME TO tournament_groups;
-ALTER TABLE event_group_members RENAME TO tournament_group_members;
+ALTER TABLE tournament_groupss RENAME TO tournament_groups;
+ALTER TABLE tournament_groups_members RENAME TO tournament_group_members;
 
 -- 2. Rename constraints
 -- For tournament_groups
 ALTER TABLE tournament_groups 
-  RENAME CONSTRAINT event_groups_pkey TO tournament_groups_pkey;
+  RENAME CONSTRAINT tournament_groupss_pkey TO tournament_groups_pkey;
 ALTER TABLE tournament_groups
-  RENAME CONSTRAINT event_groups_league_season_id_fkey TO tournament_groups_league_season_id_fkey;
+  RENAME CONSTRAINT tournament_groupss_league_season_id_fkey TO tournament_groups_league_season_id_fkey;
 ALTER TABLE tournament_groups
-  RENAME CONSTRAINT event_groups_tournament_id_fkey TO tournament_groups_tournament_id_fkey;
+  RENAME CONSTRAINT tournament_groupss_tournament_id_fkey TO tournament_groups_tournament_id_fkey;
 
 -- For tournament_group_members
 ALTER TABLE tournament_group_members
-  RENAME CONSTRAINT event_group_members_pkey TO tournament_group_members_pkey;
+  RENAME CONSTRAINT tournament_groups_members_pkey TO tournament_group_members_pkey;
 ALTER TABLE tournament_group_members
-  RENAME CONSTRAINT event_group_members_group_id_fkey TO tournament_group_members_group_id_fkey;
+  RENAME CONSTRAINT tournament_groups_members_group_id_fkey TO tournament_group_members_group_id_fkey;
 ALTER TABLE tournament_group_members
-  RENAME CONSTRAINT event_group_members_team_id_fkey TO tournament_group_members_team_id_fkey;
+  RENAME CONSTRAINT tournament_groups_members_team_id_fkey TO tournament_group_members_team_id_fkey;
 
 
 -- 3. Update indexes
-ALTER INDEX IF EXISTS idx_event_groups_tournament_id RENAME TO idx_tournament_groups_tournament_id;
-ALTER INDEX IF EXISTS idx_event_group_members_group_id RENAME TO idx_tournament_group_members_group_id;
-ALTER INDEX IF EXISTS idx_event_group_members_team_id RENAME TO idx_tournament_group_members_team_id;
+ALTER INDEX IF EXISTS idx_tournament_groupss_tournament_id RENAME TO idx_tournament_groups_tournament_id;
+ALTER INDEX IF EXISTS idx_tournament_groups_members_group_id RENAME TO idx_tournament_group_members_group_id;
+ALTER INDEX IF EXISTS idx_tournament_groups_members_team_id RENAME TO idx_tournament_group_members_team_id;
 
 -- 4. Update views to reference new table names
 CREATE OR REPLACE VIEW public.group_matches AS
@@ -51,7 +51,7 @@ RETURNS TABLE (
     point_differential INTEGER
 ) AS $$
 BEGIN
-    -- Implementation using tournament_groups instead of event_groups
+    -- Implementation using tournament_groups instead of tournament_groupss
     RETURN QUERY
     WITH team_matches AS (
         -- Team A matches
@@ -127,8 +127,8 @@ $$ LANGUAGE plpgsql;
 CREATE INDEX IF NOT EXISTS idx_tournament_groups_league_season_id ON public.tournament_groups(league_season_id);
 
 -- 10. Add comments to document the changes
-COMMENT ON TABLE public.tournament_groups IS 'Stores tournament groups, previously named event_groups';
-COMMENT ON TABLE public.tournament_group_members IS 'Stores tournament group members, previously named event_group_members';
+COMMENT ON TABLE public.tournament_groups IS 'Stores tournament groups, previously named tournament_groupss';
+COMMENT ON TABLE public.tournament_group_members IS 'Stores tournament group members, previously named tournament_groups_members';
 
 -- 11. Update any RLS (Row Level Security) policies if needed
 -- (Add specific policy updates based on your security requirements)

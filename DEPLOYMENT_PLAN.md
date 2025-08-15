@@ -32,26 +32,26 @@ Run the following migration script in the specified order:
 
 1. **Rename Tables**
    ```sql
-   ALTER TABLE event_groups RENAME TO tournament_groups;
-   ALTER TABLE event_group_members RENAME TO tournament_group_members;
+   ALTER TABLE tournament_groupss RENAME TO tournament_groups;
+   ALTER TABLE tournament_groups_members RENAME TO tournament_group_members;
    ```
 
 2. **Rename Constraints**
    ```sql
    -- For tournament_groups
    ALTER TABLE tournament_groups 
-     RENAME CONSTRAINT event_groups_pkey TO tournament_groups_pkey;
+     RENAME CONSTRAINT tournament_groupss_pkey TO tournament_groups_pkey;
    
    -- For tournament_group_members
    ALTER TABLE tournament_group_members
-     RENAME CONSTRAINT event_group_members_pkey TO tournament_group_members_pkey;
+     RENAME CONSTRAINT tournament_groups_members_pkey TO tournament_group_members_pkey;
    ```
 
 3. **Update Indexes**
    ```sql
-   ALTER INDEX IF EXISTS idx_event_groups_tournament_id RENAME TO idx_tournament_groups_tournament_id;
-   ALTER INDEX IF EXISTS idx_event_group_members_group_id RENAME TO idx_tournament_group_members_group_id;
-   ALTER INDEX IF EXISTS idx_event_group_members_team_id RENAME TO idx_tournament_group_members_team_id;
+   ALTER INDEX IF EXISTS idx_tournament_groupss_tournament_id RENAME TO idx_tournament_groups_tournament_id;
+   ALTER INDEX IF EXISTS idx_tournament_groups_members_group_id RENAME TO idx_tournament_group_members_group_id;
+   ALTER INDEX IF EXISTS idx_tournament_groups_members_team_id RENAME TO idx_tournament_group_members_team_id;
    ```
 
 4. **Update Views and Functions**

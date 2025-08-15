@@ -122,6 +122,11 @@ class LeagueSeason(Base):
     # Relationships
     league_info = relationship("League", foreign_keys=[league_id])
     league_name_rel = relationship("League", foreign_keys=[league_name])
+    tournament_groups = relationship(
+        "TournamentGroup", 
+        back_populates="league_season",
+        cascade="all, delete-orphan"
+    )
     
     def __repr__(self):
         return f"<LeagueSeason {self.league_name} - {self.season_number}>"
@@ -158,6 +163,11 @@ class Tournament(Base):
     champion_team = relationship("Team", foreign_keys=[champion])
     runner_up_team = relationship("Team", foreign_keys=[runner_up])
     place_team = relationship("Team", foreign_keys=[place])
+    tournament_groups = relationship(
+        "TournamentGroup", 
+        back_populates="tournament",
+        cascade="all, delete-orphan"
+    )
     awards_race = relationship("AwardsRace", back_populates="tournament")
     draft_pool = relationship("DraftPool", back_populates="tournament")
     event_results = relationship("TournamentResult", back_populates="tournament")
@@ -171,7 +181,6 @@ class Tournament(Base):
     match_submissions = relationship("MatchSubmission", back_populates="tournament")
     player_badges = relationship("PlayerBadge", back_populates="tournament")
     past_champions = relationship("PastChampion", back_populates="tournament")
-    event_groups = relationship("EventGroup", back_populates="tournament")
     
     def __repr__(self):
         return f"<Tournament(id={self.id}, name='{self.name}', status='{self.status}')>"

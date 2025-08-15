@@ -1,8 +1,8 @@
 # Database models
 from .user import User
 from .player import Player, PlayerStats, MatchMVP
-from .team import Team, TeamMatchStats, MatchPoints, EventGroup, EventGroupMember, GroupMatch, GroupStanding, LeagueSeason
-from .league import LeagueInfo, Tournament, PastChampion, League
+from .team import Team, TeamMatchStats, MatchPoints, TournamentGroup, TournamentGroupMember, GroupMatch, GroupStanding
+from .league import LeagueInfo, Tournament, PastChampion, League, LeagueSeason
 from .badge import PlayerBadge 
 from .awardRace import AwardsRace
 from .draft_pool import DraftPool
@@ -25,8 +25,8 @@ __all__ = [
     'Player', 'PlayerStats', 'MatchMVP',
     
     # Team models
-    'Team', 'TeamMatchStats', 'MatchPoints', 'EventGroup', 'EventGroupMember',
-    'GroupMatch', 'GroupStanding', 'LeagueSeason',
+    'Team', 'TeamMatchStats', 'MatchPoints', 'TournamentGroup', 'TournamentGroupMember',
+    'GroupMatch', 'GroupStanding',
     
     # Tournament models
     'Tournament', 'TournamentResult', 'Match', 'PlayerRPTransaction',
@@ -34,7 +34,7 @@ __all__ = [
     'UpcomingMatch', 'MatchSubmission',
     
     # League models
-    'LeagueInfo', 'PastChampion', 'League',
+    'LeagueInfo', 'PastChampion', 'League', 'LeagueSeason',
     
     # Other models
     'PlayerBadge', 'AwardsRace', 'DraftPool', 'EventResults'

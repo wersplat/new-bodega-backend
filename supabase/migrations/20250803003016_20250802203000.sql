@@ -269,25 +269,25 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- 11. Rename event_groups to tournament_groups
-ALTER TABLE event_groups RENAME TO tournament_groups;
+-- 11. Rename tournament_groupss to tournament_groups
+ALTER TABLE tournament_groupss RENAME TO tournament_groups;
 
--- 12. Rename event_group_members to tournament_group_members
-ALTER TABLE event_group_members RENAME TO tournament_group_members;
+-- 12. Rename tournament_groups_members to tournament_group_members
+ALTER TABLE tournament_groups_members RENAME TO tournament_group_members;
 
 
 -- 14. Update foreign key constraints
 ALTER TABLE tournament_group_members 
-  RENAME CONSTRAINT event_group_members_group_id_fkey TO tournament_group_members_group_id_fkey;
+  RENAME CONSTRAINT tournament_groups_members_group_id_fkey TO tournament_group_members_group_id_fkey;
 
 ALTER TABLE tournament_group_members
-  RENAME CONSTRAINT event_group_members_team_id_fkey TO tournament_group_members_team_id_fkey;
+  RENAME CONSTRAINT tournament_groups_members_team_id_fkey TO tournament_group_members_team_id_fkey;
 
 ALTER TABLE tournament_groups
-  RENAME CONSTRAINT event_groups_league_season_id_fkey TO tournament_groups_league_season_id_fkey;
+  RENAME CONSTRAINT tournament_groupss_league_season_id_fkey TO tournament_groups_league_season_id_fkey;
 
 ALTER TABLE tournament_groups
-  RENAME CONSTRAINT event_groups_tournament_id_fkey TO tournament_groups_tournament_id_fkey;
+  RENAME CONSTRAINT tournament_groupss_tournament_id_fkey TO tournament_groups_tournament_id_fkey;
 
 
 -- 15. Update function parameters to use tournament_id

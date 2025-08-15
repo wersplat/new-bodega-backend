@@ -133,61 +133,61 @@ def upgrade() -> None:
     op.create_foreign_key(None, 'draft_pool', 'leagues_info', ['league_id'], ['id'])
     op.create_foreign_key(None, 'draft_pool', 'tournaments', ['tournament_id'], ['id'])
     op.create_foreign_key(None, 'draft_pool', 'players', ['player_id'], ['id'])
-    op.alter_column('event_group_members', 'id',
+    op.alter_column('tournament_groups_members', 'id',
                existing_type=sa.UUID(),
                type_=sa.String(),
                existing_nullable=False,
                existing_server_default=sa.text('gen_random_uuid()'))
-    op.alter_column('event_group_members', 'group_id',
+    op.alter_column('tournament_groups_members', 'group_id',
                existing_type=sa.UUID(),
                type_=sa.String(),
                existing_nullable=False)
-    op.alter_column('event_group_members', 'team_id',
+    op.alter_column('tournament_groups_members', 'team_id',
                existing_type=sa.UUID(),
                type_=sa.String(),
                existing_nullable=False)
-    op.drop_constraint(op.f('event_group_members_group_id_team_id_key'), 'event_group_members', type_='unique')
-    op.drop_index(op.f('idx_event_group_members_group_id'), table_name='event_group_members')
-    op.drop_index(op.f('idx_event_group_members_team_id'), table_name='event_group_members')
-    op.create_index(op.f('ix_event_group_members_id'), 'event_group_members', ['id'], unique=False)
-    op.alter_column('event_groups', 'id',
+    op.drop_constraint(op.f('tournament_groups_members_group_id_team_id_key'), 'tournament_groups_members', type_='unique')
+    op.drop_index(op.f('idx_tournament_groups_members_group_id'), table_name='tournament_groups_members')
+    op.drop_index(op.f('idx_tournament_groups_members_team_id'), table_name='tournament_groups_members')
+    op.create_index(op.f('ix_tournament_groups_members_id'), 'tournament_groups_members', ['id'], unique=False)
+    op.alter_column('tournament_groupss', 'id',
                existing_type=sa.UUID(),
                type_=sa.String(),
                existing_nullable=False,
                existing_server_default=sa.text('gen_random_uuid()'))
-    op.alter_column('event_groups', 'name',
+    op.alter_column('tournament_groupss', 'name',
                existing_type=sa.TEXT(),
                type_=sa.String(),
                existing_nullable=False)
-    op.alter_column('event_groups', 'status',
+    op.alter_column('tournament_groupss', 'status',
                existing_type=sa.TEXT(),
                type_=sa.String(),
                existing_nullable=True,
                existing_server_default=sa.text("'active'::text"))
-    op.alter_column('event_groups', 'advancement_count',
+    op.alter_column('tournament_groupss', 'advancement_count',
                existing_type=sa.INTEGER(),
                comment=None,
                existing_comment='Number of teams that advance from this group',
                existing_nullable=True,
                existing_server_default=sa.text('2'))
-    op.alter_column('event_groups', 'sort_order',
+    op.alter_column('tournament_groupss', 'sort_order',
                existing_type=sa.INTEGER(),
                comment=None,
                existing_comment='Order in which groups are displayed',
                existing_nullable=True)
-    op.alter_column('event_groups', 'tournament_id',
+    op.alter_column('tournament_groupss', 'tournament_id',
                existing_type=sa.UUID(),
                type_=sa.String(),
                existing_nullable=True)
-    op.alter_column('event_groups', 'league_season_id',
+    op.alter_column('tournament_groupss', 'league_season_id',
                existing_type=sa.UUID(),
                type_=sa.String(),
                existing_nullable=True)
-    op.create_index(op.f('ix_event_groups_id'), 'event_groups', ['id'], unique=False)
-    op.drop_constraint(op.f('event_groups_league_season_id_fkey'), 'event_groups', type_='foreignkey')
-    op.drop_constraint(op.f('event_groups_tournament_id_fkey'), 'event_groups', type_='foreignkey')
-    op.create_foreign_key(None, 'event_groups', 'league_seasons', ['league_season_id'], ['id'])
-    op.create_foreign_key(None, 'event_groups', 'tournaments', ['tournament_id'], ['id'])
+    op.create_index(op.f('ix_tournament_groupss_id'), 'tournament_groupss', ['id'], unique=False)
+    op.drop_constraint(op.f('tournament_groupss_league_season_id_fkey'), 'tournament_groupss', type_='foreignkey')
+    op.drop_constraint(op.f('tournament_groupss_tournament_id_fkey'), 'tournament_groupss', type_='foreignkey')
+    op.create_foreign_key(None, 'tournament_groupss', 'league_seasons', ['league_season_id'], ['id'])
+    op.create_foreign_key(None, 'tournament_groupss', 'tournaments', ['tournament_id'], ['id'])
     op.alter_column('event_results', 'id',
                existing_type=sa.UUID(),
                type_=sa.String(),
@@ -1896,55 +1896,55 @@ def downgrade() -> None:
                type_=sa.UUID(),
                existing_nullable=False,
                existing_server_default=sa.text('gen_random_uuid()'))
-    op.drop_constraint(None, 'event_groups', type_='foreignkey')
-    op.drop_constraint(None, 'event_groups', type_='foreignkey')
-    op.create_foreign_key(op.f('event_groups_tournament_id_fkey'), 'event_groups', 'tournaments', ['tournament_id'], ['id'], onupdate='CASCADE', ondelete='CASCADE')
-    op.create_foreign_key(op.f('event_groups_league_season_id_fkey'), 'event_groups', 'league_seasons', ['league_season_id'], ['id'], onupdate='CASCADE', ondelete='CASCADE')
-    op.drop_index(op.f('ix_event_groups_id'), table_name='event_groups')
-    op.alter_column('event_groups', 'league_season_id',
+    op.drop_constraint(None, 'tournament_groupss', type_='foreignkey')
+    op.drop_constraint(None, 'tournament_groupss', type_='foreignkey')
+    op.create_foreign_key(op.f('tournament_groupss_tournament_id_fkey'), 'tournament_groupss', 'tournaments', ['tournament_id'], ['id'], onupdate='CASCADE', ondelete='CASCADE')
+    op.create_foreign_key(op.f('tournament_groupss_league_season_id_fkey'), 'tournament_groupss', 'league_seasons', ['league_season_id'], ['id'], onupdate='CASCADE', ondelete='CASCADE')
+    op.drop_index(op.f('ix_tournament_groupss_id'), table_name='tournament_groupss')
+    op.alter_column('tournament_groupss', 'league_season_id',
                existing_type=sa.String(),
                type_=sa.UUID(),
                existing_nullable=True)
-    op.alter_column('event_groups', 'tournament_id',
+    op.alter_column('tournament_groupss', 'tournament_id',
                existing_type=sa.String(),
                type_=sa.UUID(),
                existing_nullable=True)
-    op.alter_column('event_groups', 'sort_order',
+    op.alter_column('tournament_groupss', 'sort_order',
                existing_type=sa.INTEGER(),
                comment='Order in which groups are displayed',
                existing_nullable=True)
-    op.alter_column('event_groups', 'advancement_count',
+    op.alter_column('tournament_groupss', 'advancement_count',
                existing_type=sa.INTEGER(),
                comment='Number of teams that advance from this group',
                existing_nullable=True,
                existing_server_default=sa.text('2'))
-    op.alter_column('event_groups', 'status',
+    op.alter_column('tournament_groupss', 'status',
                existing_type=sa.String(),
                type_=sa.TEXT(),
                existing_nullable=True,
                existing_server_default=sa.text("'active'::text"))
-    op.alter_column('event_groups', 'name',
+    op.alter_column('tournament_groupss', 'name',
                existing_type=sa.String(),
                type_=sa.TEXT(),
                existing_nullable=False)
-    op.alter_column('event_groups', 'id',
+    op.alter_column('tournament_groupss', 'id',
                existing_type=sa.String(),
                type_=sa.UUID(),
                existing_nullable=False,
                existing_server_default=sa.text('gen_random_uuid()'))
-    op.drop_index(op.f('ix_event_group_members_id'), table_name='event_group_members')
-    op.create_index(op.f('idx_event_group_members_team_id'), 'event_group_members', ['team_id'], unique=False)
-    op.create_index(op.f('idx_event_group_members_group_id'), 'event_group_members', ['group_id'], unique=False)
-    op.create_unique_constraint(op.f('event_group_members_group_id_team_id_key'), 'event_group_members', ['group_id', 'team_id'], postgresql_nulls_not_distinct=False)
-    op.alter_column('event_group_members', 'team_id',
+    op.drop_index(op.f('ix_tournament_groups_members_id'), table_name='tournament_groups_members')
+    op.create_index(op.f('idx_tournament_groups_members_team_id'), 'tournament_groups_members', ['team_id'], unique=False)
+    op.create_index(op.f('idx_tournament_groups_members_group_id'), 'tournament_groups_members', ['group_id'], unique=False)
+    op.create_unique_constraint(op.f('tournament_groups_members_group_id_team_id_key'), 'tournament_groups_members', ['group_id', 'team_id'], postgresql_nulls_not_distinct=False)
+    op.alter_column('tournament_groups_members', 'team_id',
                existing_type=sa.String(),
                type_=sa.UUID(),
                existing_nullable=False)
-    op.alter_column('event_group_members', 'group_id',
+    op.alter_column('tournament_groups_members', 'group_id',
                existing_type=sa.String(),
                type_=sa.UUID(),
                existing_nullable=False)
-    op.alter_column('event_group_members', 'id',
+    op.alter_column('tournament_groups_members', 'id',
                existing_type=sa.String(),
                type_=sa.UUID(),
                existing_nullable=False,

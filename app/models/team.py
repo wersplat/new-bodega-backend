@@ -6,6 +6,7 @@ from sqlalchemy import Column, Integer, String, Float, DateTime, Text, ForeignKe
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.core.database import Base
+from .league import LeagueSeason
 
 class Team(Base):
     __tablename__ = "teams"
@@ -39,7 +40,7 @@ class Team(Base):
     match_submissions_as_team_b = relationship("MatchSubmission", foreign_keys="MatchSubmission.team_b_id")
     team_match_stats = relationship("TeamMatchStats", back_populates="team")
     match_points = relationship("MatchPoints", back_populates="team")
-    event_group_members = relationship("EventGroupMember", back_populates="team")
+    tournament_groups_members = relationship("TournamentGroupMember", back_populates="team")
     group_standings = relationship("GroupStanding", back_populates="team")
     past_champions = relationship("PastChampion", back_populates="team")
     tournaments_as_champion = relationship("Tournament", foreign_keys="Tournament.champion")
@@ -83,7 +84,7 @@ class MatchPoints(Base):
     id = Column(String, primary_key=True, index=True)
     match_id = Column(String, ForeignKey("matches.id"), nullable=False)
     team_id = Column(String, ForeignKey("teams.id"), nullable=False)
-    group_id = Column(String, ForeignKey("event_groups.id"))
+    group_id = Column(String, ForeignKey("tournament_groups.id"))
     points_earned = Column(Integer, nullable=False)
     point_type = Column(String, nullable=False)  # win_by_20_plus, regular_win, loss, forfeit
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -92,13 +93,13 @@ class MatchPoints(Base):
     # Relationships
     match = relationship("Match")
     team = relationship("Team", back_populates="match_points")
-    group = relationship("EventGroup")
+    group = relationship("TournamentGroup", back_populates="match_points")
     
     def __repr__(self):
         return f"<MatchPoints(id={self.id}, team_id='{self.team_id}', points_earned={self.points_earned})>"
 
-class EventGroup(Base):
-    __tablename__ = "event_groups"
+class TournamentGroup(Base):
+    __tablename__ = "tournament_groups"
     
     id = Column(String, primary_key=True, index=True)
     name = Column(String, nullable=False)
@@ -113,45 +114,61 @@ class EventGroup(Base):
     league_season_id = Column(String, ForeignKey("league_seasons.id"))
     
     # Relationships
-    tournament = relationship("Tournament")
-    league_season = relationship("LeagueSeason")
-    members = relationship("EventGroupMember", back_populates="group")
-    matches = relationship("GroupMatch", back_populates="group")
-    standings = relationship("GroupStanding", back_populates="group")
-    upcoming_matches = relationship("UpcomingMatch", back_populates="event_group")
+    tournament = relationship("Tournament", back_populates="tournament_groups")
+    league_season = relationship(
+        "LeagueSeason", 
+        back_populates="tournament_groups",
+        foreign_keys=[league_season_id]
+    )
+    members = relationship(
+        "TournamentGroupMember", 
+        back_populates="group",
+        cascade="all, delete-orphan"
+    )
+    matches = relationship(
+        "GroupMatch", 
+        back_populates="group",
+        cascade="all, delete-orphan"
+    )
+    standings = relationship(
+        "GroupStanding", 
+        back_populates="group",
+        cascade="all, delete-orphan"
+    )
+    upcoming_matches = relationship("UpcomingMatch", back_populates="tournament_group")
     match_points = relationship("MatchPoints", back_populates="group")
     
     def __repr__(self):
-        return f"<EventGroup(id={self.id}, name='{self.name}')>"
+        return f"<TournamentGroup(id={self.id}, name='{self.name}')>"
 
-class EventGroupMember(Base):
-    __tablename__ = "event_group_members"
+class TournamentGroupMember(Base):
+    __tablename__ = "tournament_groups_members"
     
     id = Column(String, primary_key=True, index=True)
-    group_id = Column(String, ForeignKey("event_groups.id"), nullable=False)
+    group_id = Column(String, ForeignKey("tournament_groups.id"), nullable=False)
     team_id = Column(String, ForeignKey("teams.id"), nullable=False)
     seed = Column(Integer)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     # Relationships
-    group = relationship("EventGroup", back_populates="members")
-    team = relationship("Team", back_populates="event_group_members")
+    group = relationship("TournamentGroup", back_populates="members")
+    team = relationship("Team", back_populates="tournament_groups_members")
     
     def __repr__(self):
-        return f"<EventGroupMember(id={self.id}, group_id='{self.group_id}', team_id='{self.team_id}')>"
+        return f"<TournamentGroupMember(id={self.id}, group_id='{self.group_id}', team_id='{self.team_id}')>"
 
 class GroupMatch(Base):
     __tablename__ = "group_matches"
     
     id = Column(String, primary_key=True, index=True)
-    group_id = Column(String, ForeignKey("event_groups.id"), nullable=False)
+    group_id = Column(String, ForeignKey("tournament_groups.id"), nullable=False)
     match_id = Column(String, ForeignKey("matches.id"), nullable=False)
     round = Column(Integer, nullable=False)
     match_number = Column(Integer, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     # Relationships
-    group = relationship("EventGroup", back_populates="matches")
+    group = relationship("TournamentGroup", back_populates="matches")
     match = relationship("Match")
     
     def __repr__(self):
@@ -161,7 +178,7 @@ class GroupStanding(Base):
     __tablename__ = "group_standings"
     
     id = Column(String, primary_key=True, index=True)
-    group_id = Column(String, ForeignKey("event_groups.id"), nullable=False)
+    group_id = Column(String, ForeignKey("tournament_groups.id"), nullable=False)
     team_id = Column(String, ForeignKey("teams.id"), nullable=False)
     matches_played = Column(Integer, default=0)
     wins = Column(Integer, default=0)
@@ -173,31 +190,8 @@ class GroupStanding(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
     # Relationships
-    group = relationship("EventGroup", back_populates="standings")
+    group = relationship("TournamentGroup", back_populates="standings")
     team = relationship("Team", back_populates="group_standings")
     
     def __repr__(self):
         return f"<GroupStanding(id={self.id}, group_id='{self.group_id}', team_id='{self.team_id}')>"
-
-class LeagueSeason(Base):
-    __tablename__ = "league_seasons"
-    
-    id = Column(String, primary_key=True, index=True)
-    league_name = Column(Enum("LeagueType", name="leagues"), unique=True, nullable=False)
-    season_number = Column(Integer, nullable=False)
-    start_date = Column(DateTime(timezone=True), nullable=False)
-    end_date = Column(DateTime(timezone=True), nullable=False)
-    is_active = Column(Boolean, default=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    year = Column(Enum("GameYear", name="game_year"))
-    league_id = Column(String, ForeignKey("leagues_info.id"))
-    
-    # Relationships
-    league = relationship("LeagueInfo")
-    matches = relationship("Match", back_populates="league_season")
-    draft_pool = relationship("DraftPool", back_populates="season")
-    event_groups = relationship("EventGroup", back_populates="league_season")
-    
-    def __repr__(self):
-        return f"<LeagueSeason(id={self.id}, league_name='{self.league_name}', season_number={self.season_number})>"
