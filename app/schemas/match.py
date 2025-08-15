@@ -27,7 +27,7 @@ class MatchStage(str, Enum):
 
 class MatchBase(BaseModel):
     """Base match schema with required fields"""
-    event_id: UUID
+    tournament_id: UUID
     team_a_id: UUID
     team_b_id: UUID
     stage: MatchStage = MatchStage.GROUP
@@ -91,7 +91,7 @@ class MatchWithDetails(MatchWithTeams):
     """Match schema with team and player details"""
     team_a_players: List[Dict[str, Any]] = []
     team_b_players: List[Dict[str, Any]] = []
-    event: Optional[Dict[str, Any]] = None
+    tournament: Optional[Dict[str, Any]] = None
 
 class MatchResult(BaseModel):
     """Schema for submitting match results"""

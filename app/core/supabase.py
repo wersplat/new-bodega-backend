@@ -265,11 +265,33 @@ class SupabaseService:
         return response.data if hasattr(response, 'data') else []
 
     @classmethod
-    def get_events_by_league(cls, league: str) -> List[Dict[str, Any]]:
-        """Get all events for a specific league"""
+    def get_tournaments_by_league(cls, league_id: str) -> List[Dict[str, Any]]:
+        """Get all tournaments for a specific league (new schema)."""
         client = cls.get_client()
-        response = client.table('events').select('*').eq('league', league).execute()
-        return response.data if hasattr(response, 'data') else []
+        # New schema uses leagues_info.id referenced by tournaments.league_id (or leagues_id if applicable).
+        # Default to 'league_id'; adjust here if the column name differs in production.
+        try:
+            response = (
+                client.table('tournaments')
+                .select('*')
+                .eq('league_id', league_id)
+                .execute()
+            )
+            return response.data if hasattr(response, 'data') else []
+        except Exception:
+            # Fallback for column rename scenarios (e.g., leagues_id)
+            response = (
+                client.table('tournaments')
+                .select('*')
+                .eq('leagues_id', league_id)
+                .execute()
+            )
+            return response.data if hasattr(response, 'data') else []
+
+    @classmethod
+    def get_events_by_league(cls, league_id: str) -> List[Dict[str, Any]]:
+        """Backward-compatible wrapper that returns tournaments for a league."""
+        return cls.get_tournaments_by_league(league_id)
 
 # Global Supabase client instance
 supabase = SupabaseService()

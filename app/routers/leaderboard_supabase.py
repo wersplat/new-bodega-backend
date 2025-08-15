@@ -61,7 +61,7 @@ async def get_leaderboard(
     # Filtering
     tier: Optional[PlayerTier] = Query(None, description="Filter by player tier"),
     region: Optional[str] = Query(None, description="Filter by region code (e.g., 'NA', 'EU')"),
-    event_id: Optional[str] = Query(None, description="Filter by specific event ID"),
+    event_id: Optional[str] = Query(None, description="Filter by tournament ID (back-compat param name: event_id)"),
     min_games: Optional[int] = Query(None, ge=1, description="Minimum number of games played"),
     
     # Sorting
@@ -93,7 +93,7 @@ async def get_leaderboard(
         offset: Pagination offset
         tier: Filter by player tier
         region: Filter by region code
-        event_id: Filter by specific event
+        event_id: Filter by specific tournament (back-compat param name)
         min_games: Minimum number of games played
         sort_by: Field to sort the leaderboard by
         descending: Whether to sort in descending order
@@ -114,7 +114,7 @@ async def get_leaderboard(
         logger.info(
             f"Fetching leaderboard - sort_by: {sort_by}, "
             f"descending: {descending}, tier: {tier}, region: {region}, "
-            f"event_id: {event_id}, min_games: {min_games}, "
+            f"tournament(event_id): {event_id}, min_games: {min_games}, "
             f"limit: {limit}, offset: {offset}"
         )
         
@@ -136,11 +136,28 @@ async def get_leaderboard(
         if min_games:
             query = query.gte("total_games", min_games)
             
-        # Handle event-specific leaderboard
+        # Handle tournament-specific leaderboard (back-compat: event_id param)
         if event_id:
-            # This would join with event_participants table in a real implementation
-            # For now, we'll just filter by event_id if present
-            query = query.eq("last_event_id", event_id)  # Assuming this field exists
+            # Join-based filter: get participating team_ids from event_results for this tournament
+            try:
+                teams_resp = (
+                    client.table("event_results")
+                    .select("team_id")
+                    .eq("tournament_id", event_id)
+                    .execute()
+                )
+                team_ids = sorted({row.get("team_id") for row in (teams_resp.data or []) if row.get("team_id")})
+            except Exception as e:
+                logger.error(f"Failed to fetch teams for tournament {event_id}: {str(e)}", exc_info=True)
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                    detail="Error applying tournament filter")
+
+            if not team_ids:
+                # No teams participated in this tournament; no players to show
+                return []
+
+            # Filter players by participating teams (players.current_team_id per schema)
+            query = query.in_("current_team_id", team_ids)
             
         # Apply sorting
         sort_field = sort_by.value if hasattr(sort_by, 'value') else sort_by
@@ -274,7 +291,7 @@ async def get_event_leaderboard(
     include_stats: bool = Query(False, description="Include detailed player statistics")
 ) -> List[Dict[str, Any]]:
     """
-    Get leaderboard for a specific event.
+    Get leaderboard for a specific event (backed by tournaments in new schema).
     
     This endpoint retrieves the leaderboard for a specific event, showing player rankings
     and statistics for that event. It uses an optimized database function to efficiently
@@ -292,7 +309,7 @@ async def get_event_leaderboard(
         HTTPException: If the event is not found or there's an error retrieving the leaderboard
     """
     try:
-        logger.info(f"Fetching leaderboard for event {event_id}")
+        logger.info(f"Fetching leaderboard for tournament (event) {event_id}")
         
         # Validate event_id format
         try:
@@ -306,9 +323,9 @@ async def get_event_leaderboard(
         
         client = supabase.get_client()
         
-        # First get the event to verify it exists and get basic info
+        # First get the tournament (backing the legacy 'event') to verify it exists and get basic info
         event_result = (
-            client.table("events")
+            client.table("tournaments")
             .select("id, name, start_date, end_date, status")
             .eq("id", event_id)
             .single()
@@ -322,7 +339,7 @@ async def get_event_leaderboard(
             )
         
         event = event_result.data
-        logger.debug(f"Found event: {event.get('name')} (ID: {event_id})")
+        logger.debug(f"Found tournament: {event.get('name')} (ID: {event_id})")
         
         # Determine which fields to select based on include_stats
         select_fields = [

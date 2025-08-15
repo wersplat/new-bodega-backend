@@ -133,7 +133,7 @@ async def create_match(
     Create a new match (Admin only).
     
     This endpoint allows administrators to create a new match between two teams,
-    optionally associated with an event.
+    optionally associated with a tournament.
     """
     try:
         logger.info(f"Creating new match between teams {match.team_a_id} and {match.team_b_id}")
@@ -176,19 +176,19 @@ async def create_match(
         team_a = team_a_response.data[0]
         team_b = team_b_response.data[0]
         
-        # Validate event exists if provided
-        if match.event_id:
-            logger.debug(f"Validating event: {match.event_id}")
-            event_response = client.table("events") \
+        # Validate tournament exists
+        if match.tournament_id:
+            logger.debug(f"Validating tournament: {match.tournament_id}")
+            tournament_response = client.table("tournaments") \
                 .select("id, name") \
-                .eq("id", str(match.event_id)) \
+                .eq("id", str(match.tournament_id)) \
                 .execute()
-                
-            if not event_response.data:
-                logger.warning(f"Event not found: {match.event_id}")
+            
+            if not tournament_response.data:
+                logger.warning(f"Tournament not found: {match.tournament_id}")
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
-                    detail=f"Event with ID {match.event_id} not found"
+                    detail=f"Tournament with ID {match.tournament_id} not found"
                 )
         
         # Prepare match data for insertion
@@ -238,9 +238,9 @@ async def list_matches(
         None, 
         description="Filter matches by status"
     ),
-    event_id: Optional[str] = Query(
+    tournament_id: Optional[str] = Query(
         None,
-        description="Filter matches by event ID",
+        description="Filter matches by tournament ID",
         pattern=UUID_PATTERN
     ),
     team_id: Optional[str] = Query(
@@ -297,8 +297,8 @@ async def list_matches(
         # Apply filters
         if status:
             query = query.eq("status", status.value)
-        if event_id:
-            query = query.eq("event_id", event_id)
+        if tournament_id:
+            query = query.eq("tournament_id", tournament_id)
         if team_id:
             query = query.or_(f"team_a_id.eq.{team_id},team_b_id.eq.{team_id}")
         if stage:
@@ -378,9 +378,9 @@ async def get_match(
         True,
         description="Whether to include team details in the response"
     ),
-    include_event: bool = Query(
+    include_tournament: bool = Query(
         False,
-        description="Whether to include event details in the response"
+        description="Whether to include tournament details in the response"
     ),
     include_stats: bool = Query(
         False,
@@ -440,13 +440,13 @@ async def get_match(
                     .execute()
                 match["winner"] = winner.data[0] if winner.data else None
         
-        # Include event details if requested
-        if include_event and match.get("event_id"):
-            event = client.table("events") \
+        # Include tournament details if requested
+        if include_tournament and match.get("tournament_id"):
+            tournament = client.table("tournaments") \
                 .select("*") \
-                .eq("id", match["event_id"]) \
+                .eq("id", match["tournament_id"]) \
                 .execute()
-            match["event"] = event.data[0] if event.data else None
+            match["tournament"] = tournament.data[0] if tournament.data else None
         
         # Include player statistics if requested
         if include_stats:
