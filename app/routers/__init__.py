@@ -1,6 +1,6 @@
 # API routers
-from . import tournaments
-from . import leagues
+from .import tournaments
+from .import leagues
 
 __all__ = [
     'tournaments',

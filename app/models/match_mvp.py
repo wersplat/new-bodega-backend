@@ -4,7 +4,7 @@ Match MVP Model
 This module defines the SQLAlchemy model for match MVPs in the system.
 """
 from datetime import datetime
-from sqlalchemy import Column, String, ForeignKey, Integer, DateTime, Text, Boolean, Numeric
+from sqlalchemy import Column, String, ForeignKey, Integer, DateTime, Text, Boolean, Numeric, Float
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base
