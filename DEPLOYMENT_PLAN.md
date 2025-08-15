@@ -34,7 +34,6 @@ Run the following migration script in the specified order:
    ```sql
    ALTER TABLE event_groups RENAME TO tournament_groups;
    ALTER TABLE event_group_members RENAME TO tournament_group_members;
-   ALTER TABLE event_results RENAME TO tournament_results;
    ```
 
 2. **Rename Constraints**
@@ -47,9 +46,7 @@ Run the following migration script in the specified order:
    ALTER TABLE tournament_group_members
      RENAME CONSTRAINT event_group_members_pkey TO tournament_group_members_pkey;
    
-   -- For tournament_results
-   ALTER TABLE tournament_results
-     RENAME CONSTRAINT event_results_pkey TO tournament_results_pkey;
+   
    ```
 
 3. **Update Indexes**

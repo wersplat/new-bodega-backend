@@ -4,6 +4,7 @@
 ALTER TABLE event_groups RENAME TO tournament_groups;
 ALTER TABLE event_group_members RENAME TO tournament_group_members;
 
+
 -- 2. Rename constraints
 -- For tournament_groups
 ALTER TABLE tournament_groups 
