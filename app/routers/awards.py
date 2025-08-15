@@ -1,8 +1,8 @@
 """
 Awards Endpoints (FastAPI)
 
-Exposes awards list, summary, and years endpoints backed by Supabase view
-`team_awards_all_mv`.
+Exposes awards list, summary, and years endpoints backed by Supabase table
+`past_champions`.
 """
 
 from typing import List, Optional, Dict, Any
@@ -25,53 +25,53 @@ def list_awards(
     entity: Optional[str] = Query(None, description="team:<uuid> entity"),
     teamId: Optional[str] = Query(None, description="Team UUID (alternative to entity)"),
     tier: Optional[List[str]] = Query(None, description="Repeatable event tiers (T1,T2,T3,T4)"),
-    _class: Optional[str] = Query(None, alias="class", description="award_class filter"),
+    is_tournament: Optional[bool] = Query(None, description="Filter by tournament vs league"),
     year: Optional[str] = Query(None, description="Year tag like 2K26"),
-    search: Optional[str] = Query(None, description="Fuzzy search on event_name"),
+    search: Optional[str] = Query(None, description="Fuzzy search on league_name"),
     limit: int = Query(24, ge=1, le=100),
     cursor: Optional[str] = Query(None),
 ):
     team_id = parse_entity(entity, teamId)
     client = supabase.get_client()
 
-    query = client.table("team_awards_all_mv").select("*").eq("team_id", team_id)
+    query = client.table("past_champions").select("*").eq("team_id", team_id)
     if tier:
         # filter only valid tiers
         tiers = [t for t in tier if t in ("T1", "T2", "T3", "T4")]
         if tiers:
             query = query.in_("event_tier", tiers)
-    if _class:
-        query = query.eq("award_class", _class)
+    if is_tournament is not None:
+        query = query.eq("is_tournament", is_tournament)
     if year:
         query = query.eq("year", year)
     if search:
-        query = query.ilike("event_name", f"%{search}%")
+        query = query.ilike("league_name", f"%{search}%")
 
-    # Cursor keyset: (awarded_at DESC, source_row_id DESC)
+    # Cursor keyset: (created_at DESC, id DESC)
     if cursor:
         try:
             import base64, json
             decoded = json.loads(base64.b64decode(cursor).decode("utf-8"))
-            a = decoded.get("awardedAt")
+            a = decoded.get("createdAt")
             i = decoded.get("id")
             ors = []
             if a:
-                ors.append(f"awarded_at.lt.{a}")
+                ors.append(f"created_at.lt.{a}")
             if a and i:
-                ors.append(f"and(awarded_at.eq.{a},source_row_id.lt.{i})")
+                ors.append(f"and(created_at.eq.{a},id.lt.{i})")
             if not a and i:
-                ors.append(f"source_row_id.lt.{i}")
+                ors.append(f"id.lt.{i}")
             if ors:
                 query = query.or_(",".join(ors))
         except Exception:
             pass
 
-    query = query.order("awarded_at", desc=True).order("source_row_id", desc=True).limit(limit)
+    query = query.order("created_at", desc=True).order("id", desc=True).limit(limit)
     resp = query.execute()
     data = getattr(resp, "data", []) or []
 
     def coalesce_date(row: Dict[str, Any]) -> Optional[str]:
-        d = row.get("awarded_at") or row.get("end_date") or row.get("start_date")
+        d = row.get("created_at") or row.get("tournament_date")
         return d
 
     next_cursor = None
@@ -80,7 +80,7 @@ def list_awards(
         try:
             import base64, json
             next_cursor = base64.b64encode(
-                json.dumps({"awardedAt": coalesce_date(last), "id": last.get("source_row_id")}).encode("utf-8")
+                json.dumps({"createdAt": coalesce_date(last), "id": last.get("id")}).encode("utf-8")
             ).decode("utf-8")
         except Exception:
             next_cursor = None
@@ -96,15 +96,15 @@ def awards_summary(
     team_id = parse_entity(entity, teamId)
     client = supabase.get_client()
     # Use RPC to run SQL if needed, or compute client-side
-    resp = client.table("team_awards_all_mv").select(
-        "award_class,event_tier,awarded_at,start_date,end_date"
+    resp = client.table("past_champions").select(
+        "is_tournament,event_tier,created_at,tournament_date"
     ).eq("team_id", team_id).limit(10000).execute()
     rows = getattr(resp, "data", []) or []
-    championships = sum(1 for r in rows if r.get("award_class") == "championship")
+    championships = sum(1 for r in rows if not r.get("is_tournament"))  # Leagues are championships
     tiers = len({r.get("event_tier") for r in rows if r.get("event_tier")})
 
     def to_date(r: Dict[str, Any]):
-        return r.get("awarded_at") or r.get("end_date") or r.get("start_date")
+        return r.get("created_at") or r.get("tournament_date")
 
     dates = [to_date(r) for r in rows if to_date(r)]
     first = min(dates) if dates else None
@@ -119,8 +119,8 @@ def awards_years(
 ):
     team_id = parse_entity(entity, teamId)
     client = supabase.get_client()
-    resp = client.table("team_awards_all_mv").select(
-        "season_number,year,awarded_at,start_date,end_date"
+    resp = client.table("past_champions").select(
+        "season,year,created_at,tournament_date,is_tournament"
     ).eq("team_id", team_id).limit(10000).execute()
     rows = getattr(resp, "data", []) or []
 
@@ -130,7 +130,7 @@ def awards_years(
         if r.get("year"):
             return r["year"]
         # derive 2KYY from date
-        d = r.get("awarded_at") or r.get("end_date") or r.get("start_date")
+        d = r.get("created_at") or r.get("tournament_date")
         if not d:
             return None
         try:
@@ -145,7 +145,7 @@ def awards_years(
         tag = year_tag(r)
         if not tag:
             continue
-        key = (r.get("season_number"), tag)
+        key = (r.get("season"), tag)
         counts[key] += 1
 
     result = [
