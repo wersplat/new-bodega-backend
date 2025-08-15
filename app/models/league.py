@@ -85,7 +85,7 @@ class League(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     # Relationships
-    tournaments = relationship("Tournament", back_populates="organizer")
+    tournaments = relationship("Tournament", back_populates="league")
     awards_race = relationship("AwardsRace", back_populates="league")
     draft_pool = relationship("DraftPool", back_populates="league")
     event_results = relationship("TournamentResult", back_populates="league")
@@ -159,7 +159,7 @@ class Tournament(Base):
     processed_at = Column(DateTime(timezone=True))
     
     # Relationships
-    organizer = relationship("League", back_populates="tournaments")
+    league = relationship("League", back_populates="tournaments")
     champion_team = relationship("Team", foreign_keys=[champion])
     runner_up_team = relationship("Team", foreign_keys=[runner_up])
     place_team = relationship("Team", foreign_keys=[place])

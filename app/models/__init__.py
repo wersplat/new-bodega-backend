@@ -35,5 +35,5 @@ __all__ = [
     'PastChampion', 'League', 'LeagueSeason', 'LeagueType', 'TournamentStatus', 'TournamentTier', 'Console', 'GameYear',
     
     # Other models
-    'PlayerBadge', 'AwardsRace', 'DraftPool', 'TournamentResult'
+    'PlayerBadge', 'AwardsRace', 'DraftPool'
 ]

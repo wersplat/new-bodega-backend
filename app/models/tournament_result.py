@@ -8,6 +8,7 @@ from sqlalchemy import Column, String, ForeignKey, Integer, DateTime, func, Bool
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from datetime import datetime
+import uuid
 from app.core.database import Base
 
 
@@ -15,9 +16,9 @@ class TournamentResult(Base):
     """
     SQLAlchemy model representing tournament results in the system.
     
-    This model maps to the 'tournament_results' table in the database.
+    This model maps to the 'event_results' table in the database.
     """
-    __tablename__ = "tournament_results"
+    __tablename__ = "event_results"
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     team_id = Column(String, ForeignKey("teams.id"), nullable=False)
@@ -34,9 +35,9 @@ class TournamentResult(Base):
     updated_at = Column(DateTime, onupdate=func.now())
     
     # Relationships
-    team = relationship("Team", back_populates="tournament_results")
-    tournament = relationship("Tournament", back_populates="tournament_results")
-    league = relationship("LeagueInfo", back_populates="tournament_results")
+    team = relationship("Team", back_populates="event_results")
+    tournament = relationship("Tournament", back_populates="event_results")
+    league = relationship("LeagueInfo", back_populates="event_results")
     
     def __repr__(self):
         return f"<TournamentResult(id={self.id}, team_id={self.team_id}, placement={self.placement}, tournament_id={self.tournament_id})>"
