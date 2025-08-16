@@ -9,7 +9,7 @@ from app.schemas.player import (
     PlayerCreate,
     PlayerUpdate,
     PlayerInDB,
-    PlayerTier
+    LeaderboardTier
 )
 
 # Test data
@@ -138,10 +138,10 @@ def test_player_in_db_validation():
     assert player.player_rank_score == 1100.0
     assert player.created_at == now
 
-def test_player_tier_enum_values():
-    """Test that all player tier enum values are valid."""
+def test_leaderboard_tier_enum_values():
+    """Test that all leaderboard tier enum values are valid."""
     # Test all enum values
-    tiers = [tier.value for tier in PlayerTier]
+    tiers = [tier.value for tier in LeaderboardTier]
     assert set(tiers) == {
         "bronze", "silver", "gold", "platinum", 
         "diamond", "pink_diamond", "galaxy_opal"
@@ -149,4 +149,4 @@ def test_player_tier_enum_values():
     
     # Test case sensitivity
     with pytest.raises(ValueError):
-        PlayerTier("BRONZE")  # Should be lowercase
+        LeaderboardTier("BRONZE")  # Should be lowercase

@@ -21,7 +21,7 @@ from fastapi import APIRouter, HTTPException, status, Request, Query, Path
 from app.core.supabase import supabase
 from app.core.rate_limiter import limiter
 from app.core.config import settings
-from app.schemas.player import PlayerProfile, PlayerTier
+from app.schemas.player import PlayerProfile, LeaderboardTier
 
 # Initialize router with rate limiting and explicit prefix
 router = APIRouter(
@@ -59,7 +59,7 @@ async def get_leaderboard(
     offset: int = Query(0, ge=0, description="Pagination offset"),
     
     # Filtering
-    tier: Optional[PlayerTier] = Query(None, description="Filter by player tier"),
+    tier: Optional[LeaderboardTier] = Query(None, description="Filter by player tier"),
     region: Optional[str] = Query(None, description="Filter by region code (e.g., 'NA', 'EU')"),
     tournament_id: Optional[str] = Query(None, description="Filter by tournament ID"),
     league_id: Optional[str] = Query(None, description="Filter by league (leagues_info.id)"),
@@ -231,7 +231,7 @@ async def get_leaderboard(
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_tier_leaderboard(
     request: Request,
-    tier: PlayerTier = Path(..., description="Tier to get leaderboard for"),
+    tier: LeaderboardTier = Path(..., description="Tier to get leaderboard for"),
     limit: int = Query(100, ge=1, le=1000, description="Number of entries to return (1-1000)"),
     offset: int = Query(0, ge=0, description="Pagination offset")
 ) -> List[Dict[str, Any]]:
@@ -273,7 +273,7 @@ async def get_tier_leaderboard(
         
         if total_players == 0:
             # Check if the tier is valid by looking at the enum values
-            valid_tiers = [t.value for t in PlayerTier]
+            valid_tiers = [t.value for t in LeaderboardTier]
             if tier.value not in valid_tiers:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
@@ -413,7 +413,7 @@ async def get_region_leaderboard(
     region: str = Path(..., description="Region code (e.g., 'NA', 'EU', 'APAC')"),
     limit: int = Query(100, ge=1, le=1000, description="Number of entries to return (1-1000)"),
     offset: int = Query(0, ge=0, description="Pagination offset"),
-    min_tier: Optional[PlayerTier] = Query(None, description="Minimum player tier to include"),
+    min_tier: Optional[LeaderboardTier] = Query(None, description="Minimum player tier to include"),
     sort_by: str = Query("player_rp", description="Field to sort by (player_rp, player_rank_score, win_rate)")
 ) -> List[Dict[str, Any]]:
     """

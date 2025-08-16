@@ -8,7 +8,8 @@ from typing import List, Optional
 from sqlalchemy import desc
 
 from app.core.database import get_db
-from app.models.player import Player, PlayerTier
+from app.models.player import Player
+from app.schemas.player import LeaderboardTier
 from app.models.event import Event, EventResult
 from app.schemas.player import PlayerProfile
 
@@ -18,7 +19,7 @@ router = APIRouter()
 async def get_global_leaderboard(
     limit: int = Query(100, ge=1, le=1000),
     offset: int = Query(0, ge=0),
-    tier: Optional[PlayerTier] = None,
+    tier: Optional[LeaderboardTier] = None,
     db: Session = Depends(get_db)
 ):
     """
@@ -45,7 +46,7 @@ async def get_top_players(
 
 @router.get("/tier/{tier}", response_model=List[PlayerProfile])
 async def get_tier_leaderboard(
-    tier: PlayerTier = Path(..., description="Tier to get leaderboard for"),
+    tier: LeaderboardTier = Path(..., description="Tier to get leaderboard for"),
     limit: int = Query(100, ge=1, le=1000),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db)

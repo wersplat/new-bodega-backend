@@ -40,7 +40,7 @@ class TeamWithPlayers(Team):
 
 class TeamListResponse(BaseModel):
     """Paginated list of teams with metadata."""
-    items: List[TeamResponse] = Field(..., description="List of teams")
+    items: List[Team] = Field(..., description="List of teams")
     total: int = Field(..., description="Total number of teams matching the query")
     page: int = Field(..., description="Current page number")
     size: int = Field(..., description="Number of items per page")
@@ -372,7 +372,7 @@ async def delete_team(
             detail=f"Failed to delete team: {str(e)}"
         )
 
-@router.get("/search/{name}", response_model=List[TeamResponse])
+@router.get("/search/{name}", response_model=List[Team])
 async def search_teams_by_name(name: str):
     """
     Search teams by name

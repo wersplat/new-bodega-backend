@@ -22,6 +22,15 @@ class SalaryTier(str, Enum):
     C = "C"
     D = "D"
 
+class LeaderboardTier(str, Enum):
+    BRONZE = "bronze"
+    SILVER = "silver"
+    GOLD = "gold"
+    PLATINUM = "platinum"
+    DIAMOND = "diamond"
+    PINK_DIAMOND = "pink_diamond"
+    GALAXY_OPAL = "galaxy_opal"
+
 class PlayerBase(BaseModel):
     gamertag: str = Field(..., min_length=1, max_length=100)
     alternate_gamertag: Optional[str] = Field(None, max_length=100)

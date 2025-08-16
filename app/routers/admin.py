@@ -13,7 +13,7 @@ from app.core.auth_supabase import require_admin_api_token
 from app.core.supabase import supabase
 from app.schemas.user import UserInDB
 from app.schemas.player import PlayerProfile
-from app.schemas.badge import Badge as BadgeSchema
+from app.schemas.badge import PlayerBadge as BadgeSchema
 
 # Request/Response models
 class AdminCheckRequest(BaseModel):

@@ -16,6 +16,7 @@ The backend has been updated to ensure all endpoints properly align with the dat
 ### 1. Updated Core Schemas
 
 #### `app/schemas/player.py`
+
 - ✅ Aligned with `players` table schema
 - ✅ Updated field names: `player_rp` (was `current_rp`)
 - ✅ Added proper enums: `PlayerPosition`, `SalaryTier`
@@ -23,12 +24,14 @@ The backend has been updated to ensure all endpoints properly align with the dat
 - ✅ All fields match schema types exactly
 
 #### `app/schemas/team.py`
+
 - ✅ Aligned with `teams` table schema
 - ✅ Updated field types: `current_rp` as `int`, `money_won` as `int`
 - ✅ Added new response models: `TeamWithStats`, `TeamListResponse`
 - ✅ All fields match schema types exactly
 
 #### `app/schemas/match.py`
+
 - ✅ Already aligned with `matches` table schema
 - ✅ Proper enum values for `MatchStage`
 - ✅ All fields match schema types exactly
@@ -36,43 +39,51 @@ The backend has been updated to ensure all endpoints properly align with the dat
 ### 2. New Schema Files Created
 
 #### `app/schemas/awards.py` (NEW)
+
 - ✅ Aligned with `awards_race` table schema
 - ✅ Proper enum: `AwardTypes`
 - ✅ Models: `AwardsRace`, `AwardsRaceCreate`, `AwardsRaceUpdate`, `AwardsRaceWithDetails`
 
 #### `app/schemas/badge.py` (UPDATED)
+
 - ✅ Aligned with `player_badges` table schema
 - ✅ Models: `PlayerBadge`, `PlayerBadgeCreate`, `PlayerBadgeUpdate`, `PlayerBadgeWithDetails`
 
 #### `app/schemas/team_roster.py` (NEW)
+
 - ✅ Aligned with `team_rosters` table schema
 - ✅ Models: `TeamRoster`, `TeamRosterCreate`, `TeamRosterUpdate`, `TeamRosterWithDetails`
 
 #### `app/schemas/tournament_group.py` (NEW)
+
 - ✅ Aligned with `tournament_groups` and `tournament_group_members` tables
 - ✅ Models: `TournamentGroup`, `TournamentGroupMember`, and related models
 
 ### 3. New Router Endpoints Created
 
 #### `app/routers/awards_race.py` (NEW)
+
 - ✅ Full CRUD operations for awards race
 - ✅ Filtering by tournament, league, team, player, award type
 - ✅ Admin-only create/update/delete operations
 - ✅ Public read operations
 
 #### `app/routers/player_badges.py` (NEW)
+
 - ✅ Full CRUD operations for player badges
 - ✅ Filtering by player wallet, match, tournament, league, badge type
 - ✅ Admin-only create/update/delete operations
 - ✅ Public read operations
 
 #### `app/routers/team_rosters.py` (NEW)
+
 - ✅ Full CRUD operations for team rosters
 - ✅ Filtering by team, player, tournament, league, captain status
 - ✅ Admin-only create/update/delete operations
 - ✅ Public read operations
 
 #### `app/routers/tournament_groups.py` (NEW)
+
 - ✅ Full CRUD operations for tournament groups
 - ✅ Group member management (add/remove teams)
 - ✅ Filtering by tournament, league season, status
@@ -82,12 +93,14 @@ The backend has been updated to ensure all endpoints properly align with the dat
 ### 4. Updated Existing Routers
 
 #### `app/routers/players.py`
+
 - ✅ Removed duplicate model definitions
 - ✅ Now uses schemas from `app/schemas/player.py`
 - ✅ Updated response models to use new schemas
 - ✅ All endpoints now return properly typed responses
 
 #### `app/routers/teams.py`
+
 - ✅ Removed duplicate model definitions
 - ✅ Now uses schemas from `app/schemas/team.py`
 - ✅ Updated response models to use new schemas
@@ -96,6 +109,7 @@ The backend has been updated to ensure all endpoints properly align with the dat
 ### 5. Updated Main Application
 
 #### `main.py`
+
 - ✅ Added imports for all new routers
 - ✅ Registered all new routers with proper tags
 - ✅ Maintained backward compatibility
@@ -103,6 +117,7 @@ The backend has been updated to ensure all endpoints properly align with the dat
 ## Schema Coverage
 
 ### ✅ Fully Covered Tables
+
 - `players` - Complete CRUD operations
 - `teams` - Complete CRUD operations
 - `matches` - Complete CRUD operations
@@ -113,11 +128,13 @@ The backend has been updated to ensure all endpoints properly align with the dat
 - `tournament_group_members` - Complete CRUD operations (NEW)
 
 ### 🔄 Partially Covered Tables
+
 - `player_stats` - Existing endpoints, may need updates
 - `tournaments` - Existing endpoints, may need updates
 - `leagues` - Existing endpoints, may need updates
 
 ### ⚠️ Still Need Endpoints
+
 - `draft_pool`
 - `event_results`
 - `group_matches`
@@ -137,12 +154,14 @@ The backend has been updated to ensure all endpoints properly align with the dat
 ## Field Alignment Status
 
 ### ✅ Perfectly Aligned
+
 - All enum values match exactly
 - All field names match exactly
 - All field types match exactly
 - All relationships are properly defined
 
 ### 🔧 Minor Adjustments Made
+
 - `current_rp` → `player_rp` in player schemas
 - `money_won` type changed from `float` to `int`
 - `created_at` and `updated_at` properly handled as ISO strings
@@ -150,6 +169,7 @@ The backend has been updated to ensure all endpoints properly align with the dat
 ## API Endpoints Summary
 
 ### New Endpoints Added
+
 ```
 POST   /v1/awards-race/                    - Create awards race entry
 GET    /v1/awards-race/                    - List awards race entries
@@ -201,6 +221,7 @@ DELETE /v1/tournament-groups/{id}/members/{team_id} - Remove team from group
 ## Alignment Score: 8.5/10
 
 **Strengths:**
+
 - Core entities fully aligned
 - New endpoints cover major missing functionality
 - Consistent response models
@@ -208,6 +229,7 @@ DELETE /v1/tournament-groups/{id}/members/{team_id} - Remove team from group
 - Good enum coverage
 
 **Areas for Improvement:**
+
 - Some tables still need endpoints
 - Need comprehensive testing
 - Some complex relationships could be better handled

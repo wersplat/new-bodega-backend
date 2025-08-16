@@ -14,7 +14,7 @@ from app.schemas.player import (
     PlayerProfile,
     PlayerWithHistory,
     RPHistory,
-    PlayerTier
+    LeaderboardTier
 )
 
 # Test data
@@ -222,17 +222,17 @@ def test_player_with_history():
     assert player.rp_history[0].change_reason == "Tournament win"
     assert player.rp_history[1].change_reason == "Weekly bonus"
 
-def test_player_tier_enum():
-    """Test player tier enum values"""
-    assert PlayerTier.BRONZE == "bronze"
-    assert PlayerTier.SILVER == "silver"
-    assert PlayerTier.GOLD == "gold"
-    assert PlayerTier.PLATINUM == "platinum"
-    assert PlayerTier.DIAMOND == "diamond"
-    assert PlayerTier.PINK_DIAMOND == "pink_diamond"
-    assert PlayerTier.GALAXY_OPAL == "galaxy_opal"
+def test_leaderboard_tier_enum():
+    """Test leaderboard tier enum values"""
+    assert LeaderboardTier.BRONZE == "bronze"
+    assert LeaderboardTier.SILVER == "silver"
+    assert LeaderboardTier.GOLD == "gold"
+    assert LeaderboardTier.PLATINUM == "platinum"
+    assert LeaderboardTier.DIAMOND == "diamond"
+    assert LeaderboardTier.PINK_DIAMOND == "pink_diamond"
+    assert LeaderboardTier.GALAXY_OPAL == "galaxy_opal"
     
     # Test enum iteration
-    tiers = list(PlayerTier)
+    tiers = list(LeaderboardTier)
     assert len(tiers) == 7
-    assert PlayerTier.BRONZE in tiers
+    assert LeaderboardTier.BRONZE in tiers
