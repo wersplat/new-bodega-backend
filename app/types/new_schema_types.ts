@@ -206,7 +206,7 @@ export type Database = {
             foreignKeyName: "tournament_groups_members_group_id_fkey"
             columns: ["group_id"]
             isOneToOne: false
-            referencedRelation: "tournament_groupss"
+            referencedRelation: "tournament_groups"
             referencedColumns: ["id"]
           },
           {
@@ -218,7 +218,7 @@ export type Database = {
           },
         ]
       }
-      tournament_groupss: {
+      tournament_groups: {
         Row: {
           advancement_count: number | null
           created_at: string | null
@@ -260,14 +260,14 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "tournament_groupss_league_season_id_fkey"
+            foreignKeyName: "tournament_groups_league_season_id_fkey"
             columns: ["league_season_id"]
             isOneToOne: false
             referencedRelation: "league_seasons"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "tournament_groupss_tournament_id_fkey"
+            foreignKeyName: "tournament_groups_tournament_id_fkey"
             columns: ["tournament_id"]
             isOneToOne: false
             referencedRelation: "tournaments"
@@ -369,7 +369,7 @@ export type Database = {
             foreignKeyName: "group_matches_group_id_fkey"
             columns: ["group_id"]
             isOneToOne: false
-            referencedRelation: "tournament_groupss"
+            referencedRelation: "tournament_groups"
             referencedColumns: ["id"]
           },
           {
@@ -426,7 +426,7 @@ export type Database = {
             foreignKeyName: "group_standings_group_id_fkey"
             columns: ["group_id"]
             isOneToOne: false
-            referencedRelation: "tournament_groupss"
+            referencedRelation: "tournament_groups"
             referencedColumns: ["id"]
           },
           {
