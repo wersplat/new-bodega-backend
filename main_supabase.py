@@ -18,6 +18,7 @@ from app.routers import auth, admin, discord, payments
 from app.routers.players import router as players_router
 from app.routers.events import router as events_router
 from app.routers.leaderboard_supabase import router as leaderboard_router
+from app.routers.admin_matches import router as admin_matches_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -56,6 +57,7 @@ app.include_router(players_router, prefix="/players", tags=["Players"])
 app.include_router(events_router, prefix="/events", tags=["Events"])
 app.include_router(leaderboard_router, prefix="/leaderboard", tags=["Leaderboard"])
 app.include_router(admin.router, prefix="/admin", tags=["Admin"])
+app.include_router(admin_matches_router, prefix="/admin", tags=["Admin Matches"])
 app.include_router(discord.router, prefix="/discord", tags=["Discord"])
 app.include_router(payments.router, prefix="/payments", tags=["Payments"])
 
