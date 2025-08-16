@@ -46,7 +46,7 @@ class TournamentBase(BaseModel):
     sponsor_logo: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
         use_enum_values = True
 
 class TournamentCreate(BaseModel):
@@ -75,7 +75,7 @@ class TournamentCreate(BaseModel):
         return v
 
     class Config:
-        orm_mode = True
+        from_attributes = True
         use_enum_values = True
 
 class TournamentUpdate(BaseModel):
@@ -106,7 +106,7 @@ class TournamentResponse(TournamentBase):
     processed_at: Optional[datetime] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
         use_enum_values = True
 
 # Endpoints

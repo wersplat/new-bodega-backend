@@ -127,7 +127,7 @@ def get_match_context(match_id: str) -> Dict[str, Any]:
     """Get match context including teams and rosters"""
     try:
         # Get match details
-        match = supabase.get_by_id("matches", match_id)
+        match = supabase.fetch_by_id("matches", match_id)
         if not match:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -144,8 +144,8 @@ def get_match_context(match_id: str) -> Dict[str, Any]:
                 detail="Match is missing team information"
             )
         
-        team_a = supabase.get_by_id("teams", team_a_id)
-        team_b = supabase.get_by_id("teams", team_b_id)
+        team_a = supabase.fetch_by_id("teams", team_a_id)
+        team_b = supabase.fetch_by_id("teams", team_b_id)
         
         # Get rosters
         roster_a = supabase.get_client().table("team_rosters").select(

@@ -162,6 +162,40 @@ class SupabaseService:
         response = client.table(table).delete().eq('id', id).execute()
         return len(response.data) > 0 if hasattr(response, 'data') and response.data else False
 
+    @classmethod
+    def get_by_id(cls, table: str, id: Union[str, int]) -> Optional[Dict[str, Any]]:
+        """Alias for fetch_by_id for backward compatibility"""
+        return cls.fetch_by_id(table, id)
+
+    @classmethod
+    def upsert(cls, table: str, data: Union[Dict[str, Any], List[Dict[str, Any]]], on_conflict: Optional[List[str]] = None, client: Optional[SupabaseClient] = None) -> Optional[Union[Dict[str, Any], List[Dict[str, Any]]]]:
+        """Upsert (insert or update) records in the specified table
+        
+        Args:
+            table: Name of the table to upsert into
+            data: Dictionary or list of dictionaries of data to upsert
+            on_conflict: List of column names to use for conflict resolution
+            client: Optional client to use for the operation (for transactions)
+            
+        Returns:
+            Dictionary or list of dictionaries containing the upserted records if successful, None otherwise
+        """
+        client = client or cls.get_client()
+        
+        # Build the upsert query
+        query = client.table(table).upsert(data)
+        
+        # Add conflict resolution if specified
+        if on_conflict:
+            query = query.on_conflict(','.join(on_conflict))
+        
+        response = query.execute()
+        
+        if isinstance(data, list):
+            return response.data if hasattr(response, 'data') else []
+        else:
+            return response.data[0] if hasattr(response, 'data') and response.data and len(response.data) > 0 else None
+
     # Authentication Methods
     @classmethod
     def get_user(cls, jwt: str) -> Dict[str, Any]:

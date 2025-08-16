@@ -33,7 +33,7 @@ class LeagueBase(BaseModel):
     twitter_id: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
         use_enum_values = True
 
 class LeagueCreate(LeagueBase):
@@ -53,7 +53,7 @@ class LeagueResponse(LeagueBase):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
         use_enum_values = True
 
 # Season models
@@ -78,7 +78,7 @@ class SeasonResponse(SeasonBase):
     id: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # League Endpoints
 @router.post("/", response_model=LeagueResponse, status_code=status.HTTP_201_CREATED)
