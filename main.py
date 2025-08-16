@@ -40,6 +40,7 @@ from app.routers import (
     player_badges,  # Player badges router
     team_rosters,  # Team rosters router
     tournament_groups,  # Tournament groups router
+    team_roster_current,  # Team roster current view router
 )
 from app.routers import awards as awards_router
 
@@ -144,7 +145,8 @@ app.include_router(awards_router.router, tags=["Awards"])
 app.include_router(awards_race.router, tags=["Awards Race"])
 app.include_router(player_badges.router, tags=["Player Badges"])
 app.include_router(team_rosters.router, tags=["Team Rosters"])
-app.include_router(tournament_groups.router, tags=["Tournament Groups"]) 
+app.include_router(tournament_groups.router, tags=["Tournament Groups"])
+app.include_router(team_roster_current.router, tags=["Team Roster Current"]) 
 # Add backward compatibility redirects
 
 @app.get("/api/{path:path}", include_in_schema=False)

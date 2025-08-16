@@ -9,7 +9,7 @@ import os
 
 class Settings(BaseSettings):
     # Environment
-    ENVIRONMENT: str = "development"
+    ENVIRONMENT: str = "production"
     
     # Supabase Configuration
     SUPABASE_URL: str = ""
@@ -56,7 +56,7 @@ class Settings(BaseSettings):
     # App
     DEBUG: bool = True
     ALLOWED_HOSTS: str = "localhost,127.0.0.1"
-    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:10000,https://dashboard.bodegacatsgc.gg,https://data.bodegacatsgc.gg,https://api.bodegacatsgc.gg,http://railway.app"
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:10000,https://dashboard.bodegacatsgc.gg,https://data.bodegacatsgc.gg,https://api.bodegacatsgc.gg,http://railway.app,https://bodegacatsgc.gg"
     
     # API Configuration
     API_V1_STR: str = "/v1"
@@ -76,7 +76,7 @@ class Settings(BaseSettings):
     MAX_PAGE_SIZE: int = 100
     
     # Frontend URL for OAuth redirects
-    FRONTEND_URL: str = "https://dashboard.bodegacatsgc.gg"
+    FRONTEND_URL: str = "https://bodegacatsgc.gg"
     
     model_config = SettingsConfigDict(
         env_file=".env",
