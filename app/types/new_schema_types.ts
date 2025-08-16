@@ -1,6 +1,3 @@
-Need to install the following packages:
-supabase@2.34.3
-Ok to proceed? (y) 
 export type Json =
   | string
   | number
@@ -172,102 +169,6 @@ export type Database = {
           },
           {
             foreignKeyName: "draft_pool_tournament_id_fkey"
-            columns: ["tournament_id"]
-            isOneToOne: false
-            referencedRelation: "tournaments"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      tournament_groups_members: {
-        Row: {
-          created_at: string | null
-          group_id: string
-          id: string
-          seed: number | null
-          team_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          group_id: string
-          id?: string
-          seed?: number | null
-          team_id: string
-        }
-        Update: {
-          created_at?: string | null
-          group_id?: string
-          id?: string
-          seed?: number | null
-          team_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "tournament_groups_members_group_id_fkey"
-            columns: ["group_id"]
-            isOneToOne: false
-            referencedRelation: "tournament_groups"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tournament_groups_members_team_id_fkey"
-            columns: ["team_id"]
-            isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      tournament_groups: {
-        Row: {
-          advancement_count: number | null
-          created_at: string | null
-          description: string | null
-          id: string
-          league_season_id: string | null
-          max_teams: number | null
-          name: string
-          sort_order: number | null
-          status: string | null
-          tournament_id: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          advancement_count?: number | null
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          league_season_id?: string | null
-          max_teams?: number | null
-          name: string
-          sort_order?: number | null
-          status?: string | null
-          tournament_id?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          advancement_count?: number | null
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          league_season_id?: string | null
-          max_teams?: number | null
-          name?: string
-          sort_order?: number | null
-          status?: string | null
-          tournament_id?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "tournament_groups_league_season_id_fkey"
-            columns: ["league_season_id"]
-            isOneToOne: false
-            referencedRelation: "league_seasons"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tournament_groups_tournament_id_fkey"
             columns: ["tournament_id"]
             isOneToOne: false
             referencedRelation: "tournaments"
@@ -624,7 +525,7 @@ export type Database = {
             foreignKeyName: "match_points_group_id_fkey"
             columns: ["group_id"]
             isOneToOne: false
-            referencedRelation: "tournament_groupss"
+            referencedRelation: "tournament_groups"
             referencedColumns: ["id"]
           },
           {
@@ -1836,6 +1737,102 @@ export type Database = {
           },
         ]
       }
+      tournament_group_members: {
+        Row: {
+          created_at: string | null
+          group_id: string
+          id: string
+          seed: number | null
+          team_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          group_id: string
+          id?: string
+          seed?: number | null
+          team_id: string
+        }
+        Update: {
+          created_at?: string | null
+          group_id?: string
+          id?: string
+          seed?: number | null
+          team_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "tournament_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_group_members_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tournament_groups: {
+        Row: {
+          advancement_count: number | null
+          created_at: string | null
+          description: string | null
+          id: string
+          league_season_id: string | null
+          max_teams: number | null
+          name: string
+          sort_order: number | null
+          status: string | null
+          tournament_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          advancement_count?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          league_season_id?: string | null
+          max_teams?: number | null
+          name: string
+          sort_order?: number | null
+          status?: string | null
+          tournament_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          advancement_count?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          league_season_id?: string | null
+          max_teams?: number | null
+          name?: string
+          sort_order?: number | null
+          status?: string | null
+          tournament_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_groups_league_season_id_fkey"
+            columns: ["league_season_id"]
+            isOneToOne: false
+            referencedRelation: "league_seasons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_groups_tournament_id_fkey"
+            columns: ["tournament_id"]
+            isOneToOne: false
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tournaments: {
         Row: {
           banner_url: string | null
@@ -2018,7 +2015,7 @@ export type Database = {
             foreignKeyName: "upcoming_matches_group_id_fkey"
             columns: ["group_id"]
             isOneToOne: false
-            referencedRelation: "tournament_groupss"
+            referencedRelation: "tournament_groups"
             referencedColumns: ["id"]
           },
           {
@@ -2186,50 +2183,6 @@ export type Database = {
       }
     }
     Functions: {
-      add_event_placement_bonus_rp_to_players: {
-        Args: {
-          p_bonus_amount: number
-          p_description?: string
-          p_event_id: string
-          p_team_id: string
-        }
-        Returns: {
-          bonus_rp: number
-          new_total_rp: number
-          player_name: string
-        }[]
-      }
-      add_mvp_bonus_rp: {
-        Args: {
-          p_description?: string
-          p_event_id: string
-          p_mvp_bonus?: number
-        }
-        Returns: {
-          bonus_rp: number
-          new_total_rp: number
-          player_name: string
-        }[]
-      }
-      add_player_to_team_roster: {
-        Args: {
-          in_event_id: string
-          in_joined_at?: string
-          in_player_id: string
-          in_remove_from_draft_pool?: boolean
-          in_team_id: string
-        }
-        Returns: undefined
-      }
-      adjust_team_rp: {
-        Args: {
-          amount: number
-          event_id_param?: string
-          reason: string
-          team_id_param: string
-        }
-        Returns: undefined
-      }
       analyze_elo_distribution: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -2241,22 +2194,6 @@ export type Database = {
       apply_rp_decay: {
         Args: Record<PropertyKey, never>
         Returns: undefined
-      }
-      assign_placement_bonus_rp_to_players: {
-        Args: {
-          p_event_id: string
-          p_first_place_bonus?: number
-          p_second_place_bonus?: number
-          p_third_place_bonus?: number
-          p_top8_bonus?: number
-        }
-        Returns: {
-          bonus_rp: number
-          new_total_rp: number
-          placement: number
-          player_name: string
-          team_name: string
-        }[]
       }
       assign_role: {
         Args: { role_to_assign: string; target_user_id: string }
@@ -2279,10 +2216,6 @@ export type Database = {
           tier_name: string
         }[]
       }
-      calculate_defensive_mvp_score: {
-        Args: { event_uuid: string; player_uuid: string }
-        Returns: number
-      }
       calculate_hybrid_score: {
         Args: { team_id_param: string }
         Returns: number
@@ -2295,10 +2228,6 @@ export type Database = {
         Args: { team_id_param: string }
         Returns: number
       }
-      calculate_offensive_mvp_score: {
-        Args: { event_uuid: string; player_uuid: string }
-        Returns: number
-      }
       calculate_player_salary: {
         Args: { player_uuid: string }
         Returns: {
@@ -2306,23 +2235,6 @@ export type Database = {
           player_name: string
           raw_score: number
           tier_name: string
-        }[]
-      }
-      calculate_rookie_score: {
-        Args: { event_uuid: string; player_uuid: string }
-        Returns: number
-      }
-      calculate_team_standings: {
-        Args: { event_id_param: string }
-        Returns: {
-          losses: number
-          matches_played: number
-          point_differential: number
-          points_against: number
-          points_for: number
-          team_id: string
-          team_name: string
-          wins: number
         }[]
       }
       calculate_team_total_money_won: {
@@ -2341,40 +2253,6 @@ export type Database = {
       custom_jwt: {
         Args: Record<PropertyKey, never>
         Returns: Json
-      }
-      generate_award_nominees: {
-        Args: { award_type_param: string; event_uuid: string; top_n?: number }
-        Returns: {
-          player_id: string
-          player_name: string
-          rank: number
-          score: number
-          team_id: string
-          team_name: string
-        }[]
-      }
-      generate_bracket_matches: {
-        Args: {
-          p_bracket_start_time: string
-          p_event_id: string
-          p_match_duration_minutes?: number
-        }
-        Returns: undefined
-      }
-      generate_bracket_seeding: {
-        Args: { p_event_id: string }
-        Returns: {
-          group_position: number
-          original_group_id: string
-          original_group_name: string
-          seed_position: number
-          team_id: string
-          team_name: string
-        }[]
-      }
-      generate_group_matches: {
-        Args: { p_group_id: string }
-        Returns: undefined
       }
       get_elo_bounds: {
         Args: Record<PropertyKey, never>
@@ -2474,24 +2352,12 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
-      select_award_winner: {
-        Args: {
-          award_type_param: string
-          event_uuid: string
-          winner_player_id: string
-        }
-        Returns: undefined
-      }
       sync_user_roles_for_user: {
         Args: { p_user_id: string }
         Returns: undefined
       }
       update_all_teams_money_won: {
         Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      update_awards_race: {
-        Args: { award_type_param: string; event_uuid: string; top_n?: number }
         Returns: undefined
       }
       update_elo_after_match: {
@@ -2501,42 +2367,6 @@ export type Database = {
           winner_id_param: string
         }
         Returns: undefined
-      }
-      update_event_players_rp: {
-        Args:
-          | {
-              bonus_amount?: number
-              description_param?: string
-              event_id_param: string
-              performance_score_param?: number
-              rating_param?: number
-            }
-          | {
-              bonus_rp: number
-              description_param: string
-              event_id_param: string
-            }
-        Returns: {
-          amount: number
-          player_id: string
-          player_name: string
-          transaction_id: string
-        }[]
-      }
-      update_event_players_rp_hybrid: {
-        Args: {
-          base_rp?: number
-          bonus_amount?: number
-          description_param?: string
-          event_id_param: string
-        }
-        Returns: {
-          amount: number
-          hybrid_score: number
-          player_id: string
-          player_name: string
-          transaction_id: string
-        }[]
       }
       update_existing_draft_pool_records: {
         Args: Record<PropertyKey, never>
