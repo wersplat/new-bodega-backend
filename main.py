@@ -36,6 +36,10 @@ from app.routers import (
     teams,  # Updated to use refactored teams router
     matches,  # Consolidated matches router
     player_stats,
+    awards_race,  # Awards race router
+    player_badges,  # Player badges router
+    team_rosters,  # Team rosters router
+    tournament_groups,  # Tournament groups router
 )
 from app.routers import awards as awards_router
 
@@ -136,7 +140,11 @@ app.include_router(admin.router, tags=["Admin"])
 app.include_router(admin_actions.router, tags=["Admin"])
 app.include_router(discord.router, tags=["Discord Integration"])
 app.include_router(payments.router, tags=["Payment Integration"])
-app.include_router(awards_router.router, tags=["Awards"]) 
+app.include_router(awards_router.router, tags=["Awards"])
+app.include_router(awards_race.router, tags=["Awards Race"])
+app.include_router(player_badges.router, tags=["Player Badges"])
+app.include_router(team_rosters.router, tags=["Team Rosters"])
+app.include_router(tournament_groups.router, tags=["Tournament Groups"]) 
 # Add backward compatibility redirects
 
 @app.get("/api/{path:path}", include_in_schema=False)

@@ -1,56 +1,42 @@
 """
-Pydantic schemas for badges and achievements
+Pydantic schemas for player badges
 """
 
-from pydantic import BaseModel, ConfigDict, Field, field_serializer
-from typing import Optional, List, ClassVar, Dict, Any
+from pydantic import BaseModel, ConfigDict, Field
+from typing import Optional, Dict, Any
 from datetime import datetime
 from uuid import UUID
 
-class BadgeBase(BaseModel):
-    name: str
-    description: Optional[str] = None
-    icon_url: Optional[str] = None
-    rarity: str = "common"
-
-class BadgeCreate(BadgeBase):
-    pass
-
-class BadgeUpdate(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    icon_url: Optional[str] = None
-    rarity: Optional[str] = None
-    is_active: Optional[bool] = None
-
-class BadgeInDB(BadgeBase):
-    model_config = ConfigDict(from_attributes=True)
-    
-    id: int
-    is_active: bool
-    created_at: datetime
-
-class Badge(BadgeInDB):
-    pass
-
 class PlayerBadgeBase(BaseModel):
-    player_id: int
-    badge_id: int
-    is_equipped: bool = False
+    badge_type: str = Field(..., description="Type of badge")
+    player_wallet: str = Field(..., description="Player's wallet address")
+    match_id: int = Field(..., ge=1, description="Match ID where badge was earned")
+    ipfs_uri: Optional[str] = None
+    token_id: Optional[int] = Field(None, ge=0)
+    tx_hash: Optional[str] = None
+    league_id: Optional[str] = None
+    tournament_id: Optional[str] = None
 
 class PlayerBadgeCreate(PlayerBadgeBase):
-    awarded_by: Optional[int] = None
-
-class PlayerBadgeInDB(PlayerBadgeBase):
-    model_config = ConfigDict(from_attributes=True)
-    
-    id: int
-    awarded_by: Optional[int] = None
-    awarded_at: datetime
-
-class PlayerBadge(PlayerBadgeInDB):
     pass
 
+class PlayerBadgeUpdate(BaseModel):
+    badge_type: Optional[str] = None
+    ipfs_uri: Optional[str] = None
+    token_id: Optional[int] = Field(None, ge=0)
+    tx_hash: Optional[str] = None
+    league_id: Optional[str] = None
+    tournament_id: Optional[str] = None
+
+class PlayerBadge(PlayerBadgeBase):
+    model_config = ConfigDict(from_attributes=True)
+    
+    id: str
+    created_at: datetime
+
 class PlayerBadgeWithDetails(PlayerBadge):
-    """Player badge with badge details"""
-    badge: Badge 
+    """Badge with player and match details"""
+    player: Optional[Dict[str, Any]] = None
+    match: Optional[Dict[str, Any]] = None
+    tournament: Optional[Dict[str, Any]] = None
+    league: Optional[Dict[str, Any]] = None 

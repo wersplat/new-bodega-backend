@@ -63,6 +63,7 @@ from app.core.supabase import supabase
 from app.core.auth_supabase import supabase_user_from_bearer
 from app.core.rate_limiter import limiter
 from app.core.config import settings
+from app.schemas.player import Player, PlayerProfile, PlayerWithStats, PlayerWithTeam, PlayerListResponse, PlayerCreate, PlayerUpdate
 
 # Initialize router with rate limiting and explicit prefix
 router = APIRouter(
@@ -85,78 +86,6 @@ GamertagStr = constr(
     max_length=GAMERTAG_MAX_LENGTH,
     strip_whitespace=True
 )
-
-class PlayerBase(BaseModel):
-    """Base player model with common fields."""
-    gamertag: str
-    avatar_url: Optional[str] = None
-    bio: Optional[str] = None
-    region: Optional[str] = None
-    timezone: Optional[str] = None
-
-class PlayerCreate(PlayerBase):
-    """Model for creating a new player."""
-    user_id: UUID
-    
-    @field_validator('gamertag')
-    @classmethod
-    def validate_gamertag(cls, v: str) -> str:
-        v = v.strip()
-        if not v:
-            raise ValueError('Gamertag cannot be empty')
-        if not v.replace(' ', '').isalnum():
-            raise ValueError('Gamertag can only contain alphanumeric characters and spaces')
-        return v
-
-class PlayerUpdate(BaseModel):
-    """Model for updating an existing player (partial updates allowed)."""
-    gamertag: Optional[str] = None
-    avatar_url: Optional[str] = None
-    bio: Optional[str] = None
-    region: Optional[str] = None
-    timezone: Optional[str] = None
-    is_active: Optional[bool] = None
-
-class PlayerResponse(PlayerBase):
-    """Complete player model for API responses."""
-    id: UUID
-    user_id: UUID
-    created_at: datetime
-    updated_at: datetime
-    is_active: bool
-    last_online: Optional[datetime] = None
-    
-    model_config = ConfigDict(
-        from_attributes=True,  # Replaces orm_mode=True
-        json_schema_extra={
-            "example": {
-                "id": "550e8400-e29b-41d4-a716-446655440000",
-                "user_id": "110e8400-e29b-41d4-a716-446655440000",
-                "gamertag": "examplePlayer",
-                "created_at": "2023-01-01T12:00:00Z",
-                "updated_at": "2023-01-02T14:30:00Z",
-                "is_active": True,
-                "last_online": "2023-01-02T14:30:00Z"
-            }
-        }
-    )
-    
-    # Custom JSON serialization for datetime fields
-    def model_dump(self, *args, **kwargs):
-        data = super().model_dump(*args, **kwargs)
-        # Convert datetime fields to ISO format
-        for field in ["created_at", "updated_at", "last_online"]:
-            if field in data and data[field] is not None:
-                data[field] = data[field].isoformat()
-        return data
-
-class PlayerListResponse(BaseModel):
-    """Paginated list of players with metadata."""
-    items: List[PlayerResponse]
-    total: int
-    page: int
-    size: int
-    has_more: bool
 
 # Helper Functions
 async def get_player_by_id(player_id: Union[str, UUID]) -> Optional[Dict[str, Any]]:
@@ -200,7 +129,7 @@ async def get_player_by_gamertag(gamertag: str) -> Optional[Dict[str, Any]]:
 
 @router.post(
     "/", 
-    response_model=PlayerResponse,
+    response_model=Player,
     status_code=status.HTTP_201_CREATED,
     responses={
         201: {
@@ -360,7 +289,7 @@ async def create_player(
 
 @router.get(
     "/{player_id}", 
-    response_model=PlayerResponse,
+    response_model=Player,
     responses={
         200: {
             "description": "Player profile retrieved successfully",
@@ -509,7 +438,7 @@ async def get_player(
 
 @router.get(
     "/me",
-    response_model=PlayerResponse,
+    response_model=Player,
     responses={
         200: {
             "description": "Player profile retrieved successfully",

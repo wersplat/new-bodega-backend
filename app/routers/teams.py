@@ -16,6 +16,7 @@ from app.core.supabase import supabase
 from app.core.auth_supabase import supabase_user_from_bearer, require_admin_api_token
 from app.core.rate_limiter import limiter
 from app.core.config import settings
+from app.schemas.team import Team, TeamCreate, TeamUpdate, TeamWithPlayers, TeamWithStats, TeamListResponse
 
 # Initialize router with rate limiting and explicit prefix
 router = APIRouter(
@@ -31,74 +32,9 @@ logger = logging.getLogger(__name__)
 UUID_PATTERN = r'^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
 UUID_EXAMPLE = "123e4567-e89b-12d3-a456-426614174000"
 
-# Models
-class TeamBase(BaseModel):
-    """Base team model with common fields."""
-    name: str = Field(..., min_length=3, max_length=100, description="Team name")
-    tag: Optional[str] = Field(None, max_length=10, description="Team tag/abbreviation")
-    description: Optional[str] = Field(None, description="Team description")
-    logo_url: Optional[HttpUrl] = Field(None, description="URL to team logo")
-    region_id: Optional[str] = Field(
-        None, 
-        description="Region ID where the team is based",
-        pattern=UUID_PATTERN,
-        example=UUID_EXAMPLE
-    )
-    is_active: bool = Field(True, description="Whether the team is currently active")
 
-class TeamCreate(TeamBase):
-    """Model for creating a new team."""
-    pass
 
-class TeamUpdate(BaseModel):
-    """Model for updating an existing team."""
-    name: Optional[str] = Field(None, min_length=3, max_length=100, description="Team name")
-    tag: Optional[str] = Field(None, max_length=10, description="Team tag/abbreviation")
-    description: Optional[str] = Field(None, description="Team description")
-    logo_url: Optional[HttpUrl] = Field(None, description="URL to team logo")
-    region_id: Optional[str] = Field(
-        None, 
-        description="Region ID where the team is based",
-        pattern=UUID_PATTERN,
-        example=UUID_EXAMPLE
-    )
-    is_active: Optional[bool] = Field(None, description="Whether the team is currently active")
-
-class TeamResponse(TeamBase):
-    """Complete team model for API responses."""
-    id: str = Field(..., description="Unique identifier for the team")
-    created_at: datetime = Field(..., description="When the team was created")
-    updated_at: datetime = Field(..., description="When the team was last updated")
-    created_by: Optional[str] = Field(None, description="ID of the user who created the team")
-    
-    model_config = ConfigDict(
-        from_attributes=True,  # Replaces orm_mode=True
-        json_schema_extra={
-            "example": {
-                "id": "550e8400-e29b-41d4-a716-446655440000",
-                "name": "Team Alpha",
-                "tag": "TMA",
-                "description": "A competitive team focused on excellence",
-                "logo_url": "https://example.com/team-alpha-logo.png",
-                "region_id": "110e8400-e29b-41d4-a716-446655440000",
-                "is_active": True,
-                "created_at": "2023-01-01T12:00:00Z",
-                "updated_at": "2023-01-02T14:30:00Z",
-                "created_by": "220e8400-e29b-41d4-a716-446655440000"
-            }
-        }
-    )
-    
-    # Custom JSON serialization for datetime fields
-    def model_dump(self, *args, **kwargs):
-        data = super().model_dump(*args, **kwargs)
-        # Convert datetime fields to ISO format
-        for field in ["created_at", "updated_at"]:
-            if field in data and data[field] is not None:
-                data[field] = data[field].isoformat()
-        return data
-
-class TeamWithPlayers(TeamResponse):
+class TeamWithPlayers(Team):
     """Team model that includes player information."""
     players: List[Dict[str, Any]] = Field(default_factory=list, description="List of players on the team")
 
@@ -146,7 +82,7 @@ async def get_team_by_id(team_id: str) -> Optional[Dict[str, Any]]:
 # API Endpoints
 @router.post(
     "/",
-    response_model=TeamResponse,
+    response_model=Team,
     status_code=status.HTTP_201_CREATED,
     responses={
         201: {"description": "Team created successfully"},
@@ -374,7 +310,7 @@ async def list_teams(
             }
         )
 
-@router.put("/{team_id}", response_model=TeamResponse)
+@router.put("/{team_id}", response_model=Team)
 async def update_team(
     team_id: str,
     team_update: TeamUpdate,
