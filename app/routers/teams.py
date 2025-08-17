@@ -380,3 +380,19 @@ async def search_teams_by_name(name: str):
     client = supabase.get_client()
     result = client.table("teams").select("*").ilike("name", f"%{name}%").execute()
     return result.data if hasattr(result, 'data') else []
+
+@router.get("/search", response_model=List[Team])
+async def search_teams(
+    q: str = Query(..., description="Search query for team name", min_length=1, max_length=100),
+    limit: int = Query(20, ge=1, le=100, description="Maximum number of results to return")
+):
+    """
+    Search teams by name using a query parameter.
+
+    This endpoint supports the query style used by the admin frontend:
+    GET /v1/teams/search?q=NAME&limit=20
+    """
+    client = supabase.get_client()
+    query = client.table("teams").select("*").ilike("name", f"%{q}%").limit(limit)
+    result = query.execute()
+    return result.data if hasattr(result, 'data') else []
