@@ -5,6 +5,7 @@ Main application entry point for Supabase version
 
 import logging
 from datetime import datetime
+from time import timezone
 from typing import Dict, Any
 
 from fastapi import FastAPI, Request
@@ -16,7 +17,7 @@ from app.core.config import settings
 from app.core.rate_limiter import limiter, rate_limit_exceeded_handler
 from app.routers import auth, admin, discord, payments
 from app.routers.players import router as players_router
-from app.routers.events import router as events_router
+from app.routers.tournaments import router as tournaments_router
 from app.routers.leaderboard_supabase import router as leaderboard_router
 from app.routers.admin_matches import router as admin_matches_router
 
@@ -54,7 +55,7 @@ app.add_middleware(
 # Include routers - using Supabase versions where available
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 app.include_router(players_router, prefix="/players", tags=["Players"])
-app.include_router(events_router, prefix="/events", tags=["Events"])
+app.include_router(tournaments_router, prefix="/tournaments", tags=["Tournaments"])
 app.include_router(leaderboard_router, prefix="/leaderboard", tags=["Leaderboard"])
 app.include_router(admin.router, prefix="/admin", tags=["Admin"])
 app.include_router(admin_matches_router, prefix="/admin", tags=["Admin Matches"])
@@ -78,7 +79,7 @@ async def root(request: Request):
         "version": "1.0.0",
         "docs": "/docs",
         "status": "operational",
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat()
     }
 
 @app.get("/health")
@@ -88,7 +89,7 @@ async def health_check():
     """Health check endpoint"""
     return {
         "status": "healthy",
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "environment": "development" if settings.DEBUG else "production"
     }
 
@@ -97,6 +98,6 @@ if __name__ == "__main__":
     uvicorn.run(
         "main_supabase:app",
         host="0.0.0.0",
-        port=8000,
+        port=10000,
         reload=True
     )

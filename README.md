@@ -41,8 +41,10 @@ Base path: `/v1`
   - Effect: Update `match_submissions` review fields.
 
 Rate limits
+
 - Stripe webhook: `10/minute`
 - Admin actions: `60/minute` per endpoint
+
 # NBA 2K Global Rankings Backend
 
 A comprehensive FastAPI backend for managing NBA 2K Global Rankings, tournaments, and player profiles, powered by Supabase.

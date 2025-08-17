@@ -17,7 +17,7 @@ from app.core.auth import get_current_active_user
 from app.schemas.user import User
 
 router = APIRouter(
-    prefix="/tournaments",
+    prefix="/v1/tournaments",
     tags=["Tournaments"],
     responses={404: {"description": "Not found"}},
 )
