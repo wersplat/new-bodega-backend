@@ -553,7 +553,7 @@ export type Database = {
             foreignKeyName: "draft_pool_season_fkey"
             columns: ["season"]
             isOneToOne: false
-            referencedRelation: "league_seasons"
+            referencedRelation: "season_id"
             referencedColumns: ["id"]
           },
           {
@@ -720,7 +720,7 @@ export type Database = {
             foreignKeyName: "event_results_season_id_fkey"
             columns: ["season_id"]
             isOneToOne: false
-            referencedRelation: "league_seasons"
+            referencedRelation: "season_id"
             referencedColumns: ["id"]
           },
           {
@@ -1174,7 +1174,7 @@ export type Database = {
           },
         ]
       }
-      league_seasons: {
+      season_id: {
         Row: {
           created_at: string
           end_date: string
@@ -1219,112 +1219,112 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "league_seasons_league_id_fkey"
+            foreignKeyName: "season_id_league_id_fkey"
             columns: ["league_id"]
             isOneToOne: false
             referencedRelation: "league_calendar"
             referencedColumns: ["league_id"]
           },
           {
-            foreignKeyName: "league_seasons_league_id_fkey"
+            foreignKeyName: "season_id_league_id_fkey"
             columns: ["league_id"]
             isOneToOne: false
             referencedRelation: "league_results"
             referencedColumns: ["league_id"]
           },
           {
-            foreignKeyName: "league_seasons_league_id_fkey"
+            foreignKeyName: "season_id_league_id_fkey"
             columns: ["league_id"]
             isOneToOne: false
             referencedRelation: "league_season_team_rosters"
             referencedColumns: ["league_id"]
           },
           {
-            foreignKeyName: "league_seasons_league_id_fkey"
+            foreignKeyName: "season_id_league_id_fkey"
             columns: ["league_id"]
             isOneToOne: false
             referencedRelation: "league_team_rosters"
             referencedColumns: ["league_id"]
           },
           {
-            foreignKeyName: "league_seasons_league_id_fkey"
+            foreignKeyName: "season_id_league_id_fkey"
             columns: ["league_id"]
             isOneToOne: false
             referencedRelation: "leagues_info"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "league_seasons_league_id_fkey"
+            foreignKeyName: "season_id_league_id_fkey"
             columns: ["league_id"]
             isOneToOne: false
             referencedRelation: "tournament_results"
             referencedColumns: ["organizer_id"]
           },
           {
-            foreignKeyName: "league_seasons_league_name_fkey"
+            foreignKeyName: "season_id_league_name_fkey"
             columns: ["league_name"]
             isOneToOne: false
             referencedRelation: "league_calendar"
             referencedColumns: ["league_name"]
           },
           {
-            foreignKeyName: "league_seasons_league_name_fkey"
+            foreignKeyName: "season_id_league_name_fkey"
             columns: ["league_name"]
             isOneToOne: false
             referencedRelation: "league_results"
             referencedColumns: ["league_name"]
           },
           {
-            foreignKeyName: "league_seasons_league_name_fkey"
+            foreignKeyName: "season_id_league_name_fkey"
             columns: ["league_name"]
             isOneToOne: false
             referencedRelation: "league_season_team_rosters"
             referencedColumns: ["league_name"]
           },
           {
-            foreignKeyName: "league_seasons_league_name_fkey"
+            foreignKeyName: "season_id_league_name_fkey"
             columns: ["league_name"]
             isOneToOne: false
             referencedRelation: "league_team_rosters"
             referencedColumns: ["league_name"]
           },
           {
-            foreignKeyName: "league_seasons_league_name_fkey"
+            foreignKeyName: "season_id_league_name_fkey"
             columns: ["league_name"]
             isOneToOne: false
             referencedRelation: "leagues_info"
             referencedColumns: ["league"]
           },
           {
-            foreignKeyName: "league_seasons_league_name_fkey"
+            foreignKeyName: "season_id_league_name_fkey"
             columns: ["league_name"]
             isOneToOne: false
             referencedRelation: "player_roster_history"
             referencedColumns: ["league_name"]
           },
           {
-            foreignKeyName: "league_seasons_league_name_fkey"
+            foreignKeyName: "season_id_league_name_fkey"
             columns: ["league_name"]
             isOneToOne: false
             referencedRelation: "team_roster_history"
             referencedColumns: ["league_name"]
           },
           {
-            foreignKeyName: "league_seasons_league_name_fkey"
+            foreignKeyName: "season_id_league_name_fkey"
             columns: ["league_name"]
             isOneToOne: false
             referencedRelation: "tournament_calendar"
             referencedColumns: ["organizer_name"]
           },
           {
-            foreignKeyName: "league_seasons_league_name_fkey"
+            foreignKeyName: "season_id_league_name_fkey"
             columns: ["league_name"]
             isOneToOne: false
             referencedRelation: "tournament_champions_by_year"
             referencedColumns: ["organizer_name"]
           },
           {
-            foreignKeyName: "league_seasons_league_name_fkey"
+            foreignKeyName: "season_id_league_name_fkey"
             columns: ["league_name"]
             isOneToOne: false
             referencedRelation: "tournament_results"
@@ -1471,7 +1471,7 @@ export type Database = {
             foreignKeyName: "lg_conf_season_fkey"
             columns: ["season"]
             isOneToOne: false
-            referencedRelation: "league_seasons"
+            referencedRelation: "season_id"
             referencedColumns: ["id"]
           },
         ]
@@ -2283,10 +2283,10 @@ export type Database = {
           game_year: Database["public"]["Enums"]["game_year"] | null
           id: string
           league_id: string | null
-          league_season: string | null
           played_at: string | null
           score_a: number | null
           score_b: number | null
+          season_id: string | null
           stage: Database["public"]["Enums"]["stage"] | null
           team_a_id: string | null
           team_b_id: string | null
@@ -2299,10 +2299,10 @@ export type Database = {
           game_year?: Database["public"]["Enums"]["game_year"] | null
           id?: string
           league_id?: string | null
-          league_season?: string | null
           played_at?: string | null
           score_a?: number | null
           score_b?: number | null
+          season_id?: string | null
           stage?: Database["public"]["Enums"]["stage"] | null
           team_a_id?: string | null
           team_b_id?: string | null
@@ -2315,10 +2315,10 @@ export type Database = {
           game_year?: Database["public"]["Enums"]["game_year"] | null
           id?: string
           league_id?: string | null
-          league_season?: string | null
           played_at?: string | null
           score_a?: number | null
           score_b?: number | null
+          season_id?: string | null
           stage?: Database["public"]["Enums"]["stage"] | null
           team_a_id?: string | null
           team_b_id?: string | null
@@ -2369,24 +2369,24 @@ export type Database = {
             referencedColumns: ["organizer_id"]
           },
           {
-            foreignKeyName: "matches_league_season_fkey"
-            columns: ["league_season"]
+            foreignKeyName: "matches_season_id_fkey"
+            columns: ["season_id"]
             isOneToOne: false
             referencedRelation: "league_calendar"
             referencedColumns: ["season_id"]
           },
           {
-            foreignKeyName: "matches_league_season_fkey"
-            columns: ["league_season"]
+            foreignKeyName: "matches_season_id_fkey"
+            columns: ["season_id"]
             isOneToOne: false
             referencedRelation: "league_results"
             referencedColumns: ["season_id"]
           },
           {
-            foreignKeyName: "matches_league_season_fkey"
-            columns: ["league_season"]
+            foreignKeyName: "matches_season_id_fkey"
+            columns: ["season_id"]
             isOneToOne: false
-            referencedRelation: "league_seasons"
+            referencedRelation: "season_id"
             referencedColumns: ["id"]
           },
           {
@@ -2918,7 +2918,7 @@ export type Database = {
             foreignKeyName: "past_champions_season_id_fkey"
             columns: ["season_id"]
             isOneToOne: true
-            referencedRelation: "league_seasons"
+            referencedRelation: "season_id"
             referencedColumns: ["id"]
           },
           {
@@ -3435,7 +3435,7 @@ export type Database = {
             foreignKeyName: "player_handles_season_id_fkey"
             columns: ["season_id"]
             isOneToOne: false
-            referencedRelation: "league_seasons"
+            referencedRelation: "season_id"
             referencedColumns: ["id"]
           },
           {
@@ -4412,7 +4412,7 @@ export type Database = {
             foreignKeyName: "playlist_season_id_fkey"
             columns: ["season_id"]
             isOneToOne: false
-            referencedRelation: "league_seasons"
+            referencedRelation: "season_id"
             referencedColumns: ["id"]
           },
           {
@@ -5069,7 +5069,7 @@ export type Database = {
             foreignKeyName: "rp_transactions_season_id_fkey"
             columns: ["season_id"]
             isOneToOne: false
-            referencedRelation: "league_seasons"
+            referencedRelation: "season_id"
             referencedColumns: ["id"]
           },
           {
@@ -5256,61 +5256,61 @@ export type Database = {
       }
       team_match_stats: {
         Row: {
-          assists: number
-          blocks: number
-          field_goals_attempted: number
-          field_goals_made: number
-          fouls: number
-          free_throws_attempted: number
-          free_throws_made: number
+          assists: number | null
+          blocks: number | null
+          field_goals_attempted: number | null
+          field_goals_made: number | null
+          fouls: number | null
+          free_throws_attempted: number | null
+          free_throws_made: number | null
           id: string
           match_id: string
           plus_minus: number | null
-          points: number
-          rebounds: number
-          steals: number
+          points: number | null
+          rebounds: number | null
+          steals: number | null
           team_id: string
-          three_points_attempted: number
-          three_points_made: number
-          turnovers: number
+          three_points_attempted: number | null
+          three_points_made: number | null
+          turnovers: number | null
         }
         Insert: {
-          assists: number
-          blocks: number
-          field_goals_attempted: number
-          field_goals_made: number
-          fouls: number
-          free_throws_attempted: number
-          free_throws_made: number
+          assists?: number | null
+          blocks?: number | null
+          field_goals_attempted?: number | null
+          field_goals_made?: number | null
+          fouls?: number | null
+          free_throws_attempted?: number | null
+          free_throws_made?: number | null
           id?: string
           match_id: string
           plus_minus?: number | null
-          points: number
-          rebounds: number
-          steals: number
+          points?: number | null
+          rebounds?: number | null
+          steals?: number | null
           team_id: string
-          three_points_attempted: number
-          three_points_made: number
-          turnovers: number
+          three_points_attempted?: number | null
+          three_points_made?: number | null
+          turnovers?: number | null
         }
         Update: {
-          assists?: number
-          blocks?: number
-          field_goals_attempted?: number
-          field_goals_made?: number
-          fouls?: number
-          free_throws_attempted?: number
-          free_throws_made?: number
+          assists?: number | null
+          blocks?: number | null
+          field_goals_attempted?: number | null
+          field_goals_made?: number | null
+          fouls?: number | null
+          free_throws_attempted?: number | null
+          free_throws_made?: number | null
           id?: string
           match_id?: string
           plus_minus?: number | null
-          points?: number
-          rebounds?: number
-          steals?: number
+          points?: number | null
+          rebounds?: number | null
+          steals?: number | null
           team_id?: string
-          three_points_attempted?: number
-          three_points_made?: number
-          turnovers?: number
+          three_points_attempted?: number | null
+          three_points_made?: number | null
+          turnovers?: number | null
         }
         Relationships: [
           {
@@ -5556,7 +5556,7 @@ export type Database = {
             foreignKeyName: "team_rosters_season_id_fkey"
             columns: ["season_id"]
             isOneToOne: false
-            referencedRelation: "league_seasons"
+            referencedRelation: "season_id"
             referencedColumns: ["id"]
           },
           {
@@ -5835,7 +5835,7 @@ export type Database = {
             foreignKeyName: "teams_pot_tracker_season_id_fkey"
             columns: ["season_id"]
             isOneToOne: false
-            referencedRelation: "league_seasons"
+            referencedRelation: "season_id"
             referencedColumns: ["id"]
           },
           {
@@ -6134,7 +6134,7 @@ export type Database = {
             foreignKeyName: "event_groups_league_season_id_fkey"
             columns: ["league_season_id"]
             isOneToOne: false
-            referencedRelation: "league_seasons"
+            referencedRelation: "season_id"
             referencedColumns: ["id"]
           },
           {
@@ -7339,7 +7339,7 @@ export type Database = {
             foreignKeyName: "team_rosters_season_id_fkey"
             columns: ["season_id"]
             isOneToOne: false
-            referencedRelation: "league_seasons"
+            referencedRelation: "season_id"
             referencedColumns: ["id"]
           },
         ]

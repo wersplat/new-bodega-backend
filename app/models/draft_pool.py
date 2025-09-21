@@ -54,7 +54,7 @@ class DraftPool(Base):
     # References
     season = Column(
         UUID(as_uuid=True), 
-        ForeignKey("league_seasons.id", onupdate='CASCADE', ondelete='SET NULL'),
+        ForeignKey("season_id.id", onupdate='CASCADE', ondelete='SET NULL'),
         nullable=True,
         comment='Reference to the league season'
     )

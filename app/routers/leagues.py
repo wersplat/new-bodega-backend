@@ -230,7 +230,7 @@ async def create_season(
     return db_season
 
 @router.get("/{league_id}/seasons", response_model=List[SeasonResponse])
-async def list_league_seasons(
+async def list_season_id(
     league_id: str,
     skip: int = 0,
     limit: int = 100,

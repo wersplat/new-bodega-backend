@@ -111,7 +111,7 @@ class TournamentGroup(Base):
     advancement_count = Column(Integer, default=2)
     sort_order = Column(Integer)
     tournament_id = Column(String, ForeignKey("tournaments.id"))
-    league_season_id = Column(String, ForeignKey("league_seasons.id"))
+    league_season_id = Column(String, ForeignKey("season_id.id"))
     
     # Relationships
     tournament = relationship("Tournament", back_populates="tournament_groups")

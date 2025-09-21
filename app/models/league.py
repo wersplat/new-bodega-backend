@@ -169,9 +169,9 @@ class LeagueSeason(Base):
     """
     SQLAlchemy model representing a league season.
     
-    This model maps to the 'league_seasons' table in the database.
+    This model maps to the 'season_id' table in the database.
     """
-    __tablename__ = "league_seasons"
+    __tablename__ = "season_id"
     
     id = Column(String, primary_key=True, index=True)
     league_id = Column(String, ForeignKey("leagues_info.id"), nullable=False)
