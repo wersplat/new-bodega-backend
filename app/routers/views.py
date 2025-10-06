@@ -13,6 +13,18 @@ from typing import Dict, List, Any, Optional
 from app.core.supabase_client import supabase
 from app.core.config import settings
 from app.core.rate_limiter import limiter
+from app.schemas.views import (
+    LeagueCalendarResponse, LeagueResultsResponse, LeagueTeamRosterResponse,
+    PlayerPerformanceResponse, PlayerPerformanceByGameYearResponse, 
+    PlayerStatsByLeagueSeasonResponse, PlayerRosterHistoryResponse,
+    TopTournamentPerformerResponse, TournamentMVPResponse,
+    TeamPerformanceResponse, TeamPerformanceByGameYearResponse,
+    TeamRosterCurrentResponse, TeamRosterHistoryResponse,
+    TournamentCalendarResponse, TournamentResultsResponse,
+    TournamentChampionsByYearResponse, TournamentPlayerStatsResponse,
+    TournamentTeamStatsResponse, TournamentTeamRostersResponse,
+    PlayerGamePERResponse, PlayerMonthlyPERResponse, PlayerYearlyPERResponse
+)
 import logging
 
 logger = logging.getLogger(__name__)
@@ -21,7 +33,7 @@ router = APIRouter(prefix="/views", tags=["Database Views"])
 
 
 # League Views
-@router.get("/league-calendar")
+@router.get("/league-calendar", response_model=List[LeagueCalendarResponse])
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_league_calendar(
     request: Request,
@@ -54,7 +66,7 @@ async def get_league_calendar(
         )
 
 
-@router.get("/league-results")
+@router.get("/league-results", response_model=List[LeagueResultsResponse])
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_league_results(
     request: Request,
@@ -88,7 +100,7 @@ async def get_league_results(
         )
 
 
-@router.get("/league-team-rosters")
+@router.get("/league-team-rosters", response_model=List[LeagueTeamRosterResponse])
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_league_team_rosters(
     request: Request,
@@ -120,7 +132,7 @@ async def get_league_team_rosters(
         )
 
 
-@router.get("/league-season-team-rosters")
+@router.get("/league-season-team-rosters", response_model=List[LeagueTeamRosterResponse])
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_league_season_team_rosters(
     request: Request,
@@ -156,7 +168,7 @@ async def get_league_season_team_rosters(
 
 
 # Player Views
-@router.get("/player-performance")
+@router.get("/player-performance", response_model=List[PlayerPerformanceResponse])
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_player_performance(
     request: Request,
@@ -190,7 +202,7 @@ async def get_player_performance(
         )
 
 
-@router.get("/player-performance-by-game-year")
+@router.get("/player-performance-by-game-year", response_model=List[PlayerPerformanceByGameYearResponse])
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_player_performance_by_game_year(
     request: Request,
@@ -224,7 +236,7 @@ async def get_player_performance_by_game_year(
         )
 
 
-@router.get("/player-stats-by-league-season")
+@router.get("/player-stats-by-league-season", response_model=List[PlayerStatsByLeagueSeasonResponse])
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_player_stats_by_league_season(
     request: Request,
@@ -261,7 +273,7 @@ async def get_player_stats_by_league_season(
         )
 
 
-@router.get("/player-roster-history")
+@router.get("/player-roster-history", response_model=List[PlayerRosterHistoryResponse])
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_player_roster_history(
     request: Request,
@@ -298,7 +310,7 @@ async def get_player_roster_history(
         )
 
 
-@router.get("/top-tournament-performers")
+@router.get("/top-tournament-performers", response_model=List[TopTournamentPerformerResponse])
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_top_tournament_performers(
     request: Request,
@@ -323,7 +335,7 @@ async def get_top_tournament_performers(
         )
 
 
-@router.get("/tournament-mvps")
+@router.get("/tournament-mvps", response_model=List[TournamentMVPResponse])
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_tournament_mvps(
     request: Request,
@@ -358,7 +370,7 @@ async def get_tournament_mvps(
 
 
 # Team Views
-@router.get("/team-performance")
+@router.get("/team-performance", response_model=List[TeamPerformanceResponse])
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_team_performance(
     request: Request,
@@ -389,7 +401,7 @@ async def get_team_performance(
         )
 
 
-@router.get("/team-performance-by-game-year")
+@router.get("/team-performance-by-game-year", response_model=List[TeamPerformanceByGameYearResponse])
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_team_performance_by_game_year(
     request: Request,
@@ -423,7 +435,7 @@ async def get_team_performance_by_game_year(
         )
 
 
-@router.get("/team-roster-current")
+@router.get("/team-roster-current", response_model=List[TeamRosterCurrentResponse])
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_team_roster_current(
     request: Request,
@@ -452,7 +464,7 @@ async def get_team_roster_current(
         )
 
 
-@router.get("/team-roster-history")
+@router.get("/team-roster-history", response_model=List[TeamRosterHistoryResponse])
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_team_roster_history(
     request: Request,
@@ -487,7 +499,7 @@ async def get_team_roster_history(
 
 
 # Tournament Views
-@router.get("/tournament-calendar")
+@router.get("/tournament-calendar", response_model=List[TournamentCalendarResponse])
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_tournament_calendar(
     request: Request,
@@ -521,7 +533,7 @@ async def get_tournament_calendar(
         )
 
 
-@router.get("/tournament-results")
+@router.get("/tournament-results", response_model=List[TournamentResultsResponse])
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_tournament_results(
     request: Request,
@@ -555,7 +567,7 @@ async def get_tournament_results(
         )
 
 
-@router.get("/tournament-champions-by-year")
+@router.get("/tournament-champions-by-year", response_model=List[TournamentChampionsByYearResponse])
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_tournament_champions_by_year(
     request: Request,
@@ -589,7 +601,7 @@ async def get_tournament_champions_by_year(
         )
 
 
-@router.get("/tournament-player-stats")
+@router.get("/tournament-player-stats", response_model=List[TournamentPlayerStatsResponse])
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_tournament_player_stats(
     request: Request,
@@ -626,7 +638,7 @@ async def get_tournament_player_stats(
         )
 
 
-@router.get("/tournament-team-stats")
+@router.get("/tournament-team-stats", response_model=List[TournamentTeamStatsResponse])
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_tournament_team_stats(
     request: Request,
@@ -663,7 +675,7 @@ async def get_tournament_team_stats(
         )
 
 
-@router.get("/tournament-team-rosters")
+@router.get("/tournament-team-rosters", response_model=List[TournamentTeamRostersResponse])
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_tournament_team_rosters(
     request: Request,
@@ -698,7 +710,7 @@ async def get_tournament_team_rosters(
 
 
 # Advanced Analytics Views
-@router.get("/player-game-per")
+@router.get("/player-game-per", response_model=List[PlayerGamePERResponse])
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_player_game_per(
     request: Request,
@@ -738,7 +750,7 @@ async def get_player_game_per(
         )
 
 
-@router.get("/player-monthly-per")
+@router.get("/player-monthly-per", response_model=List[PlayerMonthlyPERResponse])
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_player_monthly_per(
     request: Request,
@@ -778,7 +790,7 @@ async def get_player_monthly_per(
         )
 
 
-@router.get("/player-yearly-per")
+@router.get("/player-yearly-per", response_model=List[PlayerYearlyPERResponse])
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_player_yearly_per(
     request: Request,
