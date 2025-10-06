@@ -29,7 +29,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/views", tags=["Database Views"])
+router = APIRouter(tags=["Database Views"])
 
 
 # League Views
