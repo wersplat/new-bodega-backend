@@ -10,7 +10,7 @@ Base URL: /v1/views
 
 from fastapi import APIRouter, HTTPException, Query, Request, status
 from typing import Dict, List, Any, Optional
-from app.core.supabase_client import supabase
+from app.core.supabase import supabase
 from app.core.config import settings
 from app.core.rate_limiter import limiter
 from app.schemas.views import (
