@@ -529,3 +529,84 @@ async def get_region_leaderboard(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occurred while retrieving the {region} region leaderboard"
         )
+
+
+@router.get(
+    "/teams",
+    response_model=List[Dict[str, Any]],
+    responses={
+        200: {"description": "Team leaderboard retrieved successfully"},
+        400: {"description": "Invalid query parameters"},
+        429: {"description": "Rate limit exceeded"},
+        500: {"description": "Internal server error"}
+    }
+)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
+async def get_team_leaderboard(
+    request: Request,
+    limit: int = Query(100, ge=1, le=1000, description="Number of entries to return (1-1000)"),
+    offset: int = Query(0, ge=0, description="Pagination offset"),
+    sort_by: str = Query("current_rp", description="Field to sort by (current_rp, elo_rating, global_rank)")
+) -> List[Dict[str, Any]]:
+    """
+    Get global team leaderboard.
+    
+    This endpoint retrieves a paginated leaderboard of teams sorted by the specified field
+    in descending order. It uses the team_performance_view for optimized data access.
+    
+    Args:
+        request: The FastAPI request object (used for rate limiting)
+        limit: Maximum number of entries to return (1-1000)
+        offset: Pagination offset
+        sort_by: Field to sort results by. Must be one of: current_rp, elo_rating, global_rank
+        
+    Returns:
+        List[Dict[str, Any]]: List of team profiles with performance data
+        
+    Raises:
+        HTTPException: If there's an error retrieving the team leaderboard or invalid parameters
+    """
+    try:
+        # Validate sort_by parameter
+        valid_sort_fields = {"current_rp", "elo_rating", "global_rank", "win_percentage", "total_matches_played"}
+        if sort_by not in valid_sort_fields:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid sort_by parameter. Must be one of: {', '.join(valid_sort_fields)}"
+            )
+        
+        logger.info(
+            f"Fetching team leaderboard - limit: {limit}, offset: {offset}, sort_by: {sort_by}"
+        )
+        
+        client = supabase.get_client()
+        
+        # Get team leaderboard from performance view
+        query = (
+            client.table("team_performance_view")
+            .select("*")
+            .order(sort_by, desc=True)
+            .range(offset, offset + limit - 1)
+        )
+        
+        result = query.execute()
+        teams = result.data if hasattr(result, 'data') else []
+        
+        # Add rank based on the current sort order
+        for i, team in enumerate(teams, start=1):
+            team["rank"] = offset + i
+        
+        logger.info(f"Retrieved {len(teams)} teams from team leaderboard")
+        return teams
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(
+            f"Error retrieving team leaderboard: {str(e)}",
+            exc_info=True
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while retrieving the team leaderboard"
+        )

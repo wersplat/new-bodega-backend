@@ -726,3 +726,140 @@ async def update_my_profile(
             detail="An unexpected error occurred while updating the player profile"
         )
 # The get_player_history endpoint has been consolidated with the get_player endpoint
+
+
+@router.get("/{player_id}/stats")
+@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+async def get_player_stats(
+    request: Request,
+    player_id: Union[str, UUID]
+) -> Dict[str, Any]:
+    """
+    Get player statistics.
+    
+    This endpoint retrieves comprehensive statistics for a specific player,
+    including performance metrics, match history, and achievements.
+    
+    Args:
+        request: The FastAPI request object (used for rate limiting)
+        player_id: The unique identifier of the player
+        
+    Returns:
+        Dict[str, Any]: Player statistics including performance metrics
+        
+    Raises:
+        HTTPException: If the player is not found or there's an error retrieving stats
+    """
+    try:
+        logger.info(f"Getting stats for player {player_id}")
+        
+        # Get player basic info
+        player = await get_player_by_id(player_id)
+        if not player:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Player not found"
+            )
+        
+        client = supabase.get_client()
+        
+        # Get player stats from view
+        stats_result = client.table("player_performance_view").select("*").eq("id", str(player_id)).execute()
+        
+        stats = stats_result.data[0] if stats_result.data else {}
+        
+        # Get recent matches
+        matches_result = client.table("matches").select(
+            "id, played_at, team_a_id, team_b_id, winner_id, score_a, score_b"
+        ).or_(
+            f"team_a_id.in.({player_id}),team_b_id.in.({player_id})"
+        ).order("played_at", desc=True).limit(10).execute()
+        
+        return {
+            "player_id": player_id,
+            "player_info": player,
+            "stats": stats,
+            "recent_matches": matches_result.data or []
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting player stats: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while retrieving player statistics"
+        )
+
+
+@router.get("/{player_id}/matches")
+@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+async def get_player_matches(
+    request: Request,
+    player_id: Union[str, UUID],
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0)
+) -> Dict[str, Any]:
+    """
+    Get player match history.
+    
+    This endpoint retrieves the match history for a specific player with pagination.
+    
+    Args:
+        request: The FastAPI request object (used for rate limiting)
+        player_id: The unique identifier of the player
+        limit: Maximum number of matches to return (1-100)
+        offset: Number of matches to skip for pagination
+        
+    Returns:
+        Dict[str, Any]: Player match history with pagination info
+        
+    Raises:
+        HTTPException: If the player is not found or there's an error retrieving matches
+    """
+    try:
+        logger.info(f"Getting matches for player {player_id}")
+        
+        # Verify player exists
+        player = await get_player_by_id(player_id)
+        if not player:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Player not found"
+            )
+        
+        client = supabase.get_client()
+        
+        # Get matches where player participated
+        matches_result = client.table("matches").select(
+            "id, played_at, team_a_id, team_b_id, winner_id, score_a, score_b, tournament_id, league_id"
+        ).or_(
+            f"team_a_id.in.({player_id}),team_b_id.in.({player_id})"
+        ).order("played_at", desc=True).range(offset, offset + limit - 1).execute()
+        
+        # Get total count for pagination
+        count_result = client.table("matches").select("id", count="exact").or_(
+            f"team_a_id.in.({player_id}),team_b_id.in.({player_id})"
+        ).execute()
+        
+        total_matches = count_result.count if count_result.count else 0
+        
+        return {
+            "player_id": player_id,
+            "matches": matches_result.data or [],
+            "pagination": {
+                "limit": limit,
+                "offset": offset,
+                "total": total_matches,
+                "has_more": offset + limit < total_matches
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting player matches: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while retrieving player matches"
+        )

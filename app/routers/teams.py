@@ -396,3 +396,132 @@ async def search_teams(
     query = client.table("teams").select("*").ilike("name", f"%{q}%").limit(limit)
     result = query.execute()
     return result.data if hasattr(result, 'data') else []
+
+
+@router.get("/{team_id}/stats")
+async def get_team_stats(team_id: str):
+    """
+    Get team statistics and performance metrics.
+    """
+    try:
+        client = supabase.get_client()
+        
+        # Get team basic info
+        team_result = client.table("teams").select("*").eq("id", team_id).execute()
+        if not team_result.data:
+            raise HTTPException(status_code=404, detail="Team not found")
+        
+        team = team_result.data[0]
+        
+        # Get team stats from view
+        stats_result = client.table("team_performance_view").select("*").eq("team_id", team_id).execute()
+        stats = stats_result.data[0] if stats_result.data else {}
+        
+        # Get recent matches
+        matches_result = client.table("matches").select(
+            "id, played_at, team_a_id, team_b_id, winner_id, score_a, score_b, tournament_id, league_id"
+        ).or_(
+            f"team_a_id.eq.{team_id},team_b_id.eq.{team_id}"
+        ).order("played_at", desc=True).limit(10).execute()
+        
+        return {
+            "team_id": team_id,
+            "team_info": team,
+            "stats": stats,
+            "recent_matches": matches_result.data or []
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting team stats: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while retrieving team statistics"
+        )
+
+
+@router.get("/{team_id}/matches")
+async def get_team_matches(
+    team_id: str,
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0)
+):
+    """
+    Get team match history with pagination.
+    """
+    try:
+        client = supabase.get_client()
+        
+        # Verify team exists
+        team_result = client.table("teams").select("id").eq("id", team_id).execute()
+        if not team_result.data:
+            raise HTTPException(status_code=404, detail="Team not found")
+        
+        # Get matches where team participated
+        matches_result = client.table("matches").select(
+            "id, played_at, team_a_id, team_b_id, winner_id, score_a, score_b, tournament_id, league_id"
+        ).or_(
+            f"team_a_id.eq.{team_id},team_b_id.eq.{team_id}"
+        ).order("played_at", desc=True).range(offset, offset + limit - 1).execute()
+        
+        # Get total count for pagination
+        count_result = client.table("matches").select("id", count="exact").or_(
+            f"team_a_id.eq.{team_id},team_b_id.eq.{team_id}"
+        ).execute()
+        
+        total_matches = count_result.count if count_result.count else 0
+        
+        return {
+            "team_id": team_id,
+            "matches": matches_result.data or [],
+            "pagination": {
+                "limit": limit,
+                "offset": offset,
+                "total": total_matches,
+                "has_more": offset + limit < total_matches
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting team matches: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while retrieving team matches"
+        )
+
+
+@router.get("/{team_id}/roster")
+async def get_team_roster(team_id: str):
+    """
+    Get current team roster.
+    """
+    try:
+        client = supabase.get_client()
+        
+        # Verify team exists
+        team_result = client.table("teams").select("id, name").eq("id", team_id).execute()
+        if not team_result.data:
+            raise HTTPException(status_code=404, detail="Team not found")
+        
+        team = team_result.data[0]
+        
+        # Get current roster from view
+        roster_result = client.table("team_roster_current").select("*").eq("team_id", team_id).execute()
+        
+        return {
+            "team_id": team_id,
+            "team_name": team["name"],
+            "roster": roster_result.data or []
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting team roster: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while retrieving team roster"
+        )

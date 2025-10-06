@@ -244,3 +244,125 @@ async def delete_tournament(
     db.commit()
     
     return None
+
+
+@router.get("/{tournament_id}/teams")
+async def get_tournament_teams(tournament_id: UUID):
+    """
+    Get teams participating in a tournament.
+    """
+    try:
+        client = supabase.get_client()
+        
+        # Verify tournament exists
+        tournament_result = client.table("tournaments").select("id, name").eq("id", str(tournament_id)).execute()
+        if not tournament_result.data:
+            raise HTTPException(status_code=404, detail="Tournament not found")
+        
+        tournament = tournament_result.data[0]
+        
+        # Get teams from tournament results view
+        teams_result = client.table("tournament_results").select(
+            "team_id, team_name, logo_url, final_placement, wins, losses, win_percentage"
+        ).eq("tournament_id", str(tournament_id)).order("final_placement").execute()
+        
+        return {
+            "tournament_id": str(tournament_id),
+            "tournament_name": tournament["name"],
+            "teams": teams_result.data or []
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting tournament teams: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while retrieving tournament teams"
+        )
+
+
+@router.get("/{tournament_id}/matches")
+async def get_tournament_matches(
+    tournament_id: UUID,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0)
+):
+    """
+    Get matches for a tournament with pagination.
+    """
+    try:
+        client = supabase.get_client()
+        
+        # Verify tournament exists
+        tournament_result = client.table("tournaments").select("id, name").eq("id", str(tournament_id)).execute()
+        if not tournament_result.data:
+            raise HTTPException(status_code=404, detail="Tournament not found")
+        
+        tournament = tournament_result.data[0]
+        
+        # Get matches for tournament
+        matches_result = client.table("matches").select(
+            "id, played_at, team_a_id, team_b_id, winner_id, score_a, score_b, status"
+        ).eq("tournament_id", str(tournament_id)).order("played_at", desc=True).range(offset, offset + limit - 1).execute()
+        
+        # Get total count for pagination
+        count_result = client.table("matches").select("id", count="exact").eq("tournament_id", str(tournament_id)).execute()
+        
+        total_matches = count_result.count if count_result.count else 0
+        
+        return {
+            "tournament_id": str(tournament_id),
+            "tournament_name": tournament["name"],
+            "matches": matches_result.data or [],
+            "pagination": {
+                "limit": limit,
+                "offset": offset,
+                "total": total_matches,
+                "has_more": offset + limit < total_matches
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting tournament matches: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while retrieving tournament matches"
+        )
+
+
+@router.get("/{tournament_id}/standings")
+async def get_tournament_standings(tournament_id: UUID):
+    """
+    Get tournament standings and results.
+    """
+    try:
+        client = supabase.get_client()
+        
+        # Verify tournament exists
+        tournament_result = client.table("tournaments").select("id, name, status").eq("id", str(tournament_id)).execute()
+        if not tournament_result.data:
+            raise HTTPException(status_code=404, detail="Tournament not found")
+        
+        tournament = tournament_result.data[0]
+        
+        # Get standings from tournament results view
+        standings_result = client.table("tournament_results").select("*").eq("tournament_id", str(tournament_id)).order("final_placement").execute()
+        
+        return {
+            "tournament_id": str(tournament_id),
+            "tournament_name": tournament["name"],
+            "tournament_status": tournament["status"],
+            "standings": standings_result.data or []
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting tournament standings: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while retrieving tournament standings"
+        )
