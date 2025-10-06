@@ -67,7 +67,6 @@ from app.schemas.player import Player, PlayerProfile, PlayerWithStats, PlayerWit
 
 # Initialize router with rate limiting and explicit prefix
 router = APIRouter(
-    prefix="/v1/players",
     tags=["Players"],
     responses={404: {"description": "Not found"}},
 )
@@ -285,6 +284,75 @@ async def create_player(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An unexpected error occurred while creating the player profile"
+        )
+
+@router.get(
+    "/search",
+    response_model=List[Dict[str, Any]],
+    responses={
+        200: {"description": "List of matching players"},
+        400: {"description": "Invalid query parameters"},
+        429: {"description": "Rate limit exceeded"},
+        500: {"description": "Internal server error"}
+    }
+)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
+async def search_player_by_gamertag(
+    request: Request,
+    query: str = Query(..., min_length=2, max_length=50, description="Gamertag or part of gamertag to search for"),
+    limit: int = Query(10, ge=1, le=50, description="Maximum number of results to return"),
+    exact_match: bool = Query(False, description="Whether to search for an exact gamertag match")
+) -> List[Dict[str, Any]]:
+    """
+    Search for players by gamertag.
+    
+    This endpoint searches for players whose gamertags match the provided query.
+    The search is case-insensitive and can match partial gamertags by default.
+    
+    Args:
+        request: The FastAPI request object (used for rate limiting)
+        query: The gamertag or part of gamertag to search for (2-50 characters)
+        limit: Maximum number of results to return (1-50)
+        exact_match: If True, only returns exact gamertag matches
+        
+    Returns:
+        List[Dict[str, Any]]: List of matching player profiles with limited fields
+        
+    Raises:
+        HTTPException: If there's an error performing the search
+    """
+    try:
+        logger.info(f"Searching for players with gamertag like: {query}")
+        
+        client = supabase.get_client()
+        query_builder = (
+            client.table("players")
+            .select("id, gamertag, avatar_url, created_at, last_online")
+            .limit(limit)
+        )
+        
+        # Apply exact or partial match
+        if exact_match:
+            query_builder = query_builder.eq("gamertag", query)
+        else:
+            query_builder = query_builder.ilike("gamertag", f"%{query}%")
+        
+        # Execute query
+        result = query_builder.execute()
+        
+        # Format response
+        players = result.data if hasattr(result, 'data') else []
+        
+        # Log search metrics
+        logger.info(f"Found {len(players)} matching players for query: {query}")
+        
+        return players
+        
+    except Exception as e:
+        logger.error(f"Error searching for players with gamertag {query}: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while searching for players"
         )
 
 @router.get(
@@ -658,72 +726,3 @@ async def update_my_profile(
             detail="An unexpected error occurred while updating the player profile"
         )
 # The get_player_history endpoint has been consolidated with the get_player endpoint
-
-@router.get(
-    "/search",
-    response_model=List[Dict[str, Any]],
-    responses={
-        200: {"description": "List of matching players"},
-        400: {"description": "Invalid query parameters"},
-        429: {"description": "Rate limit exceeded"},
-        500: {"description": "Internal server error"}
-    }
-)
-@limiter.limit(settings.RATE_LIMIT_DEFAULT)
-async def search_player_by_gamertag(
-    request: Request,
-    query: str = Query(..., min_length=2, max_length=50, description="Gamertag or part of gamertag to search for"),
-    limit: int = Query(10, ge=1, le=50, description="Maximum number of results to return"),
-    exact_match: bool = Query(False, description="Whether to search for an exact gamertag match")
-) -> List[Dict[str, Any]]:
-    """
-    Search for players by gamertag.
-    
-    This endpoint searches for players whose gamertags match the provided query.
-    The search is case-insensitive and can match partial gamertags by default.
-    
-    Args:
-        request: The FastAPI request object (used for rate limiting)
-        query: The gamertag or part of gamertag to search for (2-50 characters)
-        limit: Maximum number of results to return (1-50)
-        exact_match: If True, only returns exact gamertag matches
-        
-    Returns:
-        List[Dict[str, Any]]: List of matching player profiles with limited fields
-        
-    Raises:
-        HTTPException: If there's an error performing the search
-    """
-    try:
-        logger.info(f"Searching for players with gamertag like: {query}")
-        
-        client = supabase.get_client()
-        query_builder = (
-            client.table("players")
-            .select("id, gamertag, avatar_url, created_at, last_online")
-            .limit(limit)
-        )
-        
-        # Apply exact or partial match
-        if exact_match:
-            query_builder = query_builder.eq("gamertag", query)
-        else:
-            query_builder = query_builder.ilike("gamertag", f"%{query}%")
-        
-        # Execute query
-        result = query_builder.execute()
-        
-        # Format response
-        players = result.data if hasattr(result, 'data') else []
-        
-        # Log search metrics
-        logger.info(f"Found {len(players)} matching players for query: {query}")
-        
-        return players
-        
-    except Exception as e:
-        logger.error(f"Error searching for players with gamertag {query}: {str(e)}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="An error occurred while searching for players"
-        )

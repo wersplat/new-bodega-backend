@@ -130,7 +130,7 @@ app.add_middleware(
 # Include routers with flattened RESTful structure
 # Authentication endpoints remain at root
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
-app.include_router(players.router, tags=["Players"])
+app.include_router(players.router, prefix="/v1/players", tags=["Players"])
 app.include_router(tournaments.router, tags=["Tournaments"])
 app.include_router(leagues.router, tags=["Leagues"])
 app.include_router(leaderboard.router, tags=["Leaderboards"])
@@ -224,7 +224,7 @@ def health_check():
     db_status = "ok"
     try:
         # Simple query to check database connectivity
-        supabase.get_client().rpc('version').execute()
+        supabase.get_client().table('players').select('id').limit(1).execute()
     except Exception as e:
         logger.error(f"Database health check failed: {str(e)}")
         db_status = f"error: {str(e)}"
