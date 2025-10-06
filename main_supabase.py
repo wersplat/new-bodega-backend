@@ -98,6 +98,6 @@ if __name__ == "__main__":
     uvicorn.run(
         "main_supabase:app",
         host="0.0.0.0",
-        port=10000,
+        port=80000,
         reload=True
     )
