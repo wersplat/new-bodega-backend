@@ -4,8 +4,7 @@ Main application entry point for Supabase version
 """
 
 import logging
-from datetime import datetime
-from time import timezone
+from datetime import datetime, timezone
 from typing import Dict, Any
 
 from fastapi import FastAPI, Request
