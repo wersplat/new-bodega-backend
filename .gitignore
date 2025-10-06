@@ -154,3 +154,5 @@ uploads/
 # docker
 docker-compose.yml
 .Dockerfile.old
+.Dockerfile.old
+docker-compose.yml
