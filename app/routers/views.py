@@ -22,7 +22,7 @@ router = APIRouter(prefix="/views", tags=["Database Views"])
 
 # League Views
 @router.get("/league-calendar")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_league_calendar(
     request: Request,
     limit: int = Query(50, ge=1, le=200),
@@ -55,7 +55,7 @@ async def get_league_calendar(
 
 
 @router.get("/league-results")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_league_results(
     request: Request,
     league_id: Optional[str] = Query(None, description="Filter by specific league ID"),
@@ -89,7 +89,7 @@ async def get_league_results(
 
 
 @router.get("/league-team-rosters")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_league_team_rosters(
     request: Request,
     league_id: Optional[str] = Query(None, description="Filter by specific league ID"),
@@ -121,7 +121,7 @@ async def get_league_team_rosters(
 
 
 @router.get("/league-season-team-rosters")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_league_season_team_rosters(
     request: Request,
     league_id: Optional[str] = Query(None, description="Filter by specific league ID"),
@@ -157,7 +157,7 @@ async def get_league_season_team_rosters(
 
 # Player Views
 @router.get("/player-performance")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_player_performance(
     request: Request,
     player_id: Optional[str] = Query(None, description="Filter by specific player ID"),
@@ -191,7 +191,7 @@ async def get_player_performance(
 
 
 @router.get("/player-performance-by-game-year")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_player_performance_by_game_year(
     request: Request,
     player_id: Optional[str] = Query(None, description="Filter by specific player ID"),
@@ -225,7 +225,7 @@ async def get_player_performance_by_game_year(
 
 
 @router.get("/player-stats-by-league-season")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_player_stats_by_league_season(
     request: Request,
     league_id: Optional[str] = Query(None, description="Filter by specific league ID"),
@@ -262,7 +262,7 @@ async def get_player_stats_by_league_season(
 
 
 @router.get("/player-roster-history")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_player_roster_history(
     request: Request,
     player_id: Optional[str] = Query(None, description="Filter by specific player ID"),
@@ -299,7 +299,7 @@ async def get_player_roster_history(
 
 
 @router.get("/top-tournament-performers")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_top_tournament_performers(
     request: Request,
     limit: int = Query(50, ge=1, le=200),
@@ -324,7 +324,7 @@ async def get_top_tournament_performers(
 
 
 @router.get("/tournament-mvps")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_tournament_mvps(
     request: Request,
     tournament_id: Optional[str] = Query(None, description="Filter by specific tournament ID"),
@@ -359,7 +359,7 @@ async def get_tournament_mvps(
 
 # Team Views
 @router.get("/team-performance")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_team_performance(
     request: Request,
     team_id: Optional[str] = Query(None, description="Filter by specific team ID"),
@@ -390,7 +390,7 @@ async def get_team_performance(
 
 
 @router.get("/team-performance-by-game-year")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_team_performance_by_game_year(
     request: Request,
     team_id: Optional[str] = Query(None, description="Filter by specific team ID"),
@@ -424,7 +424,7 @@ async def get_team_performance_by_game_year(
 
 
 @router.get("/team-roster-current")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_team_roster_current(
     request: Request,
     team_id: Optional[str] = Query(None, description="Filter by specific team ID")
@@ -453,7 +453,7 @@ async def get_team_roster_current(
 
 
 @router.get("/team-roster-history")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_team_roster_history(
     request: Request,
     team_id: Optional[str] = Query(None, description="Filter by specific team ID"),
@@ -488,7 +488,7 @@ async def get_team_roster_history(
 
 # Tournament Views
 @router.get("/tournament-calendar")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_tournament_calendar(
     request: Request,
     status_filter: Optional[str] = Query(None, description="Filter by tournament status: upcoming, in_progress, completed"),
@@ -522,7 +522,7 @@ async def get_tournament_calendar(
 
 
 @router.get("/tournament-results")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_tournament_results(
     request: Request,
     tournament_id: Optional[str] = Query(None, description="Filter by specific tournament ID"),
@@ -556,7 +556,7 @@ async def get_tournament_results(
 
 
 @router.get("/tournament-champions-by-year")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_tournament_champions_by_year(
     request: Request,
     game_year: Optional[int] = Query(None, description="Filter by specific game year"),
@@ -590,7 +590,7 @@ async def get_tournament_champions_by_year(
 
 
 @router.get("/tournament-player-stats")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_tournament_player_stats(
     request: Request,
     tournament_id: Optional[str] = Query(None, description="Filter by specific tournament ID"),
@@ -627,7 +627,7 @@ async def get_tournament_player_stats(
 
 
 @router.get("/tournament-team-stats")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_tournament_team_stats(
     request: Request,
     tournament_id: Optional[str] = Query(None, description="Filter by specific tournament ID"),
@@ -664,7 +664,7 @@ async def get_tournament_team_stats(
 
 
 @router.get("/tournament-team-rosters")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_tournament_team_rosters(
     request: Request,
     tournament_id: Optional[str] = Query(None, description="Filter by specific tournament ID"),
@@ -699,7 +699,7 @@ async def get_tournament_team_rosters(
 
 # Advanced Analytics Views
 @router.get("/player-game-per")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_player_game_per(
     request: Request,
     player_id: Optional[str] = Query(None, description="Filter by specific player ID"),
@@ -739,7 +739,7 @@ async def get_player_game_per(
 
 
 @router.get("/player-monthly-per")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_player_monthly_per(
     request: Request,
     player_id: Optional[str] = Query(None, description="Filter by specific player ID"),
@@ -779,7 +779,7 @@ async def get_player_monthly_per(
 
 
 @router.get("/player-yearly-per")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_player_yearly_per(
     request: Request,
     player_id: Optional[str] = Query(None, description="Filter by specific player ID"),

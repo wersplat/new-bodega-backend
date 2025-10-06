@@ -729,7 +729,7 @@ async def update_my_profile(
 
 
 @router.get("/{player_id}/stats")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_player_stats(
     request: Request,
     player_id: Union[str, UUID]
@@ -793,7 +793,7 @@ async def get_player_stats(
 
 
 @router.get("/{player_id}/matches")
-@limiter.limit(settings.RATE_LIMIT_PUBLIC)
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_player_matches(
     request: Request,
     player_id: Union[str, UUID],
