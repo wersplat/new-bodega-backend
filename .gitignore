@@ -150,3 +150,7 @@ Thumbs.db
 logs/
 temp/
 uploads/ 
+
+# docker
+docker-compose.yml
+.Dockerfile.old
