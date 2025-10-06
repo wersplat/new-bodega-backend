@@ -63,7 +63,7 @@ app.include_router(admin.router, prefix="/admin", tags=["Admin"])
 app.include_router(admin_matches_router, prefix="/admin", tags=["Admin Matches"])
 app.include_router(discord.router, prefix="/discord", tags=["Discord"])
 app.include_router(payments.router, prefix="/payments", tags=["Payments"])
-app.include_router(views_router, prefix="/v1", tags=["Database Views"])
+app.include_router(views_router, tags=["Database Views"])
 
 @app.get("/", tags=["Root"])
 @app.head("/")
