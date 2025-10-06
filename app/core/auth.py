@@ -5,7 +5,8 @@ Authentication utilities and JWT token management using Supabase
 import logging
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
-from jose import JWTError, jwt
+import jwt
+from jwt import PyJWTError as JWTError
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status, Request, Security
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
