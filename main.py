@@ -16,9 +16,11 @@ from app.core.config import settings
 from app.core.rate_limiter import limiter, rate_limit_exceeded_handler
 from app.routers import auth, admin, discord, payments
 from app.routers.players import router as players_router
+from app.routers.teams import router as teams_router
 from app.routers.tournaments import router as tournaments_router
 from app.routers.leaderboard_supabase import router as leaderboard_router
 from app.routers.admin_matches import router as admin_matches_router
+from app.routers.views import router as views_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -54,12 +56,14 @@ app.add_middleware(
 # Include routers - using Supabase versions where available
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 app.include_router(players_router, prefix="/players", tags=["Players"])
+app.include_router(teams_router, prefix="/teams", tags=["Teams"])
 app.include_router(tournaments_router, prefix="/tournaments", tags=["Tournaments"])
 app.include_router(leaderboard_router, prefix="/leaderboard", tags=["Leaderboard"])
 app.include_router(admin.router, prefix="/admin", tags=["Admin"])
 app.include_router(admin_matches_router, prefix="/admin", tags=["Admin Matches"])
 app.include_router(discord.router, prefix="/discord", tags=["Discord"])
 app.include_router(payments.router, prefix="/payments", tags=["Payments"])
+app.include_router(views_router, prefix="/views", tags=["Database Views"])
 
 @app.get("/", tags=["Root"])
 @app.head("/")
