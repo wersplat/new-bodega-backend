@@ -88,40 +88,40 @@ This document lists all the **ACTUALLY IMPLEMENTED** endpoints in the NBA 2K Glo
 - `POST /payments/refund/{registration_id}` - Process refund
 - `GET /payments/session/{session_id}/status` - Get payment session status
 
-### 10. Database Views (`/v1/views`) - **NEW COMPREHENSIVE SECTION**
+### 10. Database Views (`/views`) - **NEW COMPREHENSIVE SECTION**
 
 #### League Views
-- `GET /v1/views/league-calendar` - Comprehensive league calendar with seasons, tournaments, matches, and champions
-- `GET /v1/views/league-results` - Detailed league results with team standings, rosters, stats, and leaders
-- `GET /v1/views/league-team-rosters` - Current team rosters for leagues
-- `GET /v1/views/league-season-team-rosters` - Current team rosters for league seasons
+- `GET /views/league-calendar` - Comprehensive league calendar with seasons, tournaments, matches, and champions
+- `GET /views/league-results` - Detailed league results with team standings, rosters, stats, and leaders
+- `GET /views/league-team-rosters` - Current team rosters for leagues
+- `GET /views/league-season-team-rosters` - Current team rosters for league seasons
 
 #### Player Views
-- `GET /v1/views/player-performance` - Player performance overview with aggregated stats
-- `GET /v1/views/player-performance-by-game-year` - Player performance broken down by game year
-- `GET /v1/views/player-stats-by-league-season` - Player statistics aggregated by league season
-- `GET /v1/views/player-roster-history` - Complete player roster history across teams and tournaments
-- `GET /v1/views/top-tournament-performers` - Top performing players in tournaments
-- `GET /v1/views/tournament-mvps` - Tournament MVP winners and statistics
+- `GET /views/player-performance` - Player performance overview with aggregated stats
+- `GET /views/player-performance-by-game-year` - Player performance broken down by game year
+- `GET /views/player-stats-by-league-season` - Player statistics aggregated by league season
+- `GET /views/player-roster-history` - Complete player roster history across teams and tournaments
+- `GET /views/top-tournament-performers` - Top performing players in tournaments
+- `GET /views/tournament-mvps` - Tournament MVP winners and statistics
 
 #### Team Views
-- `GET /v1/views/team-performance` - Team performance overview with comprehensive stats
-- `GET /v1/views/team-performance-by-game-year` - Team performance broken down by game year
-- `GET /v1/views/team-roster-current` - Current team rosters
-- `GET /v1/views/team-roster-history` - Complete team roster history
+- `GET /views/team-performance` - Team performance overview with comprehensive stats
+- `GET /views/team-performance-by-game-year` - Team performance broken down by game year
+- `GET /views/team-roster-current` - Current team rosters
+- `GET /views/team-roster-history` - Complete team roster history
 
 #### Tournament Views
-- `GET /v1/views/tournament-calendar` - Comprehensive tournament calendar with status and details
-- `GET /v1/views/tournament-results` - Detailed tournament results with standings, rosters, and stats
-- `GET /v1/views/tournament-champions-by-year` - Tournament champions organized by year
-- `GET /v1/views/tournament-player-stats` - Player statistics for tournaments
-- `GET /v1/views/tournament-team-stats` - Team statistics for tournaments
-- `GET /v1/views/tournament-team-rosters` - Team rosters for tournaments
+- `GET /views/tournament-calendar` - Comprehensive tournament calendar with status and details
+- `GET /views/tournament-results` - Detailed tournament results with standings, rosters, and stats
+- `GET /views/tournament-champions-by-year` - Tournament champions organized by year
+- `GET /views/tournament-player-stats` - Player statistics for tournaments
+- `GET /views/tournament-team-stats` - Team statistics for tournaments
+- `GET /views/tournament-team-rosters` - Team rosters for tournaments
 
 #### Advanced Analytics Views
-- `GET /v1/views/player-game-per` - Player game-level performance metrics with True Shooting Percentage
-- `GET /v1/views/player-monthly-per` - Player monthly performance metrics with PER calculations
-- `GET /v1/views/player-yearly-per` - Player yearly performance metrics with PER calculations
+- `GET /views/player-game-per` - Player game-level performance metrics with True Shooting Percentage
+- `GET /views/player-monthly-per` - Player monthly performance metrics with PER calculations
+- `GET /views/player-yearly-per` - Player yearly performance metrics with PER calculations
 
 ## Key Features
 
