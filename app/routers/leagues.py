@@ -19,6 +19,7 @@ from app.core.config import settings
 from app.models.league import League, LeagueSeason, LeagueEnum, Console, GameYear
 from app.core.auth import get_current_active_user
 from app.schemas.user import User
+from app.schemas.enums import GameYear as GameYearEnum
 
 router = APIRouter(
     prefix="/leagues",
@@ -459,7 +460,7 @@ async def get_league_performance(
 async def get_league_rp_values(
     request: Request,
     league_id: str,
-    game_year: Optional[str] = Query(None, description="Filter by game year")
+    game_year: Optional[GameYearEnum] = Query(None, description="Filter by game year (2K16-2K26)")
 ) -> List[Dict[str, Any]]:
     """
     Get RP values and decay settings for a league.
@@ -470,7 +471,7 @@ async def get_league_rp_values(
         query = supabase.get_client().table("league_rp_values").select("*").eq("league_id", league_id)
         
         if game_year:
-            query = query.eq("game_year", game_year)
+            query = query.eq("game_year", game_year.value)
         
         result = query.execute()
         

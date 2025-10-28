@@ -16,6 +16,10 @@ from app.core.supabase import supabase
 from app.core.auth_supabase import require_admin_api_token, supabase_user_from_bearer
 from app.core.rate_limiter import limiter
 from app.core.config import settings
+from app.schemas.enums import (
+    GameYear, AchievementTier, AchievementScope, 
+    AchievementCategory, AchievementRarity, AchievementType
+)
 
 # Initialize router
 router = APIRouter(
@@ -33,9 +37,9 @@ class AchievementBase(BaseModel):
     """Base achievement model"""
     name: str = Field(..., description="Unique achievement name")
     description: Optional[str] = Field(None, description="Achievement description")
-    type: Optional[str] = Field(None, description="Achievement type")
-    category: Optional[str] = Field(None, description="Achievement category")
-    rarity: Optional[str] = Field(None, description="Achievement rarity (Common, Rare, Epic, Legendary)")
+    type: Optional[AchievementType] = Field(None, description="Achievement type")
+    category: Optional[AchievementCategory] = Field(None, description="Achievement category")
+    rarity: Optional[AchievementRarity] = Field(None, description="Achievement rarity")
     achievement_badge: Optional[str] = Field(None, description="Badge URL")
     rp_value: Optional[int] = Field(None, ge=0, description="RP value awarded")
     is_player: Optional[bool] = Field(None, description="Is player achievement")
@@ -49,9 +53,9 @@ class AchievementUpdate(BaseModel):
     """Update achievement request"""
     name: Optional[str] = None
     description: Optional[str] = None
-    type: Optional[str] = None
-    category: Optional[str] = None
-    rarity: Optional[str] = None
+    type: Optional[AchievementType] = None
+    category: Optional[AchievementCategory] = None
+    rarity: Optional[AchievementRarity] = None
     achievement_badge: Optional[str] = None
     rp_value: Optional[int] = Field(None, ge=0)
     is_player: Optional[bool] = None
@@ -67,10 +71,10 @@ class Achievement(AchievementBase):
 class AchievementRuleBase(BaseModel):
     """Base achievement rule model"""
     name: str = Field(..., description="Achievement name this rule applies to")
-    tier: str = Field(..., description="Achievement tier (bronze, silver, gold, platinum, etc)")
-    scope: str = Field(..., description="Scope (per_game, season, career, streak, event)")
+    tier: AchievementTier = Field(..., description="Achievement tier")
+    scope: AchievementScope = Field(..., description="Scope (per_game, season, career, streak, event)")
     predicate: Dict[str, Any] = Field(..., description="JSON predicate for rule evaluation")
-    game_year: Optional[str] = None
+    game_year: Optional[GameYear] = None
     league_id: Optional[str] = None
     season_id: Optional[str] = None
     window_size: Optional[int] = Field(None, ge=1, description="Window size for rolling evaluations")
@@ -85,10 +89,10 @@ class AchievementRuleCreate(AchievementRuleBase):
 
 class AchievementRuleUpdate(BaseModel):
     """Update achievement rule request"""
-    tier: Optional[str] = None
-    scope: Optional[str] = None
+    tier: Optional[AchievementTier] = None
+    scope: Optional[AchievementScope] = None
     predicate: Optional[Dict[str, Any]] = None
-    game_year: Optional[str] = None
+    game_year: Optional[GameYear] = None
     league_id: Optional[str] = None
     season_id: Optional[str] = None
     window_size: Optional[int] = Field(None, ge=1)
@@ -113,8 +117,8 @@ class PlayerAchievement(BaseModel):
     player_id: str
     rule_id: str
     title: str
-    tier: str
-    game_year: str
+    tier: AchievementTier
+    game_year: GameYear
     league_id: str
     season_id: Optional[str] = None
     match_id: Optional[str] = None
@@ -141,9 +145,9 @@ class PlayerAchievement(BaseModel):
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def list_achievements(
     request: Request,
-    category: Optional[str] = Query(None, description="Filter by category"),
-    rarity: Optional[str] = Query(None, description="Filter by rarity"),
-    type: Optional[str] = Query(None, description="Filter by type"),
+    category: Optional[AchievementCategory] = Query(None, description="Filter by category"),
+    rarity: Optional[AchievementRarity] = Query(None, description="Filter by rarity"),
+    type: Optional[AchievementType] = Query(None, description="Filter by type"),
     is_player: Optional[bool] = Query(None, description="Filter player achievements"),
     is_team: Optional[bool] = Query(None, description="Filter team achievements"),
     limit: int = Query(100, ge=1, le=1000),
@@ -158,11 +162,11 @@ async def list_achievements(
         query = supabase.get_client().table("achievements").select("*")
         
         if category:
-            query = query.eq("category", category)
+            query = query.eq("category", category.value)
         if rarity:
-            query = query.eq("rarity", rarity)
+            query = query.eq("rarity", rarity.value)
         if type:
-            query = query.eq("type", type)
+            query = query.eq("type", type.value)
         if is_player is not None:
             query = query.eq("is_player", is_player)
         if is_team is not None:
@@ -310,9 +314,9 @@ async def delete_achievement(
 async def list_achievement_rules(
     request: Request,
     achievement_name: Optional[str] = Query(None, description="Filter by achievement name"),
-    tier: Optional[str] = Query(None, description="Filter by tier"),
-    scope: Optional[str] = Query(None, description="Filter by scope"),
-    game_year: Optional[str] = Query(None, description="Filter by game year"),
+    tier: Optional[AchievementTier] = Query(None, description="Filter by tier"),
+    scope: Optional[AchievementScope] = Query(None, description="Filter by scope"),
+    game_year: Optional[GameYear] = Query(None, description="Filter by game year"),
     league_id: Optional[str] = Query(None, description="Filter by league ID"),
     season_id: Optional[str] = Query(None, description="Filter by season ID"),
     is_active: Optional[bool] = Query(None, description="Filter by active status"),
@@ -330,11 +334,11 @@ async def list_achievement_rules(
         if achievement_name:
             query = query.eq("name", achievement_name)
         if tier:
-            query = query.eq("tier", tier)
+            query = query.eq("tier", tier.value)
         if scope:
-            query = query.eq("scope", scope)
+            query = query.eq("scope", scope.value)
         if game_year:
-            query = query.eq("game_year", game_year)
+            query = query.eq("game_year", game_year.value)
         if league_id:
             query = query.eq("league_id", league_id)
         if season_id:
@@ -501,10 +505,10 @@ async def delete_achievement_rule(
 async def get_player_achievements(
     request: Request,
     player_id: str,
-    game_year: Optional[str] = Query(None, description="Filter by game year"),
+    game_year: Optional[GameYear] = Query(None, description="Filter by game year"),
     league_id: Optional[str] = Query(None, description="Filter by league"),
     season_id: Optional[str] = Query(None, description="Filter by season"),
-    tier: Optional[str] = Query(None, description="Filter by tier"),
+    tier: Optional[AchievementTier] = Query(None, description="Filter by tier"),
     limit: int = Query(100, ge=1, le=1000),
     offset: int = Query(0, ge=0)
 ) -> List[Dict[str, Any]]:
@@ -515,13 +519,13 @@ async def get_player_achievements(
         query = supabase.get_client().table("player_awards").select("*").eq("player_id", player_id)
         
         if game_year:
-            query = query.eq("game_year", game_year)
+            query = query.eq("game_year", game_year.value)
         if league_id:
             query = query.eq("league_id", league_id)
         if season_id:
             query = query.eq("season_id", season_id)
         if tier:
-            query = query.eq("tier", tier)
+            query = query.eq("tier", tier.value)
             
         query = query.order("awarded_at", desc=True).range(offset, offset + limit - 1)
         result = query.execute()

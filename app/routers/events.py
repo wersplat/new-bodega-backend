@@ -16,6 +16,7 @@ from app.core.supabase import supabase
 from app.core.auth_supabase import require_admin_api_token
 from app.core.rate_limiter import limiter
 from app.core.config import settings
+from app.schemas.enums import EventTier as EventTierEnum, EventType as EventTypeEnum
 
 # Initialize router
 router = APIRouter(
@@ -68,9 +69,9 @@ class EventResult(EventResultBase):
 
 class EventTierBase(BaseModel):
     """Base event tier model"""
-    event_tier: Optional[str] = Field(None, description="Tier code (T1, T2, T3, T4, T5)")
+    event_tier: Optional[EventTierEnum] = Field(None, description="Tier code (T1-T5)")
     tier_name: Optional[str] = Field(None, description="Tier display name")
-    event_type: Optional[str] = Field(None, description="Event type (League, Tournament)")
+    event_type: Optional[EventTypeEnum] = Field(None, description="Event type")
     is_tournament: Optional[bool] = None
     max_rp: Optional[int] = Field(None, ge=0, description="Maximum RP for this tier")
     player_rp_bonus: Optional[int] = Field(None, ge=0, description="Bonus RP for players")
@@ -82,7 +83,7 @@ class EventTierCreate(EventTierBase):
 class EventTierUpdate(BaseModel):
     """Update event tier request"""
     tier_name: Optional[str] = None
-    event_type: Optional[str] = None
+    event_type: Optional[EventTypeEnum] = None
     is_tournament: Optional[bool] = None
     max_rp: Optional[int] = Field(None, ge=0)
     player_rp_bonus: Optional[int] = Field(None, ge=0)
@@ -296,7 +297,7 @@ async def delete_event_result(
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def list_event_tiers(
     request: Request,
-    event_type: Optional[str] = Query(None, description="Filter by event type"),
+    event_type: Optional[EventTypeEnum] = Query(None, description="Filter by event type"),
     is_tournament: Optional[bool] = Query(None, description="Filter tournament vs league"),
     limit: int = Query(100, ge=1, le=1000),
     offset: int = Query(0, ge=0)
@@ -310,7 +311,7 @@ async def list_event_tiers(
         query = supabase.get_client().table("event_tiers").select("*")
         
         if event_type:
-            query = query.eq("event_type", event_type)
+            query = query.eq("event_type", event_type.value)
         if is_tournament is not None:
             query = query.eq("is_tournament", is_tournament)
             
