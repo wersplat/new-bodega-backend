@@ -21,6 +21,10 @@ from app.routers.tournaments import router as tournaments_router
 from app.routers.leaderboard_supabase import router as leaderboard_router
 from app.routers.admin_matches import router as admin_matches_router
 from app.routers.views import router as views_router
+from app.routers.achievements import router as achievements_router
+from app.routers.events import router as events_router
+from app.routers.notifications import router as notifications_router
+from app.routers.match_queue import router as match_queue_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -64,6 +68,12 @@ app.include_router(admin_matches_router, prefix="/admin", tags=["Admin Matches"]
 app.include_router(discord.router, prefix="/discord", tags=["Discord"])
 app.include_router(payments.router, prefix="/payments", tags=["Payments"])
 app.include_router(views_router, prefix="/views", tags=["Database Views"])
+
+# New routers added for schema alignment
+app.include_router(achievements_router, tags=["Achievements"])
+app.include_router(events_router, tags=["Events"])
+app.include_router(notifications_router, tags=["Notifications"])
+app.include_router(match_queue_router, tags=["Match Queue"])
 
 @app.get("/", tags=["Root"])
 @app.head("/")

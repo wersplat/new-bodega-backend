@@ -525,3 +525,214 @@ async def get_team_roster(team_id: str):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred while retrieving team roster"
         )
+
+# Team Analytics Endpoints
+
+@router.get("/{team_id}/analytics")
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
+async def get_team_analytics(
+    request: Request,
+    team_id: str
+) -> Dict[str, Any]:
+    """
+    Get comprehensive team analytics from the analytics mart.
+    
+    Includes roster composition, player ratings, performance metrics, and more.
+    """
+    try:
+        result = supabase.get_client().table("team_analytics_mart") \
+            .select("*") \
+            .eq("team_id", team_id) \
+            .execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Team analytics data not found"
+            )
+        
+        return result.data[0] if result.data else {}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching team analytics for {team_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to fetch team analytics"
+        )
+
+@router.get("/{team_id}/momentum")
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
+async def get_team_momentum(
+    request: Request,
+    team_id: str
+) -> Dict[str, Any]:
+    """
+    Get team momentum indicators including recent form and streaks.
+    
+    Provides last 5, 10, 20 game stats and win/loss trends.
+    """
+    try:
+        result = supabase.get_client().table("team_momentum_indicators_mart") \
+            .select("*") \
+            .eq("team_id", team_id) \
+            .execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Team momentum data not found"
+            )
+        
+        return result.data[0] if result.data else {}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching team momentum for {team_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to fetch team momentum data"
+        )
+
+@router.get("/{team_id}/roster-value")
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
+async def get_team_roster_value(
+    request: Request,
+    team_id: str
+) -> Dict[str, Any]:
+    """
+    Get team roster value comparison and analysis.
+    
+    Provides roster composition, player tier distribution, and positional strength.
+    """
+    try:
+        result = supabase.get_client().table("roster_value_comparison_mart") \
+            .select("*") \
+            .eq("team_id", team_id) \
+            .execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Team roster value data not found"
+            )
+        
+        return result.data[0] if result.data else {}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching team roster value for {team_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to fetch team roster value"
+        )
+
+@router.get("/{team_id}/by-game-year")
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
+async def get_team_performance_by_game_year(
+    request: Request,
+    team_id: str
+) -> List[Dict[str, Any]]:
+    """
+    Get team performance statistics grouped by game year.
+    """
+    try:
+        result = supabase.get_client().table("team_performance_by_game_year") \
+            .select("*") \
+            .eq("team_id", team_id) \
+            .order("game_year", desc=True) \
+            .execute()
+        
+        return result.data if hasattr(result, 'data') else []
+    except Exception as e:
+        logger.error(f"Error fetching team performance by game year for {team_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to fetch team performance by game year"
+        )
+
+@router.get("/{team_id}/performance-view")
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
+async def get_team_performance_view(
+    request: Request,
+    team_id: str
+) -> Dict[str, Any]:
+    """
+    Get team performance overview from the performance view.
+    
+    Optimized summary of team performance metrics.
+    """
+    try:
+        result = supabase.get_client().table("team_performance_view") \
+            .select("*") \
+            .eq("team_id", team_id) \
+            .execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Team performance view not found"
+            )
+        
+        return result.data[0] if result.data else {}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching team performance view for {team_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to fetch team performance view"
+        )
+
+@router.get("/{team_id}/head-to-head/{opponent_team_id}")
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
+async def get_head_to_head_matchup(
+    request: Request,
+    team_id: str,
+    opponent_team_id: str
+) -> Dict[str, Any]:
+    """
+    Get head-to-head matchup data between two teams.
+    
+    Provides historical matchup statistics and trends.
+    """
+    try:
+        # The head_to_head_matchup_mart view uses team names, so we need to get them first
+        team1_result = supabase.get_client().table("teams").select("name").eq("id", team_id).execute()
+        team2_result = supabase.get_client().table("teams").select("name").eq("id", opponent_team_id).execute()
+        
+        if not team1_result.data or not team2_result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="One or both teams not found"
+            )
+        
+        team1_name = team1_result.data[0]["name"]
+        team2_name = team2_result.data[0]["name"]
+        
+        # Query the mart with both possible team order combinations
+        result = supabase.get_client().table("head_to_head_matchup_mart") \
+            .select("*") \
+            .or_(
+                f"and(team_1_name.eq.{team1_name},team_2_name.eq.{team2_name}),"
+                f"and(team_1_name.eq.{team2_name},team_2_name.eq.{team1_name})"
+            ) \
+            .execute()
+        
+        if not result.data:
+            return {
+                "team_1_id": team_id,
+                "team_2_id": opponent_team_id,
+                "total_meetings": 0,
+                "message": "No head-to-head history found"
+            }
+        
+        return result.data[0] if result.data else {}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching head-to-head for {team_id} vs {opponent_team_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to fetch head-to-head matchup data"
+        )

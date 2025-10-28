@@ -858,3 +858,250 @@ async def get_team_stats_for_match(
         stats_list.append(stats_with_details)
     
     return stats_list
+
+# Analytics Endpoints
+
+@router.get("/player/{player_id}/performance-mart")
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
+async def get_player_performance_mart(
+    request: Request,
+    player_id: str
+) -> Dict[str, Any]:
+    """
+    Get comprehensive player performance analytics from the performance mart.
+    
+    This provides aggregated stats, recent form, global rating, and more.
+    """
+    try:
+        result = supabase.get_client().table("player_performance_mart") \
+            .select("*") \
+            .eq("player_id", player_id) \
+            .execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Player performance data not found"
+            )
+        
+        return result.data[0] if result.data else {}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching player performance mart for {player_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to fetch player performance data"
+        )
+
+@router.get("/player/{player_id}/hot-streak")
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
+async def get_player_hot_streak(
+    request: Request,
+    player_id: str
+) -> Dict[str, Any]:
+    """
+    Get player hot streak data and recent form analysis.
+    
+    Includes last 5, 10, 20 game averages and performance trends.
+    """
+    try:
+        result = supabase.get_client().table("player_hot_streak_mart") \
+            .select("*") \
+            .eq("player_id", player_id) \
+            .execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Player hot streak data not found"
+            )
+        
+        return result.data[0] if result.data else {}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching player hot streak for {player_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to fetch player hot streak data"
+        )
+
+@router.get("/player/{player_id}/tracking")
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
+async def get_player_stats_tracking(
+    request: Request,
+    player_id: str
+) -> Dict[str, Any]:
+    """
+    Get player statistics tracking data including milestones and achievements progress.
+    
+    Provides comprehensive career stats and milestone tracking.
+    """
+    try:
+        result = supabase.get_client().table("player_stats_tracking_mart") \
+            .select("*") \
+            .eq("player_id", player_id) \
+            .execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Player tracking data not found"
+            )
+        
+        return result.data[0] if result.data else {}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching player tracking for {player_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to fetch player tracking data"
+        )
+
+@router.get("/player/{player_id}/season-stats")
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
+async def get_player_season_stats(
+    request: Request,
+    player_id: str,
+    season_id: Optional[str] = Query(None, description="Filter by specific season")
+) -> List[Dict[str, Any]]:
+    """
+    Get player statistics by league season.
+    
+    Returns season-by-season breakdown of player performance.
+    """
+    try:
+        query = supabase.get_client().table("player_league_season_stats_mart") \
+            .select("*") \
+            .eq("player_id", player_id)
+        
+        if season_id:
+            query = query.eq("season_id", season_id)
+        
+        query = query.order("season_start_date", desc=True)
+        result = query.execute()
+        
+        return result.data if hasattr(result, 'data') else []
+    except Exception as e:
+        logger.error(f"Error fetching player season stats for {player_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to fetch player season stats"
+        )
+
+@router.get("/player/{player_id}/by-game-year")
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
+async def get_player_stats_by_game_year(
+    request: Request,
+    player_id: str
+) -> List[Dict[str, Any]]:
+    """
+    Get player performance statistics grouped by game year (2K23, 2K24, etc).
+    """
+    try:
+        result = supabase.get_client().table("player_performance_by_game_year") \
+            .select("*") \
+            .eq("player_id", player_id) \
+            .order("game_year", desc=True) \
+            .execute()
+        
+        return result.data if hasattr(result, 'data') else []
+    except Exception as e:
+        logger.error(f"Error fetching player stats by game year for {player_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to fetch player stats by game year"
+        )
+
+@router.get("/player/{player_id}/global-rating")
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
+async def get_player_global_rating(
+    request: Request,
+    player_id: str
+) -> Dict[str, Any]:
+    """
+    Get player global rating with breakdown of rating components.
+    """
+    try:
+        result = supabase.get_client().table("v_player_global_rating") \
+            .select("*") \
+            .eq("player_id", player_id) \
+            .execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Player global rating not found"
+            )
+        
+        return result.data[0] if result.data else {}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching player global rating for {player_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to fetch player global rating"
+        )
+
+@router.get("/player/{player_id}/roster-history")
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
+async def get_player_roster_history(
+    request: Request,
+    player_id: str,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0)
+) -> List[Dict[str, Any]]:
+    """
+    Get player's team roster history across all leagues and tournaments.
+    """
+    try:
+        result = supabase.get_client().table("player_roster_history") \
+            .select("*") \
+            .eq("player_id", player_id) \
+            .order("joined_at", desc=True) \
+            .range(offset, offset + limit - 1) \
+            .execute()
+        
+        return result.data if hasattr(result, 'data') else []
+    except Exception as e:
+        logger.error(f"Error fetching player roster history for {player_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to fetch player roster history"
+        )
+
+@router.get("/player/{player_id}/public-profile")
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
+async def get_player_public_profile(
+    request: Request,
+    player_id: str
+) -> Dict[str, Any]:
+    """
+    Get player's public profile with aggregated statistics.
+    
+    This is optimized for public display with key metrics.
+    """
+    try:
+        result = supabase.get_client().table("player_public_profile") \
+            .select("*") \
+            .eq("player_id", player_id) \
+            .execute()
+        
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Player public profile not found"
+            )
+        
+        return result.data[0] if result.data else {}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching player public profile for {player_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to fetch player public profile"
+        )

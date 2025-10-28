@@ -13,7 +13,6 @@ from app.core.auth_supabase import require_admin_api_token
 from app.core.supabase import supabase
 from app.schemas.user import UserInDB
 from app.schemas.player import PlayerProfile
-from app.schemas.badge import PlayerBadge as BadgeSchema
 
 # Request/Response models
 class AdminCheckRequest(BaseModel):
@@ -31,17 +30,25 @@ class RPUpdateRequest(BaseModel):
     reason: str
 
 class BadgeAwardRequest(BaseModel):
-    player_id: str  # UUID as string
-    badge_id: str  # UUID as string
+    player_wallet: str  # Wallet address
+    badge_type: str  # Badge type identifier
+    match_id: int  # Match ID where badge was earned
+    league_id: Optional[str] = None
+    tournament_id: Optional[str] = None
+    season_id: Optional[str] = None
 
 class PlayerBadgeResponse(BaseModel):
     id: str  # UUID as string
-    player_id: str  # UUID as string
-    badge_id: str  # UUID as string
-    badge_name: str
-    badge_description: str
-    awarded_at: str
-    is_equipped: bool
+    player_wallet: str  # Wallet address
+    badge_type: str  # Badge type
+    match_id: int  # Match ID
+    league_id: Optional[str] = None
+    tournament_id: Optional[str] = None
+    season_id: Optional[str] = None
+    ipfs_uri: Optional[str] = None
+    token_id: Optional[int] = None
+    tx_hash: Optional[str] = None
+    created_at: str
 
 # Helper function to calculate rank based on RP
 def calculate_rank(rp: int) -> str:
@@ -197,37 +204,31 @@ async def award_badge(
 ):
     """
     Award badge to player (admin only)
+    
+    Note: player_badges table uses player_wallet and match_id (bigint), 
+    not player_id and badge_id UUIDs as in legacy implementation.
     """
     try:
-        # Check if player exists in Supabase
-        player_result = supabase.get_client().table("players").select("*").eq("id", badge_award.player_id).single().execute()
-        if not player_result.data:
+        # Validate match exists
+        match_result = supabase.get_client().table("matches").select("id").eq("id", badge_award.match_id).execute()
+        if not match_result.data:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Player not found"
+                detail="Match not found"
             )
         
-        # Check if badge exists in Supabase
-        badge_result = supabase.get_client().table("badges").select("*").eq("id", badge_award.badge_id).single().execute()
-        if not badge_result.data:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Badge not found"
-            )
-        
-        badge = badge_result.data
-        
-        # Check if player already has this badge
+        # Check if player already has this badge for this match
         existing_badge_result = supabase.get_client().table("player_badges") \
             .select("*") \
-            .eq("player_id", badge_award.player_id) \
-            .eq("badge_id", badge_award.badge_id) \
+            .eq("player_wallet", badge_award.player_wallet) \
+            .eq("badge_type", badge_award.badge_type) \
+            .eq("match_id", badge_award.match_id) \
             .execute()
         
         if existing_badge_result.data and len(existing_badge_result.data) > 0:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Player already has this badge"
+                detail="Player already has this badge for this match"
             )
         
         # Award badge
@@ -236,23 +237,29 @@ async def award_badge(
         
         player_badge_data = {
             "id": badge_id,
-            "player_id": badge_award.player_id,
-            "badge_id": badge_award.badge_id,
-            "is_equipped": False,
-            "awarded_at": now
+            "player_wallet": badge_award.player_wallet,
+            "badge_type": badge_award.badge_type,
+            "match_id": badge_award.match_id,
+            "league_id": badge_award.league_id,
+            "tournament_id": badge_award.tournament_id,
+            "season_id": badge_award.season_id,
+            "created_at": now
         }
         
         supabase.get_client().table("player_badges").insert(player_badge_data).execute()
         
         return PlayerBadgeResponse(
             id=badge_id,
-            player_id=badge_award.player_id,
-            badge_id=badge_award.badge_id,
-            badge_name=badge["name"],
-            badge_description=badge["description"],
-            awarded_at=now,
-            is_equipped=False
+            player_wallet=badge_award.player_wallet,
+            badge_type=badge_award.badge_type,
+            match_id=badge_award.match_id,
+            league_id=badge_award.league_id,
+            tournament_id=badge_award.tournament_id,
+            season_id=badge_award.season_id,
+            created_at=now
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -294,108 +301,6 @@ async def list_all_players(
             detail=f"Error listing players: {str(e)}"
         )
 
-@router.get("/badges", response_model=List[BadgeSchema])
-async def list_all_badges(
-    _: None = Depends(require_admin_api_token)
-):
-    """
-    List all badges (admin only)
-    """
-    try:
-        # Get all badges from Supabase
-        badges_result = supabase.get_client().table("badges").select("*").eq("is_active", True).execute()
-        
-        if not badges_result.data:
-            return []
-        
-        # Convert to BadgeSchema
-        return [
-            BadgeSchema(
-                id=badge["id"],
-                name=badge["name"],
-                description=badge["description"] or "",
-                icon_url=badge.get("icon_url", ""),
-                rarity=badge.get("rarity", "common"),
-                is_active=badge.get("is_active", True)
-            )
-            for badge in badges_result.data
-        ]
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error listing badges: {str(e)}"
-        )
-
-@router.post("/badges", response_model=BadgeSchema)
-async def create_badge(
-    badge: BadgeSchema,
-    _: None = Depends(require_admin_api_token)
-):
-    """
-    Create a new badge (admin only)
-    """
-    try:
-        # Generate UUID for new badge
-        badge_id = str(uuid.uuid4())
-        
-        # Prepare badge data
-        badge_data = {
-            "id": badge_id,
-            "name": badge.name,
-            "description": badge.description or "",
-            "icon_url": badge.icon_url or "",
-            "rarity": badge.rarity or "common",
-            "is_active": True,
-            "created_at": datetime.utcnow().isoformat(),
-            "created_by": "admin_api"
-        }
-        
-        # Insert badge into Supabase
-        supabase.get_client().table("badges").insert(badge_data).execute()
-        
-        # Return the created badge
-        return BadgeSchema(
-            id=badge_id,
-            name=badge.name,
-            description=badge.description or "",
-            icon_url=badge.icon_url or "",
-            rarity=badge.rarity or "common",
-            is_active=True
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error creating badge: {str(e)}"
-        )
-
-@router.delete("/badges/{badge_id}")
-async def delete_badge(
-    badge_id: str,
-    _: None = Depends(require_admin_api_token)
-):
-    """
-    Delete a badge (admin only)
-    """
-    try:
-        # Check if badge exists
-        badge_result = supabase.get_client().table("badges").select("*").eq("id", badge_id).single().execute()
-        
-        if not badge_result.data:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Badge not found"
-            )
-        
-        # Soft delete by setting is_active to False
-        supabase.get_client().table("badges").update({
-            "is_active": False,
-            "updated_at": datetime.utcnow().isoformat(),
-            "updated_by": "admin_api"
-        }).eq("id", badge_id).execute()
-        
-        return {"message": "Badge deleted successfully"}
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error deleting badge: {str(e)}"
-        )
+# Note: Legacy badge management endpoints removed. 
+# Use /v1/player-badges/ endpoints for player badge management.
+# Achievements are managed via /v1/achievements/ endpoints.
