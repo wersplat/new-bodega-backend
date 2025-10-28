@@ -25,6 +25,7 @@ from app.schemas.views import (
     TournamentTeamStatsResponse, TournamentTeamRostersResponse,
     PlayerGamePERResponse, PlayerMonthlyPERResponse, PlayerYearlyPERResponse
 )
+from app.schemas.enums import GameYear, EventTier
 import logging
 
 logger = logging.getLogger(__name__)
@@ -207,7 +208,7 @@ async def get_player_performance(
 async def get_player_performance_by_game_year(
     request: Request,
     player_id: Optional[str] = Query(None, description="Filter by specific player ID"),
-    game_year: Optional[int] = Query(None, description="Filter by specific game year"),
+    game_year: Optional[GameYear] = Query(None, description="Filter by game year (2K16-2K26)"),
     limit: int = Query(100, ge=1, le=500),
     offset: int = Query(0, ge=0)
 ) -> List[Dict[str, Any]]:
@@ -222,7 +223,7 @@ async def get_player_performance_by_game_year(
         if player_id:
             query = query.eq("player_id", player_id)
         if game_year:
-            query = query.eq("game_year", game_year)
+            query = query.eq("game_year", game_year.value)
         
         result = query.order("game_year", desc=True).order("avg_performance_score", desc=True).range(offset, offset + limit - 1).execute()
         
@@ -340,7 +341,7 @@ async def get_top_tournament_performers(
 async def get_tournament_mvps(
     request: Request,
     tournament_id: Optional[str] = Query(None, description="Filter by specific tournament ID"),
-    game_year: Optional[int] = Query(None, description="Filter by specific game year"),
+    game_year: Optional[GameYear] = Query(None, description="Filter by game year (2K16-2K26)"),
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0)
 ) -> List[Dict[str, Any]]:
@@ -355,7 +356,7 @@ async def get_tournament_mvps(
         if tournament_id:
             query = query.eq("tournament_id", tournament_id)
         if game_year:
-            query = query.eq("game_year", game_year)
+            query = query.eq("game_year", game_year.value)
         
         result = query.order("tournament_name", desc=True).order("avg_performance_score", desc=True).range(offset, offset + limit - 1).execute()
         
@@ -406,7 +407,7 @@ async def get_team_performance(
 async def get_team_performance_by_game_year(
     request: Request,
     team_id: Optional[str] = Query(None, description="Filter by specific team ID"),
-    game_year: Optional[int] = Query(None, description="Filter by specific game year"),
+    game_year: Optional[GameYear] = Query(None, description="Filter by game year (2K16-2K26)"),
     limit: int = Query(100, ge=1, le=500),
     offset: int = Query(0, ge=0)
 ) -> List[Dict[str, Any]]:
@@ -421,7 +422,7 @@ async def get_team_performance_by_game_year(
         if team_id:
             query = query.eq("team_id", team_id)
         if game_year:
-            query = query.eq("game_year", game_year)
+            query = query.eq("game_year", game_year.value)
         
         result = query.order("game_year", desc=True).order("win_percentage", desc=True).range(offset, offset + limit - 1).execute()
         
@@ -504,7 +505,7 @@ async def get_team_roster_history(
 async def get_tournament_calendar(
     request: Request,
     status_filter: Optional[str] = Query(None, description="Filter by tournament status: upcoming, in_progress, completed"),
-    game_year: Optional[int] = Query(None, description="Filter by specific game year"),
+    game_year: Optional[GameYear] = Query(None, description="Filter by game year (2K16-2K26)"),
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0)
 ) -> List[Dict[str, Any]]:
@@ -519,7 +520,7 @@ async def get_tournament_calendar(
         if status_filter:
             query = query.eq("tournament_status", status_filter)
         if game_year:
-            query = query.eq("game_year", game_year)
+            query = query.eq("game_year", game_year.value)
         
         result = query.order("sort_order").range(offset, offset + limit - 1).execute()
         
@@ -571,8 +572,8 @@ async def get_tournament_results(
 @limiter.limit(settings.RATE_LIMIT_DEFAULT)
 async def get_tournament_champions_by_year(
     request: Request,
-    game_year: Optional[int] = Query(None, description="Filter by specific game year"),
-    tournament_tier: Optional[str] = Query(None, description="Filter by tournament tier"),
+    game_year: Optional[GameYear] = Query(None, description="Filter by game year (2K16-2K26)"),
+    tournament_tier: Optional[EventTier] = Query(None, description="Filter by tournament tier (T1-T5)"),
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0)
 ) -> List[Dict[str, Any]]:
@@ -585,9 +586,9 @@ async def get_tournament_champions_by_year(
         query = client.table("tournament_champions_by_year").select("*")
         
         if game_year:
-            query = query.eq("game_year", game_year)
+            query = query.eq("game_year", game_year.value)
         if tournament_tier:
-            query = query.eq("tournament_tier", tournament_tier)
+            query = query.eq("tournament_tier", tournament_tier.value)
         
         result = query.order("game_year", desc=True).order("end_date", desc=True).range(offset, offset + limit - 1).execute()
         
@@ -644,7 +645,7 @@ async def get_tournament_team_stats(
     request: Request,
     tournament_id: Optional[str] = Query(None, description="Filter by specific tournament ID"),
     team_id: Optional[str] = Query(None, description="Filter by specific team ID"),
-    game_year: Optional[int] = Query(None, description="Filter by specific game year"),
+    game_year: Optional[GameYear] = Query(None, description="Filter by game year (2K16-2K26)"),
     limit: int = Query(100, ge=1, le=500),
     offset: int = Query(0, ge=0)
 ) -> List[Dict[str, Any]]:
@@ -661,7 +662,7 @@ async def get_tournament_team_stats(
         if team_id:
             query = query.eq("team_id", team_id)
         if game_year:
-            query = query.eq("game_year", game_year)
+            query = query.eq("game_year", game_year.value)
         
         result = query.order("win_percentage", desc=True).range(offset, offset + limit - 1).execute()
         
@@ -798,7 +799,7 @@ async def get_player_yearly_per(
     league_id: Optional[str] = Query(None, description="Filter by specific league ID"),
     season_id: Optional[str] = Query(None, description="Filter by specific season ID"),
     tournament_id: Optional[str] = Query(None, description="Filter by specific tournament ID"),
-    game_year: Optional[int] = Query(None, description="Filter by specific game year"),
+    game_year: Optional[GameYear] = Query(None, description="Filter by game year (2K16-2K26)"),
     limit: int = Query(100, ge=1, le=500),
     offset: int = Query(0, ge=0)
 ) -> List[Dict[str, Any]]:
@@ -819,7 +820,7 @@ async def get_player_yearly_per(
         if tournament_id:
             query = query.eq("tournament_id", tournament_id)
         if game_year:
-            query = query.eq("game_year", game_year)
+            query = query.eq("game_year", game_year.value)
         
         result = query.order("game_year", desc=True).order("per15", desc=True).range(offset, offset + limit - 1).execute()
         

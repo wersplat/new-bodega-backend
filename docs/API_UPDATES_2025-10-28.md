@@ -155,12 +155,13 @@ GET    /v1/teams/{id}/head-to-head/{opponent_id} - H2H matchup
 4. `app/routers/notifications.py` - Notifications
 5. `app/routers/match_queue.py` - Match queues
 
-### Modified Files (5):
+### Modified Files (6):
 1. `app/routers/admin.py` - Badge schema fix
-2. `app/routers/leagues.py` - Analytics endpoints
+2. `app/routers/leagues.py` - Analytics endpoints + enums
 3. `app/routers/player_stats.py` - Analytics endpoints
 4. `app/routers/teams.py` - Analytics endpoints
-5. `main_supabase.py` - Registered new routers
+5. `app/routers/views.py` - Enum usage for game_year
+6. `main_supabase.py` - Registered new routers
 
 ---
 
@@ -219,6 +220,8 @@ POST /v1/match-queue/sessions/{session_id}/join
 
 ## Enum Values Reference
 
+All routers now use proper enums from `app/schemas/enums.py`:
+
 ### GameYear (use these values):
 `2K16`, `2K17`, `2K18`, `2K19`, `2K20`, `2K21`, `2K22`, `2K23`, `2K24`, `2K25`, `2K26`
 
@@ -236,6 +239,8 @@ POST /v1/match-queue/sessions/{session_id}/join
 
 ### PlayerPosition:
 `Point Guard`, `Shooting Guard`, `Lock`, `Power Forward`, `Center`
+
+**Important**: All `game_year` parameters now use the GameYear enum. Invalid values will be rejected with a 422 error showing valid options.
 
 ---
 
