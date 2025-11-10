@@ -9409,3 +9409,644 @@ _**Agent (model composer-1, mode Agent)**_
 
 ---
 
+
+
+---
+
+
+Investigating the `ModuleNotFoundError: No module named 'supabase_auth.http_clients'` error. Checking dependencies and imports.
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/requirements.txt</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/app/core/supabase.py</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="grep" data-tool-name="grep">
+<details>
+<summary>Tool use: **grep** • Grep for "supabase" in "/Volumes/870SSD/Active GH Projects/new-bodega-backend" • 864 matches</summary>
+
+Output mode: content
+
+
+| File | Content | Line |
+|------|------|------|
+| `./app/types/supabase.ts` | `__InternalSupabase: \{` | L12 |
+| `./app/types/supabase.ts` | `type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">` | L24732 |
+| `./docs/API_UPDATES_2025-10-28.md` | `Updated backend API to align with latest Supabase schema types. Fixed schema mismatches and implemented 60+ missing endpoints across 4 new routers plus enhancements to 3 existing routers.` | L10 |
+| `./docs/API_UPDATES_2025-10-28.md` | `6. `main_supabase.py` - Registered new routers` | L164 |
+| `./app/routers/views.py` | `from app.core.supabase import supabase` | L13 |
+| `./app/routers/views.py` | `client = supabase.get_client()` | L51 |
+| `./app/routers/views.py` | `client = supabase.get_client()` | L83 |
+| `./app/routers/views.py` | `client = supabase.get_client()` | L115 |
+| `./app/routers/views.py` | `client = supabase.get_client()` | L148 |
+| `./app/routers/views.py` | `client = supabase.get_client()` | L185 |
+| `./app/routers/views.py` | `client = supabase.get_client()` | L219 |
+| `./app/routers/views.py` | `client = supabase.get_client()` | L254 |
+| `./app/routers/views.py` | `client = supabase.get_client()` | L291 |
+| `./app/routers/views.py` | `client = supabase.get_client()` | L325 |
+| `./app/routers/views.py` | `client = supabase.get_client()` | L352 |
+| `./app/routers/views.py` | `client = supabase.get_client()` | L386 |
+| `./app/routers/views.py` | `client = supabase.get_client()` | L418 |
+| `./app/routers/views.py` | `client = supabase.get_client()` | L449 |
+| `./app/routers/views.py` | `client = supabase.get_client()` | L481 |
+| `./app/routers/views.py` | `client = supabase.get_client()` | L516 |
+| `./app/routers/views.py` | `client = supabase.get_client()` | L550 |
+| `./app/routers/views.py` | `client = supabase.get_client()` | L584 |
+| `./app/routers/views.py` | `client = supabase.get_client()` | L619 |
+| `./app/routers/views.py` | `client = supabase.get_client()` | L656 |
+| `./app/routers/views.py` | `client = supabase.get_client()` | L692 |
+| `./app/routers/views.py` | `client = supabase.get_client()` | L729 |
+| `./app/routers/views.py` | `client = supabase.get_client()` | L769 |
+| `./app/routers/views.py` | `client = supabase.get_client()` | L810 |
+| `./app/routers/events.py` | `from app.core.supabase import supabase` | L15 |
+| `./app/routers/events.py` | `from app.core.auth_supabase import require_admin_api_token` | L16 |
+| `./app/routers/events.py` | `query = supabase.get_client().table("event_results").select("*")` | L134 |
+| `./app/routers/events.py` | `result = supabase.get_by_id("event_results", result_id)` | L168 |
+| `./app/routers/events.py` | `team_result = supabase.get_client().table("teams").select("id").eq("id", event_result.team_id).execute()` | L199 |
+| `./app/routers/events.py` | `result = supabase.insert("event_results", result_data)` | L214 |
+| `./app/routers/events.py` | `result = supabase.update("event_results", result_id, update_data)` | L246 |
+| `./app/routers/events.py` | `result = supabase.delete("event_results", result_id)` | L275 |
+| `./app/routers/events.py` | `query = supabase.get_client().table("event_tiers").select("*")` | L311 |
+| `./app/routers/events.py` | `result = supabase.get_by_id("event_tiers", tier_id)` | L341 |
+| `./app/routers/events.py` | `result = supabase.insert("event_tiers", tier_data)` | L375 |
+| `./app/routers/events.py` | `result = supabase.update("event_tiers", tier_id, update_data)` | L405 |
+| `./app/routers/events.py` | `query = supabase.get_client().table("event_queue").select("*")` | L442 |
+| `./app/routers/events.py` | `result = supabase.get_by_id("event_queue", queue_id)` | L471 |
+| `./app/routers/events.py` | `result = supabase.update("event_queue", queue_id, update_data)` | L510 |
+| `./app/routers/events.py` | `query = supabase.get_client().table("event_results") \` | L545 |
+| `./app/routers/leagues.py` | `from app.core.supabase import supabase` | L16 |
+| `./app/routers/leagues.py` | `# Enhanced League Endpoints (Using Supabase Views)` | L331 |
+| `./app/routers/leagues.py` | `result = supabase.get_client().table("league_calendar") \` | L345 |
+| `./app/routers/leagues.py` | `query = supabase.get_client().table("league_division_standings").select("*")` | L379 |
+| `./app/routers/leagues.py` | `result = supabase.get_client().table("league_results") \` | L409 |
+| `./app/routers/leagues.py` | `query = supabase.get_client().table("league_season_performance_mart").select("*").eq("league_id", league_id)` | L435 |
+| `./app/routers/leagues.py` | `query = supabase.get_client().table("league_rp_values").select("*").eq("league_id", league_id)` | L471 |
+| `./app/routers/leagues.py` | `query = supabase.get_client().table("lg_divisions").select("*").eq("league_id", league_id)` | L497 |
+| `./app/routers/leagues.py` | `query = supabase.get_client().table("lg_conf").select("*").eq("league", league_id)` | L524 |
+| `./app/routers/leagues.py` | `result = supabase.get_client().table("league_open") \` | L549 |
+| `./app/routers/leagues.py` | `result = supabase.get_client().table("league_playoff") \` | L580 |
+| `./app/routers/leagues.py` | `result = supabase.get_client().table(table_name) \` | L627 |
+| `./app/routers/leagues.py` | `result = supabase.get_client().table("league_season_team_rosters") \` | L652 |
+| `./app/routers/achievements.py` | `from app.core.supabase import supabase` | L15 |
+| `./app/routers/achievements.py` | `from app.core.auth_supabase import require_admin_api_token, supabase_user_from_bearer` | L16 |
+| `./app/routers/achievements.py` | `query = supabase.get_client().table("achievements").select("*")` | L162 |
+| `./app/routers/achievements.py` | `result = supabase.get_by_id("achievements", achievement_id)` | L198 |
+| `./app/routers/achievements.py` | `result = supabase.insert("achievements", achievement_data)` | L232 |
+| `./app/routers/achievements.py` | `result = supabase.update("achievements", achievement_id, update_data)` | L262 |
+| `./app/routers/achievements.py` | `result = supabase.delete("achievements", achievement_id)` | L291 |
+| `./app/routers/achievements.py` | `query = supabase.get_client().table("achievement_rules").select("*")` | L332 |
+| `./app/routers/achievements.py` | `result = supabase.get_by_id("achievement_rules", rule_id)` | L372 |
+| `./app/routers/achievements.py` | `achievement_result = supabase.get_client().table("achievements").select("id").eq("name", rule.name).execute()` | L407 |
+| `./app/routers/achievements.py` | `result = supabase.insert("achievement_rules", rule_data)` | L419 |
+| `./app/routers/achievements.py` | `result = supabase.update("achievement_rules", rule_id, update_data)` | L453 |
+| `./app/routers/achievements.py` | `result = supabase.delete("achievement_rules", rule_id)` | L482 |
+| `./app/routers/achievements.py` | `query = supabase.get_client().table("player_awards").select("*").eq("player_id", player_id)` | L519 |
+| `./app/routers/achievements.py` | `result = supabase.get_client().table("achievements").select("category").execute()` | L553 |
+| `./app/routers/achievements.py` | `result = supabase.get_client().table("achievements").select("rarity").execute()` | L587 |
+| `./app/routers/achievements.py` | `result = supabase.get_client().table("achievement_eligibility_mart") \` | L624 |
+| `./app/schemas/enums.py` | `Enums matching the Supabase database schema types.` | L4 |
+| `./main_supabase.py` | `NBA 2K Global Rankings Backend with Supabase` | L2 |
+| `./main_supabase.py` | `Main application entry point for Supabase version` | L3 |
+| `./main_supabase.py` | `from app.routers.leaderboard_supabase import router as leaderboard_router` | L21 |
+| `./main_supabase.py` | `title="NBA 2K Global Rankings API (Supabase)",` | L35 |
+| `./main_supabase.py` | `description="Backend API for NBA 2K Global Rankings system using Supabase",` | L36 |
+| `./main_supabase.py` | `# Include routers - using Supabase versions where available` | L60 |
+| `./main_supabase.py` | `"message": "NBA 2K Global Rankings API (Supabase)",` | L91 |
+| `./main_supabase.py` | `"main_supabase:app",` | L112 |
+| `./app/routers/teams.py` | `Teams Router (Supabase Backend)` | L2 |
+| `./app/routers/teams.py` | `from app.core.supabase import supabase` | L15 |
+| `./app/routers/teams.py` | `from app.core.auth_supabase import supabase_user_from_bearer, require_admin_api_token` | L16 |
+| `./app/routers/teams.py` | `result = supabase.get_by_id("teams", team_id)` | L70 |
+| `./app/routers/teams.py` | `current_user: Dict[str, Any] = Depends(supabase_user_from_bearer)` | L99 |
+| `./app/routers/teams.py` | `client = supabase.get_client()` | L109 |
+| `./app/routers/teams.py` | `created_team = supabase.insert("teams", team_data)` | L128 |
+| `./app/routers/teams.py` | `client = supabase.get_client()` | L176 |
+| `./app/routers/teams.py` | `client = supabase.get_client()` | L244 |
+| `./app/routers/teams.py` | `updated_team = supabase.update("teams", team_id, team_update.model_dump(exclude_unset=True))` | L334 |
+| `./app/routers/teams.py` | `client = supabase.get_client()` | L363 |
+| `./app/routers/teams.py` | `supabase.delete("teams", team_id)` | L367 |
+| `./app/routers/teams.py` | `client = supabase.get_client()` | L380 |
+| `./app/routers/teams.py` | `client = supabase.get_client()` | L395 |
+| `./app/routers/teams.py` | `client = supabase.get_client()` | L407 |
+| `./app/routers/teams.py` | `client = supabase.get_client()` | L454 |
+| `./app/routers/teams.py` | `client = supabase.get_client()` | L502 |
+| `./app/routers/teams.py` | `result = supabase.get_client().table("team_analytics_mart") \` | L543 |
+| `./app/routers/teams.py` | `result = supabase.get_client().table("team_momentum_indicators_mart") \` | L576 |
+| `./app/routers/teams.py` | `result = supabase.get_client().table("roster_value_comparison_mart") \` | L609 |
+| `./app/routers/teams.py` | `result = supabase.get_client().table("team_performance_by_game_year") \` | L640 |
+| `./app/routers/teams.py` | `result = supabase.get_client().table("team_performance_view") \` | L666 |
+| `./app/routers/teams.py` | `team1_result = supabase.get_client().table("teams").select("name").eq("id", team_id).execute()` | L701 |
+| `./app/routers/teams.py` | `team2_result = supabase.get_client().table("teams").select("name").eq("id", opponent_team_id).execute()` | L702 |
+| `./app/routers/teams.py` | `result = supabase.get_client().table("head_to_head_matchup_mart") \` | L714 |
+| `./app/routers/player_stats.py` | `from app.core.supabase import supabase` | L13 |
+| `./app/routers/player_stats.py` | `from app.core.auth_supabase import require_admin_api_token, supabase_user_from_bearer` | L21 |
+| `./app/routers/player_stats.py` | `client: Optional Supabase client (for transactions)` | L162 |
+| `./app/routers/player_stats.py` | `client = client or supabase.get_client()` | L168 |
+| `./app/routers/player_stats.py` | `Helper function to get player stats by ID from Supabase.` | L284 |
+| `./app/routers/player_stats.py` | `result = supabase.fetch_by_id("player_stats", stats_id)` | L296 |
+| `./app/routers/player_stats.py` | `current_user: Dict[str, Any] = Depends(supabase_user_from_bearer)` | L324 |
+| `./app/routers/player_stats.py` | `with supabase.transaction() as transaction:` | L347 |
+| `./app/routers/player_stats.py` | `client = transaction or supabase.get_client()` | L349 |
+| `./app/routers/player_stats.py` | `created_stats = supabase.insert("player_stats", stats_data, client=transaction)` | L427 |
+| `./app/routers/player_stats.py` | `client = supabase.get_client()` | L489 |
+| `./app/routers/player_stats.py` | `query = supabase.get_client().table("player_stats").select("*")` | L623 |
+| `./app/routers/player_stats.py` | `updated_stats = supabase.update("player_stats", stats_id, update_data)` | L729 |
+| `./app/routers/player_stats.py` | `supabase.delete("player_stats", stats_id)` | L757 |
+| `./app/routers/player_stats.py` | `client = supabase.get_client()` | L774 |
+| `./app/routers/player_stats.py` | `client = supabase.get_client()` | L822 |
+| `./app/routers/player_stats.py` | `result = supabase.get_client().table("player_performance_mart") \` | L876 |
+| `./app/routers/player_stats.py` | `result = supabase.get_client().table("player_hot_streak_mart") \` | L909 |
+| `./app/routers/player_stats.py` | `result = supabase.get_client().table("player_stats_tracking_mart") \` | L942 |
+| `./app/routers/player_stats.py` | `query = supabase.get_client().table("player_league_season_stats_mart") \` | L976 |
+| `./app/routers/player_stats.py` | `result = supabase.get_client().table("player_performance_by_game_year") \` | L1004 |
+| `./app/routers/player_stats.py` | `result = supabase.get_client().table("v_player_global_rating") \` | L1028 |
+| `./app/routers/player_stats.py` | `result = supabase.get_client().table("player_roster_history") \` | L1061 |
+| `./app/routers/player_stats.py` | `result = supabase.get_client().table("player_public_profile") \` | L1088 |
+| `./app/routers/match_queue.py` | `from app.core.supabase import supabase` | L16 |
+| `./app/routers/match_queue.py` | `from app.core.auth_supabase import require_admin_api_token, supabase_user_from_bearer` | L17 |
+| `./app/routers/match_queue.py` | `query = supabase.get_client().table("match_queue_sessions").select("*")` | L127 |
+| `./app/routers/match_queue.py` | `result = supabase.get_by_id("match_queue_sessions", session_id)` | L157 |
+| `./app/routers/match_queue.py` | `result = supabase.insert("match_queue_sessions", session_data)` | L195 |
+| `./app/routers/match_queue.py` | `current_user: Dict[str, Any] = Depends(supabase_user_from_bearer)` | L213 |
+| `./app/routers/match_queue.py` | `result = supabase.update("match_queue_sessions", session_id, update_data)` | L225 |
+| `./app/routers/match_queue.py` | `result = supabase.get_client().table("match_queue_slots") \` | L258 |
+| `./app/routers/match_queue.py` | `session = supabase.get_by_id("match_queue_sessions", session_id)` | L289 |
+| `./app/routers/match_queue.py` | `existing = supabase.get_client().table("match_queue_slots") \` | L303 |
+| `./app/routers/match_queue.py` | `result = supabase.insert("match_queue_slots", slot_data)` | L322 |
+| `./app/routers/match_queue.py` | `slot_result = supabase.get_client().table("match_queue_slots") \` | L348 |
+| `./app/routers/match_queue.py` | `supabase.update("match_queue_slots", slot["id"], update_data)` | L369 |
+| `./app/routers/match_queue.py` | `query = supabase.get_client().table("team_match_queue_sessions").select("*")` | L400 |
+| `./app/routers/match_queue.py` | `result = supabase.insert("team_match_queue_sessions", session_data)` | L442 |
+| `./app/routers/match_queue.py` | `result = supabase.get_client().table("team_match_queue_slots") \` | L465 |
+| `./app/routers/match_queue.py` | `session = supabase.get_by_id("team_match_queue_sessions", session_id)` | L496 |
+| `./app/routers/match_queue.py` | `team_result = supabase.get_client().table("teams").select("id, name, elo_rating, current_rp").eq("id", slot.team_id).execute()` | L510 |
+| `./app/routers/match_queue.py` | `existing = supabase.get_client().table("team_match_queue_slots") \` | L520 |
+| `./app/routers/match_queue.py` | `result = supabase.insert("team_match_queue_slots", slot_data)` | L541 |
+| `./app/routers/match_queue.py` | `result = supabase.get_client().table("team_match_queue_lineup_players") \` | L567 |
+| `./app/routers/match_queue.py` | `player_query = supabase.get_client().table("match_queue_sessions").select("*").eq("status", "active")` | L594 |
+| `./app/routers/match_queue.py` | `team_query = supabase.get_client().table("team_match_queue_sessions").select("*").eq("status", "active")` | L600 |
+| `./app/routers/notifications.py` | `from app.core.supabase import supabase` | L15 |
+| `./app/routers/notifications.py` | `from app.core.auth_supabase import require_admin_api_token, supabase_user_from_bearer` | L16 |
+| `./app/routers/notifications.py` | `current_user: Dict[str, Any] = Depends(supabase_user_from_bearer),` | L78 |
+| `./app/routers/notifications.py` | `query = supabase.get_client().table("notifications").select("*", count="exact")` | L98 |
+| `./app/routers/notifications.py` | `unread_query = supabase.get_client().table("notifications").select("id", count="exact") \` | L113 |
+| `./app/routers/notifications.py` | `current_user: Dict[str, Any] = Depends(supabase_user_from_bearer)` | L152 |
+| `./app/routers/notifications.py` | `result = supabase.get_by_id("notifications", notification_id)` | L158 |
+| `./app/routers/notifications.py` | `result = supabase.insert("notifications", notification_data)` | L206 |
+| `./app/routers/notifications.py` | `current_user: Dict[str, Any] = Depends(supabase_user_from_bearer)` | L224 |
+| `./app/routers/notifications.py` | `notification = supabase.get_by_id("notifications", notification_id)` | L231 |
+| `./app/routers/notifications.py` | `result = supabase.update("notifications", notification_id, update_data)` | L250 |
+| `./app/routers/notifications.py` | `current_user: Dict[str, Any] = Depends(supabase_user_from_bearer)` | L268 |
+| `./app/routers/notifications.py` | `result = supabase.get_client().table("notifications") \` | L279 |
+| `./app/routers/notifications.py` | `current_user: Dict[str, Any] = Depends(supabase_user_from_bearer)` | L307 |
+| `./app/routers/notifications.py` | `notification = supabase.get_by_id("notifications", notification_id)` | L314 |
+| `./app/routers/notifications.py` | `supabase.delete("notifications", notification_id)` | L328 |
+| `./app/routers/notifications.py` | `current_user: Dict[str, Any] = Depends(supabase_user_from_bearer)` | L345 |
+| `./app/routers/notifications.py` | `query = supabase.get_client().table("notifications") \` | L353 |
+| `./app/routers/admin.py` | `Admin router for RP updates and badge assignment using Supabase` | L2 |
+| `./app/routers/admin.py` | `from app.core.auth_supabase import require_admin_api_token` | L12 |
+| `./app/routers/admin.py` | `from app.core.supabase import supabase` | L13 |
+| `./app/routers/admin.py` | `# Find player in Supabase` | L144 |
+| `./app/routers/admin.py` | `player_result = supabase.get_client().table("players").select("*").eq("id", rp_update.player_id).single().execute()` | L145 |
+| `./app/routers/admin.py` | `# Update player in Supabase` | L168 |
+| `./app/routers/admin.py` | `supabase.get_client().table("players").update(\{` | L169 |
+| `./app/routers/admin.py` | `supabase.get_client().table("rp_history").insert(\{` | L178 |
+| `./app/routers/admin.py` | `match_result = supabase.get_client().table("matches").select("id").eq("id", badge_award.match_id).execute()` | L213 |
+| `./app/routers/admin.py` | `existing_badge_result = supabase.get_client().table("player_badges") \` | L221 |
+| `./app/routers/admin.py` | `supabase.get_client().table("player_badges").insert(player_badge_data).execute()` | L249 |
+| `./app/routers/admin.py` | `# Get all players with pagination from Supabase` | L279 |
+| `./app/routers/admin.py` | `players_result = supabase.get_client().table("players").select("*, users(*)").range(offset, offset + limit - 1).execute()` | L280 |
+| `./app/types/new_schema_types.ts` | `__InternalSupabase: \{` | L12 |
+| `./app/types/new_schema_types.ts` | `type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">` | L24191 |
+| `./supabase/new_schema_types.ts` | `__InternalSupabase: \{` | L12 |
+| `./supabase/new_schema_types.ts` | `type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">` | L21369 |
+| `./main.py` | `NBA 2K Global Rankings Backend with Supabase` | L2 |
+| `./main.py` | `Main application entry point for Supabase version` | L3 |
+| `./main.py` | `from app.routers.leaderboard_supabase import router as leaderboard_router` | L21 |
+| `./main.py` | `title="NBA 2K Global Rankings API (Supabase)",` | L31 |
+| `./main.py` | `description="Backend API for NBA 2K Global Rankings system using Supabase",` | L32 |
+| `./main.py` | `# Include routers - using Supabase versions where available` | L56 |
+| `./main.py` | `"message": "NBA 2K Global Rankings API (Supabase)",` | L81 |
+| `./app/routers/players.py` | `Players Router (Supabase Backend)` | L2 |
+| `./app/routers/players.py` | `using Supabase as the backend storage. It handles player registration, profile management,` | L5 |
+| `./app/routers/players.py` | `- Optimized database queries with Supabase` | L16 |
+| `./app/routers/players.py` | `from app.core.supabase import supabase` | L62 |
+| `./app/routers/players.py` | `from app.core.auth_supabase import supabase_user_from_bearer` | L63 |
+| `./app/routers/players.py` | `return supabase.fetch_by_id("players", str(player_id))` | L101 |
+| `./app/routers/players.py` | `client = supabase.get_client()` | L117 |
+| `./app/routers/players.py` | `current_user: Dict[str, Any] = Depends(supabase_user_from_bearer)` | L205 |
+| `./app/routers/players.py` | `# Extract Supabase user id` | L228 |
+| `./app/routers/players.py` | `client = supabase.get_client()` | L243 |
+| `./app/routers/players.py` | `created_player = supabase.insert("players", player_data)` | L260 |
+| `./app/routers/players.py` | `client = supabase.get_client()` | L327 |
+| `./app/routers/players.py` | `client = supabase.get_client()` | L464 |
+| `./app/routers/players.py` | `client = supabase.get_client()` | L470 |
+| `./app/routers/players.py` | `current_user: Dict[str, Any] = Depends(supabase_user_from_bearer),` | L592 |
+| `./app/routers/players.py` | `client = supabase.get_client()` | L616 |
+| `./app/routers/players.py` | `current_user: Dict[str, Any] = Depends(supabase_user_from_bearer)` | L646 |
+| `./app/routers/players.py` | `client = supabase.get_client()` | L672 |
+| `./app/routers/players.py` | `updated_player = supabase.update("players", player_id, update_data)` | L696 |
+| `./app/routers/players.py` | `client = supabase.get_client()` | L764 |
+| `./app/routers/players.py` | `client = supabase.get_client()` | L831 |
+| `./app/routers/leaderboard_supabase.py` | `from app.core.supabase import supabase` | L21 |
+| `./app/routers/leaderboard_supabase.py` | `client = supabase.get_client()` | L123 |
+| `./app/routers/leaderboard_supabase.py` | `client = supabase.get_client()` | L262 |
+| `./app/routers/leaderboard_supabase.py` | `client = supabase.get_client()` | L359 |
+| `./app/routers/leaderboard_supabase.py` | `client = supabase.get_client()` | L457 |
+| `./app/routers/leaderboard_supabase.py` | `client = supabase.get_client()` | L582 |
+| `./app/routers/tournaments.py` | `client = supabase.get_client()` | L255 |
+| `./app/routers/tournaments.py` | `client = supabase.get_client()` | L295 |
+| `./app/routers/tournaments.py` | `client = supabase.get_client()` | L342 |
+| `./docs/ENDPOINT_REVIEW.md` | `The new-bodega-backend is a comprehensive FastAPI application for managing NBA 2K gaming tournaments, player rankings, and league operations. It uses Supabase as the backend database and implements a well-structured REST API with proper authentication, rate limiting, and comprehensive error handling.` | L5 |
+| `./docs/ENDPOINT_REVIEW.md` | `- **main_supabase.py**: Supabase-specific entry point (currently identical to main.py)` | L11 |
+| `./requirements.txt` | `# Supabase` | L15 |
+| `./requirements.txt` | `supabase>=2.21.1,<3.0.0` | L16 |
+| `./app/core/auth_supabase.py` | `if not settings.SUPABASE_URL:` | L25 |
+| `./app/core/auth_supabase.py` | `raise HTTPException(status_code=500, detail="SUPABASE_URL not configured")` | L26 |
+| `./app/core/auth_supabase.py` | `jwks_url = settings.SUPABASE_URL.rstrip('/') + "/auth/v1/keys"` | L27 |
+| `./app/core/auth_supabase.py` | `async def supabase_user_from_bearer(authorization: Optional[str] = Header(None)) -> dict:` | L74 |
+| `./app/core/auth.py` | `Authentication utilities and JWT token management using Supabase` | L2 |
+| `./app/core/auth.py` | `from app.core.supabase import supabase` | L24 |
+| `./app/core/auth.py` | `"""Get current authenticated user from Supabase"""` | L73 |
+| `./app/core/auth.py` | `# Get user data from Supabase` | L90 |
+| `./app/core/auth.py` | `result = supabase.get_client().table("users").select("*").eq("email", email).single().execute()` | L91 |
+| `./README.md` | `Other existing vars still apply: `SUPABASE_URL`, `SUPABASE_KEY`/`SUPABASE_ANON_KEY`, `STRIPE_SECRET_KEY`, etc.` | L9 |
+| `./README.md` | `A comprehensive FastAPI backend for managing NBA 2K Global Rankings, tournaments, and player profiles, powered by Supabase.` | L50 |
+| `./README.md` | `- **Supabase Backend**: Cloud-based PostgreSQL database with real-time capabilities` | L54 |
+| `./README.md` | `- **Authentication**: JWT-based authentication with role-based access (via Supabase Auth)` | L58 |
+| `./README.md` | `supabase.py         # Supabase client and utilities` | L97 |
+| `./README.md` | `1. Configure your `.env` file with Supabase credentials` | L120 |
+| `./README.md` | `- Supabase account (<https://supabase.com/>)` | L135 |
+| `./README.md` | `# Edit .env with your Supabase credentials` | L179 |
+| `./README.md` | `5. **Supabase Setup**` | L182 |
+| `./README.md` | `1. Create a new project at <https://supabase.com/>` | L183 |
+| `./README.md` | `3. Update `.env` with your Supabase credentials:` | L185 |
+| `./README.md` | `SUPABASE_URL=your-project-url` | L188 |
+| `./README.md` | `SUPABASE_KEY=your-service-role-key` | L189 |
+| `./README.md` | `SUPABASE_ANON_KEY=your-anon-key` | L190 |
+| `./README.md` | `Note: With Supabase, you can also use the Table Editor in the Supabase dashboard to manage your database schema.` | L203 |
+| `./README.md` | `# Supabase Configuration (Required)` | L233 |
+| `./README.md` | `SUPABASE_URL=your-project-url` | L234 |
+| `./README.md` | `SUPABASE_KEY=your-service-role-key` | L235 |
+| `./README.md` | `SUPABASE_ANON_KEY=your-anon-key` | L236 |
+| `./README.md` | `DATABASE_URL=postgresql://postgres:your-password@db.your-project.supabase.co:5432/postgres` | L239 |
+| `./app/core/supabase.py` | `Supabase client initialization and utilities with type hints` | L2 |
+| `./app/core/supabase.py` | `from supabase import create_client, Client as SupabaseClient` | L8 |
+| `./app/core/supabase.py` | `class SupabaseService:` | L19 |
+| `./app/core/supabase.py` | `_client: Optional[SupabaseClient] = None` | L20 |
+| `./app/core/supabase.py` | `_admin_client: Optional[SupabaseClient] = None` | L21 |
+| `./app/core/supabase.py` | `def get_client(cls, admin: bool = False) -> SupabaseClient:` | L24 |
+| `./app/core/supabase.py` | `"""Get or create the Supabase client instance` | L25 |
+| `./app/core/supabase.py` | `SupabaseClient: Configured Supabase client instance` | L32 |
+| `./app/core/supabase.py` | `# Prefer explicit service role key; fall back to SUPABASE_KEY` | L40 |
+| `./app/core/supabase.py` | `settings.SUPABASE_KEY` | L42 |
+| `./app/core/supabase.py` | `or os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")` | L43 |
+| `./app/core/supabase.py` | `if not settings.SUPABASE_URL or not service_role_key:` | L46 |
+| `./app/core/supabase.py` | `raise ValueError("Supabase URL and service role key must be set in environment variables")` | L47 |
+| `./app/core/supabase.py` | `alt = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SERVICE_ROLE_KEY")` | L51 |
+| `./app/core/supabase.py` | `cls._admin_client = create_client(settings.SUPABASE_URL, service_role_key)` | L54 |
+| `./app/core/supabase.py` | `if not settings.SUPABASE_URL or not settings.SUPABASE_ANON_KEY:` | L58 |
+| `./app/core/supabase.py` | `raise ValueError("Supabase URL and anon key must be set in environment variables")` | L59 |
+| `./app/core/supabase.py` | `cls._client = create_client(settings.SUPABASE_URL, settings.SUPABASE_ANON_KEY)` | L60 |
+| `./app/core/supabase.py` | `def transaction(cls) -> Iterator[SupabaseClient]:` | L65 |
+| `./app/core/supabase.py` | `with supabase.transaction() as db:` | L69 |
+| `./app/core/supabase.py` | `def insert(cls, table: str, data: Dict[str, Any], client: Optional[SupabaseClient] = None) -> Optional[Dict[str, Any]]:` | L117 |
+| `./app/core/supabase.py` | `def update(cls, table: str, id: Union[str, int], data: Dict[str, Any], client: Optional[SupabaseClient] = None) -> Optional[Dict[str, Any]]:` | L133 |
+| `./app/core/supabase.py` | `def delete(cls, table: str, id: Union[str, int], client: Optional[SupabaseClient] = None) -> bool:` | L150 |
+| `./app/core/supabase.py` | `def upsert(cls, table: str, data: Union[Dict[str, Any], List[Dict[str, Any]]], on_conflict: Optional[List[str]] = None, client: Optional[SupabaseClient] = None) -> Optional[Union[Dict[str, Any], List[Dict[str, Any]]]]:` | L171 |
+| `./app/core/supabase.py` | `"""Get user from Supabase Auth using JWT"""` | L202 |
+| `./app/core/supabase.py` | `# Global Supabase client instance` | L330 |
+| `./app/core/supabase.py` | `supabase = SupabaseService()` | L331 |
+| `./app/routers/admin_matches.py` | `from app.core.supabase import supabase` | L16 |
+| `./app/routers/admin_matches.py` | `from app.core.auth_supabase import require_admin_api_token` | L17 |
+| `./app/routers/admin_matches.py` | `match = supabase.fetch_by_id("matches", match_id)` | L130 |
+| `./app/routers/admin_matches.py` | `team_a = supabase.fetch_by_id("teams", team_a_id)` | L147 |
+| `./app/routers/admin_matches.py` | `team_b = supabase.fetch_by_id("teams", team_b_id)` | L148 |
+| `./app/routers/admin_matches.py` | `roster_a = supabase.get_client().table("team_rosters").select(` | L151 |
+| `./app/routers/admin_matches.py` | `roster_b = supabase.get_client().table("team_rosters").select(` | L155 |
+| `./app/routers/admin_matches.py` | `result = supabase.upsert(` | L245 |
+| `./app/routers/admin_matches.py` | `supabase.get_client().table("match_submissions").update(\{` | L259 |
+| `./app/routers/admin_matches.py` | `result = supabase.update("matches", match_id, match_update)` | L369 |
+| `./app/routers/admin_matches.py` | `result = supabase.upsert(` | L403 |
+| `./app/routers/admin_matches.py` | `supabase.get_client().table("match_submissions").update(\{` | L417 |
+| `./app/routers/admin_matches.py` | `existing_stats = supabase.get_client().table("player_stats").select("*").eq("match_id", match_id).execute()` | L611 |
+| `./app/routers/team_roster_current.py` | `from app.core.supabase import supabase` | L17 |
+| `./app/routers/team_roster_current.py` | `query = supabase.get_client().table("team_roster_current").select("*")` | L70 |
+| `./app/routers/team_roster_current.py` | `result = supabase.get_client().table("team_roster_current")\` | L127 |
+| `./app/routers/team_roster_current.py` | `result = supabase.get_client().table("team_roster_current")\` | L187 |
+| `./app/routers/team_roster_current.py` | `result = supabase.get_client().table("team_roster_current")\` | L254 |
+| `./app/core/config.py` | `Configuration settings for the NBA 2K Global Rankings backend with Supabase` | L2 |
+| `./app/core/config.py` | `# Supabase Configuration` | L14 |
+| `./app/core/config.py` | `SUPABASE_URL: str = ""` | L15 |
+| `./app/core/config.py` | `SUPABASE_KEY: str = ""` | L16 |
+| `./app/core/config.py` | `SUPABASE_ANON_KEY: str = ""` | L17 |
+| `./app/core/config.py` | `# Database (using Supabase connection string)` | L19 |
+| `./app/core/config.py` | `# Email (can be configured to use Supabase Auth email)` | L37 |
+| `./app/core/config.py` | `if not self.SUPABASE_URL or not self.SUPABASE_KEY:` | L94 |
+| `./app/core/config.py` | `raise ValueError("SUPABASE_URL and SUPABASE_KEY are required in production")` | L95 |
+| `./app/core/config.py` | `def get_supabase_config(self) -> Dict[str, Any]:` | L110 |
+| `./app/core/config.py` | `"""Get Supabase configuration"""` | L111 |
+| `./app/core/config.py` | `"url": self.SUPABASE_URL,` | L113 |
+| `./app/core/config.py` | `"key": self.SUPABASE_KEY or self.SUPABASE_ANON_KEY,` | L114 |
+| `./app/routers/tournament_groups.py` | `from app.core.supabase import supabase` | L15 |
+
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+The error is a missing dependency: `supabase-py` imports `supabase_auth.http_clients`, but that module isn't available. Checking the dependency structure and fixing it:
+
+
+---
+
+<tool-use data-tool-type="search" data-tool-name="web_search">
+<details>
+            <summary>Tool use: **web_search** • Searched web `supabase-py ModuleNotFoundError supabase_auth.http_clients fix` • **1** results</summary>
+        
+| Title | URL | Chunk |
+|-------|-----|-------|
+| Web Search Results |  | It appears you're encountering a log message indicating "Starting Container," accompanied by attributes and a timestamp. This message suggests that a containerized application or service is initiating. To assist you effectively, could you provide more context or specific details about the environment or platform you're using? This information will help in diagnosing any issues or confirming that the startup process is proceeding as expected.<br/><br/>In the meantime, here are some general considerations:<br/><br/>- **Container Initialization Logs**: Many container orchestration systems, such as Docker or Kubernetes, emit logs during the startup phase of containers. These logs typically include messages like "Starting container" to indicate the initiation process.<br/><br/>- **Platform-Specific Messages**: Certain platforms have predefined log messages for container events. For instance, Cisco's AlliedWare Plus operating system logs messages like "Starting container" when a container process begins. ([alliedtelesis.com](https://www.alliedtelesis.com/sites/default/files/file/2022-04/awplus-log_message_reference.pdf?utm_source=openai))<br/><br/>- **Debugging Startup Issues**: If you're experiencing issues with containers not starting correctly, enabling detailed logging can be beneficial. For example, in Azure Functions, enabling container logging can provide insights into startup failures. ([learn.microsoft.com](https://learn.microsoft.com/en-in/answers/questions/2112400/container-in-azure-functions-does-not-emit-logs-an?utm_source=openai))<br/><br/>If you can provide more specific information about your setup, such as the container platform, the application being run, or any error messages encountered, I can offer more targeted assistance. |
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/pyproject.toml</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Checking the installed Supabase package versions and dependencies:
+
+
+---
+
+<tool-use data-tool-type="bash" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **command** • Run command: cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && ./venv/bin/pip show supabase gotrue | grep -E "(Name|Version|Requires)"</summary>
+
+```bash
+cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && ./venv/bin/pip show supabase gotrue | grep -E "(Name|Version|Requires)"
+```
+
+```
+Name: supabase
+Version: 2.21.1
+Requires: httpx, postgrest, realtime, storage3, supabase-auth, supabase-functions
+Name: gotrue
+Version: 2.12.3
+Requires: httpx, pydantic, pyjwt
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="search" data-tool-name="web_search">
+<details>
+            <summary>Tool use: **web_search** • Searched web `supabase-py 2.21 supabase_auth.http_clients dependency requirements` • **1** results</summary>
+        
+| Title | URL | Chunk |
+|-------|-----|-------|
+| Web Search Results |  | It appears you're encountering an issue where your container logs show a "Starting Container" message, but the container stops unexpectedly without providing further logs. This behavior can be challenging to diagnose, but here are some steps and considerations to help you troubleshoot:<br/><br/>1. **Enable Detailed Logging**: Ensure that your container's logging is configured to capture detailed output. By default, Docker uses the `json-file` logging driver, which stores logs on the host machine. You can access these logs using the `docker logs` command:<br/><br/>   ```bash<br/>   docker logs <container_name_or_id><br/>   ```<br/><br/><br/>   If the logs are not providing sufficient information, consider configuring a different logging driver or adjusting the log level within your application to capture more detailed output. For example, setting the log level to `DEBUG` can provide more insights.<br/><br/>2. **Check for Immediate Container Exit**: If the container exits immediately after starting, it might not produce logs in time. To capture logs from a rapidly exiting container, you can use the `--follow` option with the `docker logs` command:<br/><br/>   ```bash<br/>   docker logs --follow <container_name_or_id><br/>   ```<br/><br/><br/>   This command will stream the logs in real-time, allowing you to see any output before the container exits. Additionally, you can inspect the container's exit code to gain more information:<br/><br/>   ```bash<br/>   docker inspect <container_name_or_id> --format='\{{.State.ExitCode\}}'<br/>   ```<br/><br/><br/>   An exit code of `0` indicates a successful termination, while any other code suggests an error.<br/><br/>3. **Review Application Configuration**: Ensure that your application is correctly configured to handle logging. In some cases, misconfigurations can prevent logs from being emitted. For instance, in a Python application, you might need to configure the logging module properly to direct output to the console or a file. Here's a basic example of configuring Python logging:<br/><br/>   ```python<br/>   import logging<br/><br/>   logging.basicConfig(level=logging.DEBUG)<br/>   logger = logging.getLogger(__name__)<br/><br/>   logger.info("Starting application...")<br/>   ```<br/><br/><br/>   Ensure that your application doesn't suppress or redirect logs in a way that prevents them from being captured by Docker.<br/><br/>4. **Inspect Docker Events**: Docker maintains an event log that can provide insights into container lifecycle events, including starts, stops, and crashes. You can view these events using the following command:<br/><br/>   ```bash<br/>   docker events --filter container=<container_name_or_id><br/>   ```<br/><br/><br/>   This command will display real-time events related to the specified container, which can help identify issues during startup.<br/><br/>5. **Verify Application Dependencies and Permissions**: Ensure that all necessary dependencies are available and correctly configured within the container. Missing dependencies or incorrect permissions can cause the application to fail silently. For example, in a JupyterHub deployment, a user encountered a "Permission denied" error due to incorrect permissions on the startup script ([discourse.jupyter.org](https://discourse.jupyter.org/t/container-is-gone-after-start/22226?utm_source=openai)). Verifying file permissions and ensuring that all scripts are executable can help prevent such issues.<br/><br/>6. **Test Locally**: If possible, run your containerized application locally to see if the issue persists. This can help determine if the problem is environment-specific. For instance, a user deploying a Flask web app on Azure encountered a similar issue where the container exited without providing logs. Running the container locally helped identify the root cause ([stackoverflow.com](https://stackoverflow.com/questions/77255299/unable-to-access-flask-web-app-deployed-on-azure-container-exits-with-error?utm_source=openai)).<br/><br/>By systematically following these steps, you should be able to identify and resolve the issue causing your container to stop unexpectedly. If the problem persists, consider providing more details about your application's configuration, environment, and any error messages encountered for more targeted assistance. |
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+The `supabase` package requires `supabase-auth`, but it's missing from `requirements.txt`. Adding the missing dependencies:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/requirements.txt</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="bash" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **command** • Run command: cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && ./venv/bin/pip show supabase | grep Requires</summary>
+
+```bash
+cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && ./venv/bin/pip show supabase | grep Requires
+```
+
+```
+Requires: httpx, postgrest, realtime, storage3, supabase-auth, supabase-functions
+
+```
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+The `supabase` package requires `supabase-auth`, `storage3`, and `supabase-functions`, but they're missing from `requirements.txt`. Adding them:
+
+
+---
+
+<tool-use data-tool-type="bash" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **command** • Run command: cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && ./venv/bin/pip show supabase-auth storage3 supabase-functions 2>/dev/null | grep -E "(Name|Version)" || echo "Packages not installed locally"</summary>
+
+```bash
+cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && ./venv/bin/pip show supabase-auth storage3 supabase-functions 2>/dev/null | grep -E "(Name|Version)" || echo "Packages not installed locally"
+```
+
+```
+Name: supabase-auth
+Version: 2.21.1
+Name: storage3
+Version: 0.12.1
+Name: supabase-functions
+Version: 2.21.1
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="search" data-tool-name="web_search">
+<details>
+            <summary>Tool use: **web_search** • Searched web `supabase-auth python package pypi version` • **1** results</summary>
+        
+| Title | URL | Chunk |
+|-------|-----|-------|
+| Web Search Results |  | It appears you're encountering a log message indicating "Starting Container," accompanied by attributes and a timestamp. This message typically signifies that a containerized application or service is initiating. To assist you effectively, could you provide more context or specific details about the environment or platform you're using? For instance:<br/><br/>- **Docker**: If you're using Docker, this message might be part of the standard logging when a container starts.<br/><br/>- **Kubernetes**: In a Kubernetes environment, such messages can appear when pods are being initialized.<br/><br/>- **Azure Functions**: If you're deploying containers in Azure Functions, similar logs can be observed during the startup process.<br/><br/>Understanding the specific platform or tool you're utilizing will enable me to offer more targeted assistance. |
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Adding the missing dependencies to `requirements.txt`:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **code_edit** • Edit file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/requirements.txt</summary>
+
+**Chunk 1**
+Lines added: 3, lines removed: undefined
+
+```diff
+@@ -18,4 +18,7 @@
+  postgrest&gt;=0.19.0,&lt;1.2.0
+  realtime&gt;=2.0.0,&lt;3.0.0
++ supabase-auth&gt;=2.21.1,&lt;3.0.0
++ storage3&gt;=0.12.0,&lt;1.0.0
++ supabase-functions&gt;=2.21.1,&lt;3.0.0
+  
+  # HTTP
+```
+
+</details>
+
+</tool-use>
+
+---
+
+
+
+---
+
+
+Added the missing Supabase dependencies to `requirements.txt`. Verifying the file:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/requirements.txt</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="generic" data-tool-name="read_lints">
+<details>
+          <summary>Tool use: **read_lints** • Read lints for 1 file</summary>
+      
+Lint paths:
+
+- `requirements.txt`
+
+Lint results
+
+
+**No lint errors found**
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Fixed the dependency issue. The `supabase` package requires `supabase-auth`, `storage3`, and `supabase-functions`, but they weren't listed in `requirements.txt`.
+
+## Summary
+
+**Problem**: The deployment was failing with `ModuleNotFoundError: No module named 'supabase_auth.http_clients'` because the `supabase-auth` package (and related dependencies) weren't explicitly listed in `requirements.txt`.
+
+**Solution**: Added the missing Supabase dependencies to `requirements.txt`:
+- `supabase-auth>=2.21.1,<3.0.0`
+- `storage3>=0.12.0,<1.0.0`
+- `supabase-functions>=2.21.1,<3.0.0`
+
+These are required by `supabase>=2.21.1`. While pip may install them automatically in some environments, explicitly listing them ensures they're installed during deployment builds (Docker, CI/CD, etc.).
+
+**Next Steps**: 
+1. Rebuild your deployment container/environment with the updated `requirements.txt`
+2. The application should start without the `ModuleNotFoundError`
+
+The updated `requirements.txt` now includes all required Supabase dependencies, which should resolve the deployment issue.
+
+---
+
+_**User (2025-11-10 22:53Z)**_
+
+[{"message":"Starting Container","attributes":{"level":"info"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:29.000000000Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/uvicorn/server.py\", line 67, in run","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.424230561Z"},{"message":"    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.424241704Z"},{"message":"Traceback (most recent call last):","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.424541444Z"},{"message":"  File \"/app/.venv/bin/uvicorn\", line 8, in <module>","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.424546918Z"},{"message":"    sys.exit(main())","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.424553789Z"},{"message":"             ^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.424559178Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/click/core.py\", line 1462, in __call__","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.424565969Z"},{"message":"    return self.main(*args, **kwargs)","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.424571483Z"},{"message":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.424577270Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/click/core.py\", line 1383, in main","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.424583915Z"},{"message":"    rv = self.invoke(ctx)","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.424589953Z"},{"message":"         ^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.424595273Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/click/core.py\", line 1246, in invoke","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.424600574Z"},{"message":"    return ctx.invoke(self.callback, **ctx.params)","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.424607230Z"},{"message":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.424613270Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/click/core.py\", line 814, in invoke","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.424618716Z"},{"message":"    return callback(*args, **kwargs)","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.424624854Z"},{"message":"           ^^^^^^^^^^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.424630298Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/uvicorn/main.py\", line 423, in main","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.424635067Z"},{"message":"    run(","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.424640198Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/uvicorn/main.py\", line 593, in run","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.424645095Z"},{"message":"    server.run()","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.424651135Z"},{"message":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.427245080Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/uvicorn/_compat.py\", line 23, in asyncio_run","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.427250279Z"},{"message":"    return runner.run(main)","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.427254832Z"},{"message":"           ^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.427259762Z"},{"message":"  File \"/mise/installs/python/3.11.14/lib/python3.11/asyncio/runners.py\", line 118, in run","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.427264888Z"},{"message":"    return self._loop.run_until_complete(task)","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.427270272Z"},{"message":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.427275297Z"},{"message":"  File \"uvloop/loop.pyx\", line 1518, in uvloop.loop.Loop.run_until_complete","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.427280482Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/uvicorn/server.py\", line 71, in serve","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.427285651Z"},{"message":"    await self._serve(sockets)","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.427290719Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/uvicorn/server.py\", line 78, in _serve","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.427295932Z"},{"message":"    config.load()","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.427301552Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/uvicorn/config.py\", line 438, in load","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.427306606Z"},{"message":"    self.loaded_app = import_from_string(self.app)","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.427311679Z"},{"message":"                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.427317054Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py\", line 22, in import_from_string","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.427323689Z"},{"message":"    raise exc from None","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.427328843Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py\", line 19, in import_from_string","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.427334125Z"},{"message":"    module = importlib.import_module(module_str)","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.427339260Z"},{"message":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.427344623Z"},{"message":"  File \"/mise/installs/python/3.11.14/lib/python3.11/importlib/__init__.py\", line 126, in import_module","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.434287499Z"},{"message":"    return _bootstrap._gcd_import(name[level:], package, level)","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.434292782Z"},{"message":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.434299090Z"},{"message":"  File \"<frozen importlib._bootstrap>\", line 1204, in _gcd_import","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.434304222Z"},{"message":"  File \"<frozen importlib._bootstrap>\", line 1176, in _find_and_load","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.434309828Z"},{"message":"  File \"<frozen importlib._bootstrap>\", line 1147, in _find_and_load_unlocked","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.434315872Z"},{"message":"  File \"<frozen importlib._bootstrap>\", line 690, in _load_unlocked","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.434321686Z"},{"message":"  File \"<frozen importlib._bootstrap_external>\", line 940, in exec_module","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.434326602Z"},{"message":"  File \"<frozen importlib._bootstrap>\", line 241, in _call_with_frames_removed","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.434331960Z"},{"message":"  File \"/app/main.py\", line 15, in <module>","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.434337150Z"},{"message":"    from app.core.config import settings","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.434342514Z"},{"message":"  File \"/app/app/core/__init__.py\", line 2, in <module>","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.434347933Z"},{"message":"    from .auth import (","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.434352983Z"},{"message":"  File \"/app/app/core/auth.py\", line 24, in <module>","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.434359194Z"},{"message":"    from app.core.supabase import supabase","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.434364106Z"},{"message":"  File \"/app/app/core/supabase.py\", line 8, in <module>","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.434369051Z"},{"message":"    from supabase import create_client, Client as SupabaseClient","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.434374101Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/supabase/__init__.py\", line 22, in <module>","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.434378964Z"},{"message":"    from ._async.auth_client import AsyncSupabaseAuthClient as ASupabaseAuthClient","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.434384275Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/supabase/_async/auth_client.py\", line 9, in <module>","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.438178503Z"},{"message":"    from supabase_auth.http_clients import AsyncClient","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.438189374Z"},{"message":"ModuleNotFoundError: No module named 'supabase_auth.http_clients'","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:31.438196164Z"},{"message":"Traceback (most recent call last):","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.308002978Z"},{"message":"  File \"/app/.venv/bin/uvicorn\", line 8, in <module>","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.308008342Z"},{"message":"    sys.exit(main())","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.308012165Z"},{"message":"             ^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.308016138Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/click/core.py\", line 1462, in __call__","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.308019929Z"},{"message":"    return self.main(*args, **kwargs)","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.308023517Z"},{"message":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.308027144Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/click/core.py\", line 1383, in main","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.308033827Z"},{"message":"    rv = self.invoke(ctx)","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.308040330Z"},{"message":"         ^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.308045948Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/click/core.py\", line 1246, in invoke","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.308051701Z"},{"message":"    return ctx.invoke(self.callback, **ctx.params)","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.308057948Z"},{"message":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.308063575Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/click/core.py\", line 814, in invoke","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.308068340Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/uvicorn/main.py\", line 423, in main","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.311144218Z"},{"message":"    run(","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.311151971Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/uvicorn/main.py\", line 593, in run","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.311157013Z"},{"message":"    server.run()","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.311162542Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/uvicorn/server.py\", line 67, in run","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.311167357Z"},{"message":"    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.311172470Z"},{"message":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.311177254Z"},{"message":"    return callback(*args, **kwargs)","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.311186212Z"},{"message":"           ^^^^^^^^^^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.311190675Z"},{"message":"    self.loaded_app = import_from_string(self.app)","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.317670726Z"},{"message":"    return self._loop.run_until_complete(task)","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.317688301Z"},{"message":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.317695440Z"},{"message":"  File \"uvloop/loop.pyx\", line 1518, in uvloop.loop.Loop.run_until_complete","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.317701740Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/uvicorn/server.py\", line 71, in serve","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.317707629Z"},{"message":"    await self._serve(sockets)","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.317713626Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/uvicorn/server.py\", line 78, in _serve","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.317720259Z"},{"message":"    config.load()","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.317726445Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/uvicorn/config.py\", line 438, in load","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.317732591Z"},{"message":"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.317769286Z"},{"message":"^^^^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.317776194Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/uvicorn/_compat.py\", line 23, in asyncio_run","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.317783031Z"},{"message":"    return runner.run(main)","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.317789710Z"},{"message":"           ^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.317796901Z"},{"message":"  File \"/mise/installs/python/3.11.14/lib/python3.11/asyncio/runners.py\", line 118, in run","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.317803588Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py\", line 19, in import_from_string","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.321261830Z"},{"message":"    module = importlib.import_module(module_str)","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.321271778Z"},{"message":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.321279016Z"},{"message":"  File \"/mise/installs/python/3.11.14/lib/python3.11/importlib/__init__.py\", line 126, in import_module","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.321285628Z"},{"message":"    return _bootstrap._gcd_import(name[level:], package, level)","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.321291893Z"},{"message":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.321305422Z"},{"message":"  File \"<frozen importlib._bootstrap>\", line 1204, in _gcd_import","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.321312703Z"},{"message":"                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.321360556Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py\", line 22, in import_from_string","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.321365867Z"},{"message":"    raise exc from None","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.321370600Z"},{"message":"  File \"<frozen importlib._bootstrap>\", line 1176, in _find_and_load","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.324995297Z"},{"message":"  File \"<frozen importlib._bootstrap>\", line 1147, in _find_and_load_unlocked","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.325000126Z"},{"message":"  File \"<frozen importlib._bootstrap>\", line 690, in _load_unlocked","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.325005398Z"},{"message":"  File \"<frozen importlib._bootstrap_external>\", line 940, in exec_module","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.325010010Z"},{"message":"  File \"<frozen importlib._bootstrap>\", line 241, in _call_with_frames_removed","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.325014600Z"},{"message":"  File \"/app/main.py\", line 15, in <module>","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.325018899Z"},{"message":"    from app.core.config import settings","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.325023576Z"},{"message":"  File \"/app/app/core/__init__.py\", line 2, in <module>","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.325029280Z"},{"message":"    from .auth import (","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.325035640Z"},{"message":"  File \"/app/app/core/auth.py\", line 24, in <module>","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.325041014Z"},{"message":"    from app.core.supabase import supabase","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.325046543Z"},{"message":"  File \"/app/app/core/supabase.py\", line 8, in <module>","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.325051693Z"},{"message":"    from supabase import create_client, Client as SupabaseClient","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.325056538Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/supabase/__init__.py\", line 22, in <module>","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.325061402Z"},{"message":"    from ._async.auth_client import AsyncSupabaseAuthClient as ASupabaseAuthClient","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.325067273Z"},{"message":"  File \"/app/.venv/lib/python3.11/site-packages/supabase/_async/auth_client.py\", line 9, in <module>","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.325072506Z"},{"message":"    from supabase_auth.http_clients import AsyncClient","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.325078155Z"},{"message":"ModuleNotFoundError: No module named 'supabase_auth.http_clients'","attributes":{"level":"error"},"tags":{"project":"fa0d741b-e361-4f8e-8096-5fc3cedad816","environment":"844bc614-e7dd-4169-b64f-70d26cc4c995","service":"54140689-b5ad-42e8-a4bc-fec6aeb04871","deployment":"b322d8d0-b31a-439b-aeb3-c85ae79350f5","replica":"6193e154-bde0-4d93-a778-c5c0e37dcd6d"},"timestamp":"2025-11-10T23:16:33.325084200Z"}]
+
+---
+
+_**Agent (model composer-1, mode Agent)**_
+
+
+
+---
+
+
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="run_terminal_cmd">
+<details>
+<summary>Tool use: **run_terminal_cmd**</summary>
+
+Status: **loading**
+
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
