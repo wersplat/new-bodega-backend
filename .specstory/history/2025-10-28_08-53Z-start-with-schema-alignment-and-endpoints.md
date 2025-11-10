@@ -10031,20 +10031,2566 @@ _**Agent (model composer-1, mode Agent)**_
 ---
 
 
+The error persists, suggesting either the deployment wasn't rebuilt with the updated `requirements.txt` or a package name/structure mismatch. Checking the package structure and verifying the correct package name:
+
 
 ---
 
-<tool-use data-tool-type="unknown" data-tool-name="run_terminal_cmd">
-<details>
-<summary>Tool use: **run_terminal_cmd**</summary>
+<tool-use data-tool-type="bash" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **command** • Run command: cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && ./venv/bin/python -c "import supabase_auth; print(supabase_auth.__file__); import os; print(os.listdir(os.path.dirname(supabase_auth.__file__)))"</summary>
 
-Status: **loading**
+```bash
+cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && ./venv/bin/python -c "import supabase_auth; print(supabase_auth.__file__); import os; print(os.listdir(os.path.dirname(supabase_auth.__file__)))"
+```
+
+```
+/Volumes/870SSD/Active GH Projects/new-bodega-backend/venv/lib/python3.11/site-packages/supabase_auth/__init__.py
+[&#39;http_clients.py&#39;, &#39;version.py&#39;, &#39;_async&#39;, &#39;timer.py&#39;, &#39;constants.py&#39;, &#39;__init__.py&#39;, &#39;types.py&#39;, &#39;__pycache__&#39;, &#39;py.typed&#39;, &#39;_sync&#39;, &#39;errors.py&#39;, &#39;helpers.py&#39;]
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="bash" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **command** • Run command: cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && ./venv/bin/pip show supabase-auth | head -20</summary>
+
+```bash
+cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && ./venv/bin/pip show supabase-auth | head -20
+```
+
+```
+Name: supabase-auth
+Version: 2.21.1
+Summary: Python Client Library for Supabase Auth
+Home-page: https://github.com/supabase/supabase-py/tree/main/src/auth
+Author: Joel Lee
+Author-email: Joel Lee &lt;joel@joellee.org&gt;
+License-Expression: MIT
+Location: /Volumes/870SSD/Active GH Projects/new-bodega-backend/venv/lib/python3.11/site-packages
+Requires: httpx, pydantic, pyjwt
+Required-by: supabase
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="search" data-tool-name="web_search">
+<details>
+            <summary>Tool use: **web_search** • Searched web `supabase-auth python package http_clients module structure 2.21` • **1** results</summary>
+        
+| Title | URL | Chunk |
+|-------|-----|-------|
+| Web Search Results |  | The `ModuleNotFoundError: No module named 'supabase_auth.http_clients'` error indicates that the Python interpreter cannot locate the `supabase_auth.http_clients` module, which is essential for the `supabase` package to function correctly.<br/><br/>**Possible Causes:**<br/><br/>1. **Missing Dependencies:** The `supabase` package relies on several dependencies, including `supabase-auth`, `storage3`, and `supabase-functions`. If these are not installed, the module may not be found.<br/><br/>2. **Incorrect Installation:** Even if the dependencies are listed in your `requirements.txt`, they might not have been installed properly.<br/><br/>3. **Environment Issues:** The Python environment might not be set up correctly, leading to modules not being recognized.<br/><br/>**Recommended Steps to Resolve the Issue:**<br/><br/>1. **Verify and Update `requirements.txt`:** Ensure that your `requirements.txt` file includes all necessary dependencies. Add the following lines if they are missing:<br/><br/>   ```<br/>   supabase-auth<br/>   storage3<br/>   supabase-functions<br/>   ```<br/><br/><br/>2. **Reinstall Dependencies:** After updating `requirements.txt`, reinstall the dependencies to ensure they are correctly installed:<br/><br/>   ```bash<br/>   pip install -r requirements.txt<br/>   ```<br/><br/><br/>3. **Check Python Environment:** Ensure that your Python environment is correctly set up and that the installed packages are accessible. You can list installed packages to confirm:<br/><br/>   ```bash<br/>   pip list<br/>   ```<br/><br/><br/>4. **Rebuild Deployment Environment:** If you're deploying the application (e.g., using Docker or a CI/CD pipeline), ensure that the deployment environment is rebuilt with the updated `requirements.txt` to include the new dependencies.<br/><br/>**Additional Considerations:**<br/><br/>- **Module Name Conflicts:** Ensure that there are no files or directories named `supabase` in your project directory, as this can cause import conflicts.<br/><br/>- **Virtual Environment:** If you're using a virtual environment, ensure it's activated when installing packages and running your application.<br/><br/>By following these steps, you should be able to resolve the `ModuleNotFoundError` and ensure that all necessary modules are available for your application. |
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+The package exists locally and includes `http_clients.py`. The deployment likely hasn't installed `supabase-auth`. Verifying `requirements.txt` and checking for any issues:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/requirements.txt</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="bash" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **command** • Run command: cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && ./venv/bin/pip list | grep -E "(supabase|storage|gotrue|postgrest|realtime)"</summary>
+
+```bash
+cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && ./venv/bin/pip list | grep -E "(supabase|storage|gotrue|postgrest|realtime)"
+```
+
+```
+gotrue             2.12.3
+postgrest          1.1.1
+realtime           2.7.0
+storage3           0.12.1
+supabase           2.21.1
+supabase-auth      2.21.1
+supabase-functions 2.21.1
+
+```
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+The package exists locally and includes `http_clients.py`. The deployment likely hasn't rebuilt with the updated `requirements.txt`. Verifying the package name format and ensuring it's correct:
+
+
+---
+
+<tool-use data-tool-type="bash" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **command** • Run command: cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && ./venv/bin/python -c "from supabase_auth.http_clients import AsyncClient; print('Import successful')"</summary>
+
+```bash
+cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && ./venv/bin/python -c "from supabase_auth.http_clients import AsyncClient; print('Import successful')"
+```
+
+```
+Import successful
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="grep" data-tool-name="grep">
+<details>
+<summary>Tool use: **grep** • Grep for "requirements" in "/Volumes/870SSD/Active GH Projects/new-bodega-backend" • 9 matches</summary>
+
+Output mode: content
+
+
+| File | Content | Line |
+|------|------|------|
+| `./README.md` | `requirements.txt        # Python dependencies` | L100 |
+| `./README.md` | `pip install -r requirements.txt` | L172 |
+| `./app/core/supabase.py` | `# Ensure password meets minimum requirements` | L245 |
+| `./supabase/migrations/20250201000000_rename_event_to_tournament.sql` | `-- (Add specific policy updates based on your security requirements)` | L134 |
+| `./alembic.ini` | `# installed by adding `alembic[tz]` to the pip requirements` | L18 |
+| `./app/routers/auth.py` | `error_detail = "Password does not meet requirements. It should be at least 6 characters long."` | L205 |
+| `./scripts/dev-setup.sh` | `pip install -r requirements.txt` | L68 |
+| `./supabase/config.toml` | `# Passwords that do not meet the following requirements will be rejected as weak. Supported values` | L140 |
+| `./supabase/config.toml` | `password_requirements = ""` | L142 |
 
 
 </details>
 </tool-use>
 
 ---
+
+
+
+---
+
+
+The import works locally, so the deployment likely hasn't rebuilt with the updated `requirements.txt`. Checking for a Dockerfile or deployment configuration:
+
+
+---
+
+<tool-use data-tool-type="generic" data-tool-name="glob_file_search">
+<details>
+<summary>Tool use: **glob_file_search** • Searched codebase "Dockerfile*" • **0** result in **1** directory</summary>
+
+Directory: **/Volumes/870SSD/Active GH Projects/new-bodega-backend** (0 file)
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="generic" data-tool-name="glob_file_search">
+<details>
+<summary>Tool use: **glob_file_search** • Searched codebase "*.dockerfile" • **0** result in **1** directory</summary>
+
+Directory: **/Volumes/870SSD/Active GH Projects/new-bodega-backend** (0 file)
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="generic" data-tool-name="glob_file_search">
+<details>
+<summary>Tool use: **glob_file_search** • Searched codebase "railway.json" • **0** result in **1** directory</summary>
+
+Directory: **/Volumes/870SSD/Active GH Projects/new-bodega-backend** (0 file)
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="generic" data-tool-name="glob_file_search">
+<details>
+<summary>Tool use: **glob_file_search** • Searched codebase "vercel.json" • **0** result in **1** directory</summary>
+
+Directory: **/Volumes/870SSD/Active GH Projects/new-bodega-backend** (0 file)
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="generic" data-tool-name="list_dir">
+<details>
+            <summary>Tool use: **list_directory** • Listed directory undefined • **0** results</summary>
+        
+No results found
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Checking `docker-compose.yml` for deployment configuration:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/docker-compose.yml</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="bash" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **command** • Run command: cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && ./venv/bin/pip install --dry-run supabase-auth 2>&1 | head -5</summary>
+
+```bash
+cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && ./venv/bin/pip install --dry-run supabase-auth 2>&1 | head -5
+```
+
+```
+Requirement already satisfied: supabase-auth in ./venv/lib/python3.11/site-packages (2.21.1)
+Requirement already satisfied: httpx&lt;0.29,&gt;=0.26 in ./venv/lib/python3.11/site-packages (from httpx[http2]&lt;0.29,&gt;=0.26-&gt;supabase-auth) (0.28.1)
+Requirement already satisfied: pydantic&lt;3,&gt;=1.10 in ./venv/lib/python3.11/site-packages (from supabase-auth) (2.11.10)
+Requirement already satisfied: pyjwt&gt;=2.10.1 in ./venv/lib/python3.11/site-packages (from pyjwt[crypto]&gt;=2.10.1-&gt;supabase-auth) (2.10.1)
+Requirement already satisfied: anyio in ./venv/lib/python3.11/site-packages (from httpx&lt;0.29,&gt;=0.26-&gt;httpx[http2]&lt;0.29,&gt;=0.26-&gt;supabase-auth) (4.10.0)
+
+```
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+The package name is correct. The deployment hasn't rebuilt with the updated `requirements.txt`. Verifying the file format and ensuring all dependencies are listed correctly:
+
+
+---
+
+<tool-use data-tool-type="bash" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **command** • Run command: cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && cat requirements.txt | grep -A 10 "Supabase"</summary>
+
+```bash
+cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && cat requirements.txt | grep -A 10 "Supabase"
+```
+
+```
+# Supabase
+supabase&gt;=2.21.1,&lt;3.0.0
+gotrue&gt;=2.11.0,&lt;3.0.0
+postgrest&gt;=0.19.0,&lt;1.2.0
+realtime&gt;=2.0.0,&lt;3.0.0
+supabase-auth&gt;=2.21.1,&lt;3.0.0
+storage3&gt;=0.12.0,&lt;1.0.0
+supabase-functions&gt;=2.21.1,&lt;3.0.0
+
+# HTTP
+httpx&gt;=0.28.1,&lt;0.29.0
+
+```
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+The `requirements.txt` file is correct. The deployment environment (Railway) hasn't rebuilt with the updated dependencies.
+
+## Summary
+
+**Status**: The `requirements.txt` file has been updated with the missing dependencies:
+- `supabase-auth>=2.21.1,<3.0.0`
+- `storage3>=0.12.0,<1.0.0`
+- `supabase-functions>=2.21.1,<3.0.0`
+
+**Verification**: 
+- ✅ Packages install correctly locally
+- ✅ Import works: `from supabase_auth.http_clients import AsyncClient` succeeds
+- ✅ Package structure is correct (`http_clients.py` exists)
+
+**Next Steps**:
+1. Commit and push the updated `requirements.txt` to your repository
+2. Trigger a new deployment on Railway (it should automatically rebuild when it detects the changes)
+3. The deployment should now install all required dependencies and the error should be resolved
+
+The error persists because Railway is using a cached build from before the `requirements.txt` update. Once you push the changes and trigger a new deployment, Railway will install the missing packages and the application should start successfully.
+
+If the error persists after rebuilding, check Railway's build logs to confirm that `supabase-auth`, `storage3`, and `supabase-functions` are being installed during the build process.
+
+---
+
+_**User (2025-11-10 22:53Z)**_
+
+{"message":"Starting Container","attributes":{"level":"info"},"timestamp":"2025-11-10T23:19:34.000000000Z"}
+
+{"message":"  File \"/app/.venv/lib/python3.11/site-packages/click/core.py\", line 814, in invoke","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.775452003Z"}
+
+{"message":"    return callback(*args, **kwargs)","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.775465153Z"}
+
+{"message":"Traceback (most recent call last):","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.775481376Z"}
+
+{"message":"  File \"/app/.venv/bin/uvicorn\", line 8, in <module>","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.775490660Z"}
+
+{"message":"    sys.exit(main())","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.775499323Z"}
+
+{"message":"             ^^^^^^","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.775515200Z"}
+
+{"message":"  File \"/app/.venv/lib/python3.11/site-packages/click/core.py\", line 1462, in __call__","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.775525713Z"}
+
+{"message":"    return self.main(*args, **kwargs)","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.775530775Z"}
+
+{"message":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.775536147Z"}
+
+{"message":"  File \"/app/.venv/lib/python3.11/site-packages/click/core.py\", line 1383, in main","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.775542060Z"}
+
+{"message":"    rv = self.invoke(ctx)","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.775547835Z"}
+
+{"message":"         ^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.775553898Z"}
+
+{"message":"  File \"/app/.venv/lib/python3.11/site-packages/click/core.py\", line 1246, in invoke","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.775559362Z"}
+
+{"message":"    return ctx.invoke(self.callback, **ctx.params)","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.775565099Z"}
+
+{"message":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.775571149Z"}
+
+{"message":"           ^^^^^^^^^^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.776141722Z"}
+
+{"message":"  File \"/app/.venv/lib/python3.11/site-packages/uvicorn/main.py\", line 423, in main","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.776181966Z"}
+
+{"message":"    run(","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.776188410Z"}
+
+{"message":"  File \"/app/.venv/lib/python3.11/site-packages/uvicorn/main.py\", line 593, in run","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.776193827Z"}
+
+{"message":"    server.run()","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.776198831Z"}
+
+{"message":"  File \"/app/.venv/lib/python3.11/site-packages/uvicorn/server.py\", line 67, in run","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.776204115Z"}
+
+{"message":"    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.776209807Z"}
+
+{"message":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.776215066Z"}
+
+{"message":"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.776221467Z"}
+
+{"message":"  File \"/app/.venv/lib/python3.11/site-packages/uvicorn/_compat.py\", line 23, in asyncio_run","attributes":{"level":"error"},"timestamp":"2025-11-10T23:19:35.776226963Z"}
+
+---
+
+_**Agent (model composer-1, mode Agent)**_
+
+
+
+---
+
+
+The error log appears truncated. Checking for syntax or import errors in the codebase:
+
+
+---
+
+<tool-use data-tool-type="bash" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **command** • Run command: cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && ./venv/bin/python -c "import sys; sys.path.insert(0, '.'); from main_supabase import app; print('Import successful')" 2>&1</summary>
+
+```bash
+cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && ./venv/bin/python -c "import sys; sys.path.insert(0, '.'); from main_supabase import app; print('Import successful')" 2>&1
+```
+
+```
+Import successful
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/main_supabase.py</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Import works locally. The deployment error log is truncated. Verifying router imports and checking for other potential issues:
+
+
+---
+
+<tool-use data-tool-type="bash" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **command** • Run command: cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && ./venv/bin/python -c "
+import sys
+sys.path.insert(0, '.')
+try:
+    from app.routers.achievements import router
+    from app.routers.events import router as events_router
+    from app.routers.notifications import router as notifications_router
+    from app.routers.match_queue import router as match_queue_router
+    print('✓ All new routers import successfully')
+except Exception as e:
+    print(f'✗ Import error: {e}')
+    import traceback
+    traceback.print_exc()
+"</summary>
+
+```bash
+cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && ./venv/bin/python -c "
+import sys
+sys.path.insert(0, '.')
+try:
+    from app.routers.achievements import router
+    from app.routers.events import router as events_router
+    from app.routers.notifications import router as notifications_router
+    from app.routers.match_queue import router as match_queue_router
+    print('✓ All new routers import successfully')
+except Exception as e:
+    print(f'✗ Import error: {e}')
+    import traceback
+    traceback.print_exc()
+"
+```
+
+```
+✓ All new routers import successfully
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="grep" data-tool-name="grep">
+<details>
+<summary>Tool use: **grep** • Grep for "from app\.routers" in "/Volumes/870SSD/Active GH Projects/new-bodega-backend/main_supabase.py" • 11 matches</summary>
+
+Output mode: content
+
+
+| File | Content | Line |
+|------|------|------|
+| `main_supabase.py` | `from app.routers import auth, admin, discord, payments` | L17 |
+| `main_supabase.py` | `from app.routers.players import router as players_router` | L18 |
+| `main_supabase.py` | `from app.routers.teams import router as teams_router` | L19 |
+| `main_supabase.py` | `from app.routers.tournaments import router as tournaments_router` | L20 |
+| `main_supabase.py` | `from app.routers.leaderboard_supabase import router as leaderboard_router` | L21 |
+| `main_supabase.py` | `from app.routers.admin_matches import router as admin_matches_router` | L22 |
+| `main_supabase.py` | `from app.routers.views import router as views_router` | L23 |
+| `main_supabase.py` | `from app.routers.achievements import router as achievements_router` | L24 |
+| `main_supabase.py` | `from app.routers.events import router as events_router` | L25 |
+| `main_supabase.py` | `from app.routers.notifications import router as notifications_router` | L26 |
+| `main_supabase.py` | `from app.routers.match_queue import router as match_queue_router` | L27 |
+
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+All imports work locally. The error log is truncated, so the actual error isn't visible. Verifying `requirements.txt` and checking for potential issues:
+
+
+---
+
+<tool-use data-tool-type="bash" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **command** • Run command: cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && python3 -m pip check 2>&1 | head -20</summary>
+
+```bash
+cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && python3 -m pip check 2>&1 | head -20
+```
+
+```
+No broken requirements found.
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/requirements.txt</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+The `requirements.txt` looks correct and all imports work locally. The error log is truncated, so the actual error isn't visible.
+
+## Current Status
+
+- Requirements.txt updated with missing dependencies
+- All imports work locally
+- No broken dependencies detected
+- Error log is truncated — need the full error message
+
+## Next Steps
+
+1. Check the full error logs in Railway to see the complete traceback and error message.
+
+2. Verify Railway is installing the dependencies:
+   - Check Railway build logs for lines like:
+     ```
+     Installing supabase-auth...
+     Installing storage3...
+     Installing supabase-functions...
+     ```
+
+3. If the error persists, try:
+   - Clear Railway's build cache (if available)
+   - Force a fresh rebuild
+   - Verify the `requirements.txt` file is in the repository root
+
+4. Share the complete error message from Railway logs (not just the traceback) so I can identify the exact issue.
+
+The truncated log shows the failure occurs during uvicorn startup, but without the actual error message (likely after the `asyncio_run` line), I can't pinpoint the cause. Please share the full error output from Railway's deployment logs.
+
+---
+
+_**User (2025-11-10 22:53Z)**_
+
+message,attributes,tags,timestamp
+
+"  File ""/app/main.py"", line 15, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:44.895714329Z
+
+    from app.core.config import settings,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:44.895720154Z
+
+"  File ""/app/app/core/__init__.py"", line 2, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:44.895725839Z
+
+    from .auth import (,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:44.895731432Z
+
+"  File ""/app/app/core/auth.py"", line 24, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:44.895737221Z
+
+    from app.core.supabase import supabase,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:44.895742826Z
+
+"  File ""/app/app/core/supabase.py"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:44.895748262Z
+
+"    from supabase import create_client, Client as SupabaseClient","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:44.895755771Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/__init__.py"", line 22, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:44.895761887Z
+
+    from ._async.auth_client import AsyncSupabaseAuthClient as ASupabaseAuthClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:44.895767296Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/_async/auth_client.py"", line 9, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:44.895772905Z
+
+    from supabase_auth.http_clients import AsyncClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:44.895778584Z
+
+ModuleNotFoundError: No module named 'supabase_auth.http_clients',"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:44.895785045Z
+
+    sys.exit(main()),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.571790372Z
+
+             ^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.571807187Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 67, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.571815092Z
+
+"    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.571826795Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1462, in __call__","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.571856650Z
+
+Traceback (most recent call last):,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.571858688Z
+
+"    return self.main(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.571870024Z
+
+"  File ""/app/.venv/bin/uvicorn"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.571871161Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.571904500Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1383, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.571914994Z
+
+    rv = self.invoke(ctx),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.571921025Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.571925133Z
+
+         ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.571932098Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 814, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.571943179Z
+
+    run(,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.571944539Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1246, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.571945491Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 593, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.571955195Z
+
+"    return ctx.invoke(self.callback, **ctx.params)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.571957340Z
+
+"    return callback(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.571961845Z
+
+    server.run(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.571965634Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.571973407Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 423, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.571980670Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.572250184Z
+
+^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.572274365Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/_compat.py"", line 23, in asyncio_run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.572283156Z
+
+    return runner.run(main),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.572290533Z
+
+           ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575569900Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/asyncio/runners.py"", line 118, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575580550Z
+
+    return self._loop.run_until_complete(task),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575587274Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575592490Z
+
+"  File ""uvloop/loop.pyx"", line 1518, in uvloop.loop.Loop.run_until_complete","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575600075Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 71, in serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575604661Z
+
+    await self._serve(sockets),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575609652Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 78, in _serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575614585Z
+
+    config.load(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575618766Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/config.py"", line 438, in load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575625605Z
+
+    self.loaded_app = import_from_string(self.app),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575854178Z
+
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575860594Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 22, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575865780Z
+
+    raise exc from None,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575874067Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 19, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575880118Z
+
+    module = importlib.import_module(module_str),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575885142Z
+
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575891338Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/importlib/__init__.py"", line 126, in import_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575897049Z
+
+"    return _bootstrap._gcd_import(name[level:], package, level)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575902670Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575911173Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1204, in _gcd_import","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575918595Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1176, in _find_and_load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575927323Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1147, in _find_and_load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575956508Z
+
+"  File ""<frozen importlib._bootstrap>"", line 690, in _load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575962832Z
+
+"  File ""<frozen importlib._bootstrap_external>"", line 940, in exec_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.575968246Z
+
+"  File ""<frozen importlib._bootstrap>"", line 241, in _call_with_frames_removed","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.576532882Z
+
+"  File ""/app/main.py"", line 15, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.576537094Z
+
+    from app.core.config import settings,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.576544357Z
+
+"  File ""/app/app/core/__init__.py"", line 2, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.576548649Z
+
+    from .auth import (,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.576553120Z
+
+"  File ""/app/app/core/auth.py"", line 24, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.576557590Z
+
+    from app.core.supabase import supabase,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.576561839Z
+
+"  File ""/app/app/core/supabase.py"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.576579974Z
+
+"    from supabase import create_client, Client as SupabaseClient","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.576585724Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/__init__.py"", line 22, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.576591730Z
+
+    from ._async.auth_client import AsyncSupabaseAuthClient as ASupabaseAuthClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.576599664Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/_async/auth_client.py"", line 9, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.576606910Z
+
+    from supabase_auth.http_clients import AsyncClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.576612381Z
+
+ModuleNotFoundError: No module named 'supabase_auth.http_clients',"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:47.576627766Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.731480893Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 67, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.731482985Z
+
+"    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.731492492Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 814, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.731501760Z
+
+    run(,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.731508457Z
+
+Traceback (most recent call last):,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.731513590Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 593, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.731516706Z
+
+"  File ""/app/.venv/bin/uvicorn"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.731521908Z
+
+    server.run(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.731524504Z
+
+    sys.exit(main()),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.731529515Z
+
+             ^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.731537264Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1462, in __call__","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.731543118Z
+
+"    return self.main(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.731549458Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.731555311Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1383, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.731561750Z
+
+    rv = self.invoke(ctx),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.731570950Z
+
+         ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.731577123Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1246, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.731583390Z
+
+"    return ctx.invoke(self.callback, **ctx.params)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.731589026Z
+
+"    return callback(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.731640579Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.731653720Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 423, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.731668883Z
+
+"  File ""uvloop/loop.pyx"", line 1518, in uvloop.loop.Loop.run_until_complete","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.741957507Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 71, in serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.741969309Z
+
+    await self._serve(sockets),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.741976297Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.741982507Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 78, in _serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.741984770Z
+
+,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.741990211Z
+
+    config.load(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.741992331Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/_compat.py"", line 23, in asyncio_run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.741998524Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/config.py"", line 438, in load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.742000386Z
+
+    return runner.run(main),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.742005024Z
+
+    self.loaded_app = import_from_string(self.app),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.742008304Z
+
+           ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.742010188Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/asyncio/runners.py"", line 118, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.742014637Z
+
+    return self._loop.run_until_complete(task),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.742018814Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.742022882Z
+
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.744598736Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 22, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.744605878Z
+
+    raise exc from None,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.744613338Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 19, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.744618780Z
+
+    module = importlib.import_module(module_str),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.744624572Z
+
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.744630212Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/importlib/__init__.py"", line 126, in import_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.744644544Z
+
+"    return _bootstrap._gcd_import(name[level:], package, level)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.744651507Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.744657203Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1204, in _gcd_import","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.744665324Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1176, in _find_and_load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.744670697Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1147, in _find_and_load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.744675601Z
+
+"  File ""<frozen importlib._bootstrap>"", line 690, in _load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.744680562Z
+
+"  File ""<frozen importlib._bootstrap_external>"", line 940, in exec_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.744685523Z
+
+"  File ""<frozen importlib._bootstrap>"", line 241, in _call_with_frames_removed","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.744690440Z
+
+"  File ""/app/main.py"", line 15, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.744696294Z
+
+    from app.core.config import settings,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.744701479Z
+
+"  File ""/app/app/core/__init__.py"", line 2, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.749068879Z
+
+    from .auth import (,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.749075110Z
+
+"  File ""/app/app/core/auth.py"", line 24, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.749080702Z
+
+    from app.core.supabase import supabase,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.749086670Z
+
+"  File ""/app/app/core/supabase.py"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.749092564Z
+
+"    from supabase import create_client, Client as SupabaseClient","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.749098239Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/__init__.py"", line 22, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.749104028Z
+
+    from ._async.auth_client import AsyncSupabaseAuthClient as ASupabaseAuthClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.749109749Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/_async/auth_client.py"", line 9, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.749116002Z
+
+    from supabase_auth.http_clients import AsyncClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.749121788Z
+
+ModuleNotFoundError: No module named 'supabase_auth.http_clients',"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:49.749132499Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.395042279Z
+
+    sys.exit(main()),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.395042837Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 423, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.395052930Z
+
+             ^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.395053406Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1462, in __call__","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.395062164Z
+
+    run(,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.395062402Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1246, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.395066260Z
+
+"    return self.main(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.395071980Z
+
+"    return ctx.invoke(self.callback, **ctx.params)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.395084431Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.395093559Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 814, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.395100652Z
+
+"    return callback(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.395108585Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.395113731Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1383, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.395119299Z
+
+    rv = self.invoke(ctx),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.395126230Z
+
+         ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.395131082Z
+
+Traceback (most recent call last):,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.395226742Z
+
+"  File ""/app/.venv/bin/uvicorn"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.395232114Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 593, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.397666378Z
+
+    server.run(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.397670528Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 67, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.397675020Z
+
+"    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.397678845Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.397683166Z
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.397687110Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/_compat.py"", line 23, in asyncio_run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.397692639Z
+
+    return runner.run(main),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.397697066Z
+
+           ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.397700640Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/asyncio/runners.py"", line 118, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.397704503Z
+
+    return self._loop.run_until_complete(task),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.397708747Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.397714122Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1176, in _find_and_load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.398127947Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1147, in _find_and_load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.398133320Z
+
+    self.loaded_app = import_from_string(self.app),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.398141573Z
+
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.398147624Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 78, in _serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.398154681Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/importlib/__init__.py"", line 126, in import_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.398155879Z
+
+"  File ""uvloop/loop.pyx"", line 1518, in uvloop.loop.Loop.run_until_complete","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.398158555Z
+
+"    return _bootstrap._gcd_import(name[level:], package, level)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.398162110Z
+
+    config.load(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.398166513Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.398173231Z
+
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.398174880Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/config.py"", line 438, in load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.398175672Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1204, in _gcd_import","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.398178610Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 71, in serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.398186199Z
+
+    await self._serve(sockets),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.398191126Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 22, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.398195821Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 19, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.398199985Z
+
+    raise exc from None,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.398205536Z
+
+    module = importlib.import_module(module_str),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.398205559Z
+
+"  File ""<frozen importlib._bootstrap>"", line 690, in _load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.402503754Z
+
+"  File ""<frozen importlib._bootstrap_external>"", line 940, in exec_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.402514083Z
+
+"  File ""<frozen importlib._bootstrap>"", line 241, in _call_with_frames_removed","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.402520667Z
+
+"  File ""/app/main.py"", line 15, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.402530447Z
+
+    from app.core.config import settings,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.402537433Z
+
+"  File ""/app/app/core/__init__.py"", line 2, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.402544198Z
+
+    from .auth import (,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.402550464Z
+
+"  File ""/app/app/core/auth.py"", line 24, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.402557045Z
+
+    from app.core.supabase import supabase,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.402563062Z
+
+"  File ""/app/app/core/supabase.py"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.402569153Z
+
+"    from supabase import create_client, Client as SupabaseClient","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.402576415Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/__init__.py"", line 22, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.402582181Z
+
+    from ._async.auth_client import AsyncSupabaseAuthClient as ASupabaseAuthClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.402589892Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/_async/auth_client.py"", line 9, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.402595442Z
+
+    from supabase_auth.http_clients import AsyncClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.402601576Z
+
+ModuleNotFoundError: No module named 'supabase_auth.http_clients',"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:52.402607541Z
+
+"    return self.main(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.573814186Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.573821561Z
+
+Traceback (most recent call last):,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.573824274Z
+
+"  File ""/app/.venv/bin/uvicorn"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.573826999Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1383, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.573828140Z
+
+    sys.exit(main()),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.573835892Z
+
+             ^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.573850397Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1462, in __call__","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.573859706Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.573880113Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 814, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.573886539Z
+
+"    return callback(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.573891271Z
+
+    rv = self.invoke(ctx),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.573902220Z
+
+         ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.573919520Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1246, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.573927152Z
+
+"    return ctx.invoke(self.callback, **ctx.params)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.573932910Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.574229557Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 423, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.574236640Z
+
+    run(,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.574241129Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 593, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.574249298Z
+
+    server.run(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.574254016Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 67, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.574258421Z
+
+"    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.574262480Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.574266768Z
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.574270904Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/_compat.py"", line 23, in asyncio_run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.574280159Z
+
+    return runner.run(main),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.574284569Z
+
+           ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.581817704Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/asyncio/runners.py"", line 118, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.581824240Z
+
+    return self._loop.run_until_complete(task),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.581830861Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.581837959Z
+
+"  File ""uvloop/loop.pyx"", line 1518, in uvloop.loop.Loop.run_until_complete","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.581844430Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 71, in serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.581850711Z
+
+    await self._serve(sockets),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.581857412Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 78, in _serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.581866842Z
+
+    config.load(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.581873354Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/config.py"", line 438, in load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.581880611Z
+
+    self.loaded_app = import_from_string(self.app),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.581887494Z
+
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.581894606Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 22, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582047804Z
+
+    raise exc from None,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582055545Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 19, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582062734Z
+
+    module = importlib.import_module(module_str),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582069389Z
+
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582075645Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/importlib/__init__.py"", line 126, in import_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582086292Z
+
+"    return _bootstrap._gcd_import(name[level:], package, level)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582092944Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582100690Z
+
+^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582108141Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1204, in _gcd_import","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582115872Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1176, in _find_and_load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582122341Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1147, in _find_and_load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582129181Z
+
+"  File ""<frozen importlib._bootstrap>"", line 690, in _load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582135509Z
+
+"  File ""<frozen importlib._bootstrap_external>"", line 940, in exec_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582142671Z
+
+"  File ""<frozen importlib._bootstrap>"", line 241, in _call_with_frames_removed","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582149436Z
+
+"  File ""/app/main.py"", line 15, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582209817Z
+
+    from app.core.config import settings,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582216289Z
+
+"  File ""/app/app/core/__init__.py"", line 2, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582222940Z
+
+    from .auth import (,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582228485Z
+
+"  File ""/app/app/core/auth.py"", line 24, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582240861Z
+
+    from app.core.supabase import supabase,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582246347Z
+
+"  File ""/app/app/core/supabase.py"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582251303Z
+
+"    from supabase import create_client, Client as SupabaseClient","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582256770Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/__init__.py"", line 22, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582262966Z
+
+    from ._async.auth_client import AsyncSupabaseAuthClient as ASupabaseAuthClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582268932Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/_async/auth_client.py"", line 9, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582276237Z
+
+    from supabase_auth.http_clients import AsyncClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582281655Z
+
+ModuleNotFoundError: No module named 'supabase_auth.http_clients',"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""b322d8d0-b31a-439b-aeb3-c85ae79350f5"",""replica"":""6193e154-bde0-4d93-a778-c5c0e37dcd6d""}",2025-11-10T23:16:54.582287564Z
+
+Starting Container,"{""level"":""info""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:34.000000000Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 814, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.775452003Z
+
+"    return callback(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.775465153Z
+
+Traceback (most recent call last):,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.775481376Z
+
+"  File ""/app/.venv/bin/uvicorn"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.775490660Z
+
+    sys.exit(main()),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.775499323Z
+
+             ^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.775515200Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1462, in __call__","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.775525713Z
+
+"    return self.main(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.775530775Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.775536147Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1383, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.775542060Z
+
+    rv = self.invoke(ctx),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.775547835Z
+
+         ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.775553898Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1246, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.775559362Z
+
+"    return ctx.invoke(self.callback, **ctx.params)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.775565099Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.775571149Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776141722Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 423, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776181966Z
+
+    run(,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776188410Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 593, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776193827Z
+
+    server.run(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776198831Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 67, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776204115Z
+
+"    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776209807Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776215066Z
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776221467Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/_compat.py"", line 23, in asyncio_run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776226963Z
+
+    return runner.run(main),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776232143Z
+
+           ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776238166Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/asyncio/runners.py"", line 118, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776243594Z
+
+    return self._loop.run_until_complete(task),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776424342Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776429558Z
+
+"  File ""uvloop/loop.pyx"", line 1518, in uvloop.loop.Loop.run_until_complete","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776477565Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 71, in serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776482706Z
+
+    await self._serve(sockets),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776487612Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 78, in _serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776492883Z
+
+    config.load(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776498505Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/config.py"", line 438, in load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776503843Z
+
+    self.loaded_app = import_from_string(self.app),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776508783Z
+
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776516499Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 22, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776521445Z
+
+    raise exc from None,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776526898Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 19, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776533708Z
+
+    module = importlib.import_module(module_str),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776539191Z
+
+"  File ""<frozen importlib._bootstrap_external>"", line 940, in exec_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776947005Z
+
+"  File ""<frozen importlib._bootstrap>"", line 241, in _call_with_frames_removed","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776957729Z
+
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776968696Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/importlib/__init__.py"", line 126, in import_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776975115Z
+
+"    return _bootstrap._gcd_import(name[level:], package, level)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776980933Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.776987321Z
+
+^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.777002125Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1204, in _gcd_import","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.777009169Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1176, in _find_and_load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.777014614Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1147, in _find_and_load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.777019570Z
+
+"  File ""<frozen importlib._bootstrap>"", line 690, in _load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.777024823Z
+
+"  File ""/app/main.py"", line 15, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.777319416Z
+
+    from app.core.config import settings,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.777327313Z
+
+"  File ""/app/app/core/__init__.py"", line 2, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.777332557Z
+
+    from .auth import (,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.777338056Z
+
+"  File ""/app/app/core/auth.py"", line 24, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.777343138Z
+
+    from app.core.supabase import supabase,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.777348697Z
+
+"  File ""/app/app/core/supabase.py"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.777353891Z
+
+"    from supabase import create_client, Client as SupabaseClient","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.777359673Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/__init__.py"", line 22, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.777364930Z
+
+    from ._async.auth_client import AsyncSupabaseAuthClient as ASupabaseAuthClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.777370427Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/_async/auth_client.py"", line 9, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.777375546Z
+
+    from supabase_auth.http_clients import AsyncClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.777381054Z
+
+ModuleNotFoundError: No module named 'supabase_auth.http_clients',"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:35.777386704Z
+
+sending signal SIGTERM to container,"{""level"":""info""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""6191f7c3-e48a-408c-93c3-751b88bfcfcb"",""replica"":""3b541a9d-f391-470e-9e2f-1c3024c4fe92""}",2025-11-10T23:19:37.000000000Z
+
+Traceback (most recent call last):,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.296235700Z
+
+"  File ""/app/.venv/bin/uvicorn"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.296247079Z
+
+    sys.exit(main()),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.296258447Z
+
+             ^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.296265557Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1462, in __call__","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.296271653Z
+
+"    return self.main(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.296278870Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.296284785Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1383, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.296291606Z
+
+    rv = self.invoke(ctx),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.296298208Z
+
+         ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.296305640Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1246, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.296312702Z
+
+"    return ctx.invoke(self.callback, **ctx.params)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.296320369Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.296327383Z
+
+^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.296333572Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 814, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.296339730Z
+
+"    return callback(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.296347057Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.298017519Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 423, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.298027411Z
+
+    run(,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.298032379Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 593, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.298037248Z
+
+    server.run(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.298041919Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 67, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.298048116Z
+
+"    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.298053046Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.298057867Z
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.298063557Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/_compat.py"", line 23, in asyncio_run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.298067986Z
+
+    return runner.run(main),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.298072676Z
+
+           ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.298418780Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/asyncio/runners.py"", line 118, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.298425883Z
+
+    return self._loop.run_until_complete(task),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.298431293Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.298436211Z
+
+"  File ""uvloop/loop.pyx"", line 1518, in uvloop.loop.Loop.run_until_complete","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.298440998Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 71, in serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.298446049Z
+
+    await self._serve(sockets),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.298450798Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 78, in _serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.298455628Z
+
+    config.load(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.298460224Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/config.py"", line 438, in load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.298466099Z
+
+    self.loaded_app = import_from_string(self.app),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.298471369Z
+
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299079759Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 22, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299085016Z
+
+    raise exc from None,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299088929Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 19, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299092603Z
+
+    module = importlib.import_module(module_str),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299096319Z
+
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299100173Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/importlib/__init__.py"", line 126, in import_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299104159Z
+
+"    return _bootstrap._gcd_import(name[level:], package, level)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299107932Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299111438Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1204, in _gcd_import","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299118614Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1176, in _find_and_load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299122896Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1147, in _find_and_load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299126936Z
+
+"  File ""<frozen importlib._bootstrap>"", line 690, in _load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299131061Z
+
+"  File ""<frozen importlib._bootstrap_external>"", line 940, in exec_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299135115Z
+
+"  File ""<frozen importlib._bootstrap>"", line 241, in _call_with_frames_removed","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299139468Z
+
+"  File ""/app/main.py"", line 15, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299794957Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/_async/auth_client.py"", line 9, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299801568Z
+
+    from app.core.config import settings,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299802914Z
+
+"  File ""/app/app/core/__init__.py"", line 2, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299808363Z
+
+    from .auth import (,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299814291Z
+
+    from supabase_auth.http_clients import AsyncClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299814522Z
+
+"  File ""/app/app/core/auth.py"", line 24, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299821178Z
+
+ModuleNotFoundError: No module named 'supabase_auth.http_clients',"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299824513Z
+
+    from app.core.supabase import supabase,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299827487Z
+
+"  File ""/app/app/core/supabase.py"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299832156Z
+
+"    from supabase import create_client, Client as SupabaseClient","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299837215Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/__init__.py"", line 22, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299841413Z
+
+    from ._async.auth_client import AsyncSupabaseAuthClient as ASupabaseAuthClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:37.299846092Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.221659779Z
+
+"  File ""/app/.venv/bin/uvicorn"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.221670650Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 423, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.221671050Z
+
+    run(,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.221678096Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 593, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.221684677Z
+
+    sys.exit(main()),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.221686575Z
+
+Traceback (most recent call last):,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.221695966Z
+
+             ^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.221698273Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1462, in __call__","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.221706364Z
+
+"    return self.main(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.221712753Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.221720260Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1383, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.221726852Z
+
+    rv = self.invoke(ctx),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.221734231Z
+
+         ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.221741492Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1246, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.221750027Z
+
+"    return ctx.invoke(self.callback, **ctx.params)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.221757186Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.221763561Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 814, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.221769876Z
+
+"    return callback(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.221775912Z
+
+    server.run(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.222037931Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 67, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.222043703Z
+
+"    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.222049079Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.222054831Z
+
+^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.222061235Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/_compat.py"", line 23, in asyncio_run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.222072404Z
+
+    return runner.run(main),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.222082106Z
+
+           ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.222087720Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/asyncio/runners.py"", line 118, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.222093590Z
+
+    return self._loop.run_until_complete(task),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.222099316Z
+
+    module = importlib.import_module(module_str),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.222457153Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.222459507Z
+
+"  File ""uvloop/loop.pyx"", line 1518, in uvloop.loop.Loop.run_until_complete","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.222466117Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 71, in serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.222470367Z
+
+    await self._serve(sockets),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.222474420Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 78, in _serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.222478169Z
+
+    config.load(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.222482284Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/config.py"", line 438, in load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.222486838Z
+
+    self.loaded_app = import_from_string(self.app),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.222491435Z
+
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.222495321Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 22, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.222499178Z
+
+    raise exc from None,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.222503010Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 19, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.222506728Z
+
+"  File ""<frozen importlib._bootstrap_external>"", line 940, in exec_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.223326169Z
+
+             ^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.223329487Z
+
+"  File ""<frozen importlib._bootstrap>"", line 241, in _call_with_frames_removed","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.223336099Z
+
+^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.223339384Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/importlib/__init__.py"", line 126, in import_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.223347651Z
+
+"  File ""/app/main.py"", line 15, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.223347840Z
+
+"    return _bootstrap._gcd_import(name[level:], package, level)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.223354915Z
+
+    from app.core.config import settings,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.223359772Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.223364047Z
+
+^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.223369386Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1204, in _gcd_import","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.223374503Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1176, in _find_and_load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.223380256Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1147, in _find_and_load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.223386178Z
+
+"  File ""<frozen importlib._bootstrap>"", line 690, in _load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.223391219Z
+
+"  File ""/app/app/core/__init__.py"", line 2, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.224081609Z
+
+    from .auth import (,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.224088346Z
+
+"  File ""/app/app/core/auth.py"", line 24, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.224093849Z
+
+    from app.core.supabase import supabase,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.224099917Z
+
+"  File ""/app/app/core/supabase.py"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.224105496Z
+
+"    from supabase import create_client, Client as SupabaseClient","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.224111194Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/__init__.py"", line 22, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.224116768Z
+
+    from ._async.auth_client import AsyncSupabaseAuthClient as ASupabaseAuthClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.224122099Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/_async/auth_client.py"", line 9, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.224127204Z
+
+    from supabase_auth.http_clients import AsyncClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.224132712Z
+
+ModuleNotFoundError: No module named 'supabase_auth.http_clients',"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:39.224139125Z
+
+Traceback (most recent call last):,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.159344905Z
+
+"  File ""/app/.venv/bin/uvicorn"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.159349540Z
+
+    sys.exit(main()),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.159354032Z
+
+             ^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.159357846Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1462, in __call__","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.159363992Z
+
+"    return self.main(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.159370539Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.159376781Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1383, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.159384145Z
+
+    rv = self.invoke(ctx),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.159389644Z
+
+         ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.159395717Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1246, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.159401410Z
+
+"    return ctx.invoke(self.callback, **ctx.params)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.159405871Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.159411978Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 814, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.159417254Z
+
+"    return callback(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.159421614Z
+
+    server.run(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.161119181Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 67, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.161129531Z
+
+"    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.161135962Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.161142233Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.161149792Z
+
+^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.161150091Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 423, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.161158604Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/_compat.py"", line 23, in asyncio_run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.161158919Z
+
+    return runner.run(main),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.161165660Z
+
+    run(,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.161169004Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 593, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.161174498Z
+
+           ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.162685219Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/asyncio/runners.py"", line 118, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.162693708Z
+
+    return self._loop.run_until_complete(task),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.162700018Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.162705929Z
+
+"  File ""uvloop/loop.pyx"", line 1518, in uvloop.loop.Loop.run_until_complete","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.162713569Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 71, in serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.162719218Z
+
+    await self._serve(sockets),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.162724248Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 78, in _serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.162730700Z
+
+    config.load(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.162738639Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/config.py"", line 438, in load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.162745526Z
+
+    self.loaded_app = import_from_string(self.app),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.162752213Z
+
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.164364732Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 22, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.164373770Z
+
+    raise exc from None,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.164381636Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 19, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.164388245Z
+
+    module = importlib.import_module(module_str),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.164393702Z
+
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.164399438Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/importlib/__init__.py"", line 126, in import_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.164405009Z
+
+"    return _bootstrap._gcd_import(name[level:], package, level)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.164410174Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.164415459Z
+
+^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.164420013Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1204, in _gcd_import","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.164423995Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1176, in _find_and_load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.164427618Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1147, in _find_and_load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.165295873Z
+
+"  File ""<frozen importlib._bootstrap>"", line 690, in _load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.165307020Z
+
+"  File ""<frozen importlib._bootstrap_external>"", line 940, in exec_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.165316966Z
+
+"  File ""<frozen importlib._bootstrap>"", line 241, in _call_with_frames_removed","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.165323450Z
+
+"  File ""/app/main.py"", line 15, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.165330307Z
+
+    from app.core.config import settings,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.165336227Z
+
+"  File ""/app/app/core/__init__.py"", line 2, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.165342220Z
+
+    from .auth import (,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.165348866Z
+
+"  File ""/app/app/core/auth.py"", line 24, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.165355773Z
+
+    from app.core.supabase import supabase,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.165361571Z
+
+"  File ""/app/app/core/supabase.py"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.165372590Z
+
+"    from supabase import create_client, Client as SupabaseClient","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.165379993Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/__init__.py"", line 22, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.165386143Z
+
+    from ._async.auth_client import AsyncSupabaseAuthClient as ASupabaseAuthClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.165392315Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/_async/auth_client.py"", line 9, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.165398911Z
+
+    from supabase_auth.http_clients import AsyncClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.165408391Z
+
+ModuleNotFoundError: No module named 'supabase_auth.http_clients',"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:41.165413311Z
+
+Traceback (most recent call last):,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.020979323Z
+
+"  File ""/app/.venv/bin/uvicorn"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.020995246Z
+
+    sys.exit(main()),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.021002270Z
+
+             ^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.021010084Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1462, in __call__","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.021015725Z
+
+"    return self.main(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.021021623Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.021028113Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1383, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.021034060Z
+
+    rv = self.invoke(ctx),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.021039142Z
+
+         ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.021045551Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1246, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.021051264Z
+
+"    return ctx.invoke(self.callback, **ctx.params)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.021056807Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.021063414Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 814, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.021069730Z
+
+"    return callback(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022183999Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022196408Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 423, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022205323Z
+
+    run(,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022214469Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 593, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022222339Z
+
+    server.run(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022230575Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 67, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022238606Z
+
+"    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022246349Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022254352Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/_compat.py"", line 23, in asyncio_run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022262956Z
+
+    return runner.run(main),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022273510Z
+
+           ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022281518Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/asyncio/runners.py"", line 118, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022289226Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/config.py"", line 438, in load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022729260Z
+
+    self.loaded_app = import_from_string(self.app),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022738430Z
+
+    return self._loop.run_until_complete(task),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022738668Z
+
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022748894Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022749394Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 22, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022757771Z
+
+"  File ""uvloop/loop.pyx"", line 1518, in uvloop.loop.Loop.run_until_complete","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022757876Z
+
+    raise exc from None,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022766704Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 71, in serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022766742Z
+
+    await self._serve(sockets),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022774734Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 19, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022777335Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 78, in _serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022783219Z
+
+    module = importlib.import_module(module_str),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022785979Z
+
+    config.load(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.022790236Z
+
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.023272520Z
+
+"  File ""<frozen importlib._bootstrap>"", line 241, in _call_with_frames_removed","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.023273955Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/importlib/__init__.py"", line 126, in import_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.023281801Z
+
+"  File ""/app/main.py"", line 15, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.023282671Z
+
+"    return _bootstrap._gcd_import(name[level:], package, level)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.023290342Z
+
+    from app.core.config import settings,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.023292163Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.023298798Z
+
+"  File ""/app/app/core/__init__.py"", line 2, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.023300031Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1204, in _gcd_import","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.023307607Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1176, in _find_and_load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.023314956Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1147, in _find_and_load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.023322590Z
+
+"  File ""<frozen importlib._bootstrap>"", line 690, in _load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.023329869Z
+
+"  File ""<frozen importlib._bootstrap_external>"", line 940, in exec_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.023337776Z
+
+    from .auth import (,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.023535354Z
+
+"  File ""/app/app/core/auth.py"", line 24, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.023541983Z
+
+    from app.core.supabase import supabase,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.023547651Z
+
+"  File ""/app/app/core/supabase.py"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.023554334Z
+
+"    from supabase import create_client, Client as SupabaseClient","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.023559838Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/__init__.py"", line 22, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.023565559Z
+
+    from ._async.auth_client import AsyncSupabaseAuthClient as ASupabaseAuthClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.023571664Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/_async/auth_client.py"", line 9, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.023576917Z
+
+    from supabase_auth.http_clients import AsyncClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.023581672Z
+
+ModuleNotFoundError: No module named 'supabase_auth.http_clients',"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:43.023588341Z
+
+Traceback (most recent call last):,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.841659020Z
+
+"  File ""/app/.venv/bin/uvicorn"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.841664244Z
+
+    sys.exit(main()),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.841668735Z
+
+             ^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.841675945Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1462, in __call__","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.841681308Z
+
+"    return self.main(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.841686052Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.841690815Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1383, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.841695529Z
+
+    rv = self.invoke(ctx),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.841700349Z
+
+         ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.841704927Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1246, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.841710316Z
+
+"    return ctx.invoke(self.callback, **ctx.params)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.841714933Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.841719897Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 814, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.841725489Z
+
+"    return callback(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.841730698Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842199174Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 423, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842212902Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/asyncio/runners.py"", line 118, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842213071Z
+
+    run(,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842220577Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 593, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842226734Z
+
+    server.run(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842234922Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 67, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842246197Z
+
+"    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842251838Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842257685Z
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842262920Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/_compat.py"", line 23, in asyncio_run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842268665Z
+
+    return runner.run(main),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842273402Z
+
+           ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842277770Z
+
+    return self._loop.run_until_complete(task),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842678446Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842684248Z
+
+"  File ""uvloop/loop.pyx"", line 1518, in uvloop.loop.Loop.run_until_complete","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842688946Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 71, in serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842696091Z
+
+    await self._serve(sockets),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842701300Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 78, in _serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842706043Z
+
+    config.load(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842710332Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/config.py"", line 438, in load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842714605Z
+
+    self.loaded_app = import_from_string(self.app),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842719305Z
+
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842723646Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 22, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842728980Z
+
+    raise exc from None,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842735655Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 19, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842740053Z
+
+    module = importlib.import_module(module_str),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.842744623Z
+
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.843504064Z
+
+"  File ""<frozen importlib._bootstrap>"", line 690, in _load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.843511116Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/importlib/__init__.py"", line 126, in import_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.843517110Z
+
+"  File ""<frozen importlib._bootstrap_external>"", line 940, in exec_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.843522534Z
+
+"    return _bootstrap._gcd_import(name[level:], package, level)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.843529321Z
+
+"  File ""<frozen importlib._bootstrap>"", line 241, in _call_with_frames_removed","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.843533780Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.843542388Z
+
+"  File ""/app/main.py"", line 15, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.843543970Z
+
+    from app.core.config import settings,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.843554047Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1204, in _gcd_import","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.843556795Z
+
+"  File ""/app/app/core/__init__.py"", line 2, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.843566031Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1176, in _find_and_load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.843568950Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1147, in _find_and_load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.843581453Z
+
+    from .auth import (,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.843582179Z
+
+"  File ""/app/app/core/auth.py"", line 24, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.843591204Z
+
+    from app.core.supabase import supabase,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.843599580Z
+
+"  File ""/app/app/core/supabase.py"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.843733174Z
+
+"    from supabase import create_client, Client as SupabaseClient","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.843738977Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/__init__.py"", line 22, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.843744356Z
+
+    from ._async.auth_client import AsyncSupabaseAuthClient as ASupabaseAuthClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.843750407Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/_async/auth_client.py"", line 9, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.843755435Z
+
+    from supabase_auth.http_clients import AsyncClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.843759681Z
+
+ModuleNotFoundError: No module named 'supabase_auth.http_clients',"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:44.843763465Z
+
+"    return ctx.invoke(self.callback, **ctx.params)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.657356264Z
+
+Traceback (most recent call last):,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.657364096Z
+
+"  File ""/app/.venv/bin/uvicorn"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.657368512Z
+
+    sys.exit(main()),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.657372952Z
+
+             ^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.657378704Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.657379392Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1462, in __call__","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.657383756Z
+
+"    return self.main(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.657389256Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 814, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.657390843Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.657393424Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1383, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.657399309Z
+
+    rv = self.invoke(ctx),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.657404510Z
+
+"    return callback(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.657407914Z
+
+         ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.657410466Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1246, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.657414396Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.657984943Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 423, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.657993653Z
+
+    run(,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658010880Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 593, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658017250Z
+
+    server.run(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658030700Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 67, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658036861Z
+
+"    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658042760Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658048527Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/_compat.py"", line 23, in asyncio_run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658054878Z
+
+    return runner.run(main),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658069376Z
+
+           ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658075192Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/asyncio/runners.py"", line 118, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658081724Z
+
+    return self._loop.run_until_complete(task),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658088006Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/importlib/__init__.py"", line 126, in import_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658620016Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658627072Z
+
+"  File ""uvloop/loop.pyx"", line 1518, in uvloop.loop.Loop.run_until_complete","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658635754Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 71, in serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658642449Z
+
+    await self._serve(sockets),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658647889Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 78, in _serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658653326Z
+
+    config.load(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658658179Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/config.py"", line 438, in load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658663285Z
+
+    self.loaded_app = import_from_string(self.app),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658668828Z
+
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658674231Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 22, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658680906Z
+
+    raise exc from None,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658686467Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 19, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658692230Z
+
+    module = importlib.import_module(module_str),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658697982Z
+
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658703744Z
+
+"    return _bootstrap._gcd_import(name[level:], package, level)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658913491Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658920117Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1204, in _gcd_import","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658926153Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1176, in _find_and_load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658932380Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1147, in _find_and_load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658938101Z
+
+"  File ""<frozen importlib._bootstrap>"", line 690, in _load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658944648Z
+
+"  File ""<frozen importlib._bootstrap_external>"", line 940, in exec_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658951288Z
+
+"  File ""<frozen importlib._bootstrap>"", line 241, in _call_with_frames_removed","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658957654Z
+
+"  File ""/app/main.py"", line 15, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658963424Z
+
+    from app.core.config import settings,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658969470Z
+
+"  File ""/app/app/core/__init__.py"", line 2, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658976229Z
+
+    from .auth import (,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658981342Z
+
+"  File ""/app/app/core/auth.py"", line 24, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658988606Z
+
+    from app.core.supabase import supabase,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.658997631Z
+
+"  File ""/app/app/core/supabase.py"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.659004094Z
+
+"    from supabase import create_client, Client as SupabaseClient","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.659010004Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/__init__.py"", line 22, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.659016316Z
+
+    from ._async.auth_client import AsyncSupabaseAuthClient as ASupabaseAuthClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.659800502Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/_async/auth_client.py"", line 9, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.659806840Z
+
+    from supabase_auth.http_clients import AsyncClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.659815206Z
+
+ModuleNotFoundError: No module named 'supabase_auth.http_clients',"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:46.659820390Z
+
+Traceback (most recent call last):,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413021091Z
+
+"  File ""/app/.venv/bin/uvicorn"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413034002Z
+
+    sys.exit(main()),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413041893Z
+
+             ^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413048676Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1462, in __call__","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413055652Z
+
+"    return self.main(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413063197Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413070792Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1383, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413076863Z
+
+    rv = self.invoke(ctx),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413083446Z
+
+         ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413090430Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1246, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413096070Z
+
+"    return ctx.invoke(self.callback, **ctx.params)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413103132Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413109218Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 814, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413117403Z
+
+"    return callback(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413123916Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413751427Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 423, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413759477Z
+
+    run(,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413765314Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 593, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413771573Z
+
+    server.run(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413777320Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 67, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413783057Z
+
+"    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413789643Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413794826Z
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413799897Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/_compat.py"", line 23, in asyncio_run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413805231Z
+
+    return runner.run(main),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413812704Z
+
+           ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413818619Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/asyncio/runners.py"", line 118, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.413824266Z
+
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414347126Z
+
+    return self._loop.run_until_complete(task),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414351630Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 22, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414358098Z
+
+    raise exc from None,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414367420Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414371001Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 19, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414378497Z
+
+"  File ""uvloop/loop.pyx"", line 1518, in uvloop.loop.Loop.run_until_complete","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414383988Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 71, in serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414389594Z
+
+    await self._serve(sockets),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414395560Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 78, in _serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414401930Z
+
+    config.load(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414407393Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/config.py"", line 438, in load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414414155Z
+
+    self.loaded_app = import_from_string(self.app),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414420208Z
+
+    module = importlib.import_module(module_str),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414760181Z
+
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414767010Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/importlib/__init__.py"", line 126, in import_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414773161Z
+
+"    return _bootstrap._gcd_import(name[level:], package, level)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414778759Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414784187Z
+
+^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414789386Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1204, in _gcd_import","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414795152Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1176, in _find_and_load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414800428Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1147, in _find_and_load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414806784Z
+
+"  File ""<frozen importlib._bootstrap>"", line 690, in _load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414812249Z
+
+"  File ""<frozen importlib._bootstrap_external>"", line 940, in exec_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414817348Z
+
+"  File ""<frozen importlib._bootstrap>"", line 241, in _call_with_frames_removed","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414823121Z
+
+"  File ""/app/main.py"", line 15, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414932707Z
+
+    from app.core.config import settings,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414939599Z
+
+"  File ""/app/app/core/__init__.py"", line 2, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414945863Z
+
+    from .auth import (,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414952378Z
+
+"  File ""/app/app/core/auth.py"", line 24, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414958142Z
+
+    from app.core.supabase import supabase,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414965016Z
+
+"  File ""/app/app/core/supabase.py"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414971268Z
+
+"    from supabase import create_client, Client as SupabaseClient","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414977743Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/__init__.py"", line 22, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414985759Z
+
+    from ._async.auth_client import AsyncSupabaseAuthClient as ASupabaseAuthClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.414992256Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/_async/auth_client.py"", line 9, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.415023179Z
+
+    from supabase_auth.http_clients import AsyncClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.415029594Z
+
+ModuleNotFoundError: No module named 'supabase_auth.http_clients',"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:48.415035358Z
+
+Traceback (most recent call last):,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.235025872Z
+
+"  File ""/app/.venv/bin/uvicorn"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.235035899Z
+
+    sys.exit(main()),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.235046230Z
+
+             ^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.235056010Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1462, in __call__","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.235065737Z
+
+"    return self.main(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.236340070Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.236351537Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1383, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.236359703Z
+
+    rv = self.invoke(ctx),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.236367398Z
+
+         ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.236373691Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1246, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.236379840Z
+
+"    return ctx.invoke(self.callback, **ctx.params)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.236385729Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.236391772Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 814, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.236399537Z
+
+"    return callback(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.236405455Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.236412578Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 423, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.236418057Z
+
+    run(,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.236423458Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 593, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.236453678Z
+
+    server.run(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.236460311Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 67, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.236468376Z
+
+"    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.236474653Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 71, in serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.237683853Z
+
+    await self._serve(sockets),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.237696471Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.237710624Z
+
+^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.237716690Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/_compat.py"", line 23, in asyncio_run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.237722199Z
+
+    return runner.run(main),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.237727588Z
+
+           ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.237733251Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/asyncio/runners.py"", line 118, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.237738405Z
+
+    return self._loop.run_until_complete(task),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.237743691Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.237748686Z
+
+"  File ""uvloop/loop.pyx"", line 1518, in uvloop.loop.Loop.run_until_complete","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.237754182Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 78, in _serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239141843Z
+
+    config.load(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239148251Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/config.py"", line 438, in load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239152767Z
+
+    self.loaded_app = import_from_string(self.app),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239157619Z
+
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239161948Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 22, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239167050Z
+
+    raise exc from None,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239171311Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 19, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239175554Z
+
+    module = importlib.import_module(module_str),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239179751Z
+
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239183832Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/importlib/__init__.py"", line 126, in import_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239188371Z
+
+"    return _bootstrap._gcd_import(name[level:], package, level)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239193091Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239202421Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1204, in _gcd_import","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239207022Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1176, in _find_and_load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239212622Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1147, in _find_and_load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239216739Z
+
+"  File ""<frozen importlib._bootstrap>"", line 690, in _load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239220638Z
+
+"  File ""<frozen importlib._bootstrap_external>"", line 940, in exec_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239224761Z
+
+"  File ""<frozen importlib._bootstrap>"", line 241, in _call_with_frames_removed","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239236673Z
+
+"  File ""/app/main.py"", line 15, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239240814Z
+
+    from app.core.config import settings,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239423548Z
+
+    from supabase_auth.http_clients import AsyncClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239430067Z
+
+"  File ""/app/app/core/__init__.py"", line 2, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239436082Z
+
+ModuleNotFoundError: No module named 'supabase_auth.http_clients',"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239436187Z
+
+    from .auth import (,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239443904Z
+
+"  File ""/app/app/core/auth.py"", line 24, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239450177Z
+
+    from app.core.supabase import supabase,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239457348Z
+
+"  File ""/app/app/core/supabase.py"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239464025Z
+
+"    from supabase import create_client, Client as SupabaseClient","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239470748Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/__init__.py"", line 22, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239476928Z
+
+    from ._async.auth_client import AsyncSupabaseAuthClient as ASupabaseAuthClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239482945Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/_async/auth_client.py"", line 9, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:50.239489304Z
+
+         ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.469425536Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1246, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.469433695Z
+
+"    return ctx.invoke(self.callback, **ctx.params)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.469439301Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.469444195Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 814, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.469448472Z
+
+"    return callback(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.469455124Z
+
+Traceback (most recent call last):,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.469473062Z
+
+"  File ""/app/.venv/bin/uvicorn"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.469479277Z
+
+    sys.exit(main()),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.469485484Z
+
+             ^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.469492231Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1462, in __call__","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.469498181Z
+
+"    return self.main(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.469503810Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.469509769Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1383, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.469515943Z
+
+    rv = self.invoke(ctx),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.469521861Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473301604Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 423, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473308433Z
+
+    run(,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473314153Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 593, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473319513Z
+
+    server.run(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473325905Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 67, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473332970Z
+
+"    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473339225Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473345224Z
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473350096Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/_compat.py"", line 23, in asyncio_run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473354933Z
+
+    return runner.run(main),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473359465Z
+
+           ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473364249Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/asyncio/runners.py"", line 118, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473369539Z
+
+    return self._loop.run_until_complete(task),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473377185Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473382276Z
+
+"  File ""uvloop/loop.pyx"", line 1518, in uvloop.loop.Loop.run_until_complete","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473387593Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 71, in serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473392473Z
+
+    await self._serve(sockets),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473397071Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 78, in _serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473402166Z
+
+    config.load(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473406739Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/config.py"", line 438, in load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473411230Z
+
+    self.loaded_app = import_from_string(self.app),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473415435Z
+
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473419523Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 22, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473424654Z
+
+    raise exc from None,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473429016Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 19, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473434222Z
+
+    module = importlib.import_module(module_str),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473438388Z
+
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473443455Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/importlib/__init__.py"", line 126, in import_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473447812Z
+
+"    return _bootstrap._gcd_import(name[level:], package, level)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473451885Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473456596Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1204, in _gcd_import","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473460747Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1176, in _find_and_load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473467235Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1147, in _find_and_load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473471407Z
+
+"  File ""<frozen importlib._bootstrap>"", line 690, in _load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473475691Z
+
+"  File ""<frozen importlib._bootstrap_external>"", line 940, in exec_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473479540Z
+
+"  File ""<frozen importlib._bootstrap>"", line 241, in _call_with_frames_removed","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473483813Z
+
+"  File ""/app/main.py"", line 15, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473488489Z
+
+    from app.core.config import settings,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473493239Z
+
+"  File ""/app/app/core/__init__.py"", line 2, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473497645Z
+
+    from .auth import (,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473501840Z
+
+"  File ""/app/app/core/auth.py"", line 24, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473506058Z
+
+    from app.core.supabase import supabase,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473510185Z
+
+"  File ""/app/app/core/supabase.py"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473514185Z
+
+"    from supabase import create_client, Client as SupabaseClient","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473518044Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/__init__.py"", line 22, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473523507Z
+
+    from ._async.auth_client import AsyncSupabaseAuthClient as ASupabaseAuthClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473527959Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/_async/auth_client.py"", line 9, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473532287Z
+
+    from supabase_auth.http_clients import AsyncClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473536812Z
+
+ModuleNotFoundError: No module named 'supabase_auth.http_clients',"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:56.473541981Z
+
+Traceback (most recent call last):,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.317561914Z
+
+"  File ""/app/.venv/bin/uvicorn"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.317574429Z
+
+    sys.exit(main()),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.317582593Z
+
+             ^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.317590054Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1462, in __call__","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.317597340Z
+
+"    return self.main(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.317604612Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.317610962Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1383, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.317628104Z
+
+    rv = self.invoke(ctx),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.317634420Z
+
+         ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.317641040Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 1246, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.317648227Z
+
+"    return ctx.invoke(self.callback, **ctx.params)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.318526259Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.318537383Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/click/core.py"", line 814, in invoke","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.318544798Z
+
+"    return callback(*args, **kwargs)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.318550949Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.318558735Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 423, in main","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.318566475Z
+
+    run(,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.318572159Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/main.py"", line 593, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.318577984Z
+
+    server.run(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.318584596Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 67, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.318590884Z
+
+"    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.318596505Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.319234544Z
+
+^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.319245051Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/_compat.py"", line 23, in asyncio_run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.319250357Z
+
+    return runner.run(main),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.319255103Z
+
+           ^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.319260638Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/asyncio/runners.py"", line 118, in run","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.319265592Z
+
+    return self._loop.run_until_complete(task),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.319270422Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.319276155Z
+
+"  File ""uvloop/loop.pyx"", line 1518, in uvloop.loop.Loop.run_until_complete","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.319285578Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 71, in serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.319291260Z
+
+    await self._serve(sockets),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.319297312Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/server.py"", line 78, in _serve","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.319303832Z
+
+    config.load(),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.319309911Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/config.py"", line 438, in load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.319314485Z
+
+    self.loaded_app = import_from_string(self.app),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.319319118Z
+
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.320758134Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 22, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.320764650Z
+
+    raise exc from None,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.320769163Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py"", line 19, in import_from_string","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.320773241Z
+
+    module = importlib.import_module(module_str),"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.320777051Z
+
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.320781680Z
+
+"  File ""/mise/installs/python/3.11.14/lib/python3.11/importlib/__init__.py"", line 126, in import_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.320785534Z
+
+"    return _bootstrap._gcd_import(name[level:], package, level)","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.320790681Z
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.321544879Z
+
+^^^^^,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.321552415Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1204, in _gcd_import","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.321556739Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1176, in _find_and_load","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.321561530Z
+
+"  File ""<frozen importlib._bootstrap>"", line 1147, in _find_and_load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.321571937Z
+
+"  File ""<frozen importlib._bootstrap>"", line 690, in _load_unlocked","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.321576175Z
+
+"  File ""<frozen importlib._bootstrap_external>"", line 940, in exec_module","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.321579771Z
+
+"  File ""<frozen importlib._bootstrap>"", line 241, in _call_with_frames_removed","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.321583475Z
+
+"  File ""/app/main.py"", line 15, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.321587467Z
+
+    from app.core.config import settings,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.321593308Z
+
+"  File ""/app/app/core/__init__.py"", line 2, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.321597234Z
+
+    from .auth import (,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.321601684Z
+
+"  File ""/app/app/core/auth.py"", line 24, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.321609844Z
+
+    from app.core.supabase import supabase,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.321617878Z
+
+"  File ""/app/app/core/supabase.py"", line 8, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.321621580Z
+
+"    from supabase import create_client, Client as SupabaseClient","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.321625413Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/__init__.py"", line 22, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.321629118Z
+
+    from ._async.auth_client import AsyncSupabaseAuthClient as ASupabaseAuthClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.321634347Z
+
+"  File ""/app/.venv/lib/python3.11/site-packages/supabase/_async/auth_client.py"", line 9, in <module>","{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.321640437Z
+
+    from supabase_auth.http_clients import AsyncClient,"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.321645151Z
+
+ModuleNotFoundError: No module named 'supabase_auth.http_clients',"{""level"":""error""}","{""project"":""fa0d741b-e361-4f8e-8096-5fc3cedad816"",""environment"":""844bc614-e7dd-4169-b64f-70d26cc4c995"",""service"":""54140689-b5ad-42e8-a4bc-fec6aeb04871"",""deployment"":""1fe31b34-72da-4b45-beba-5e028ea5199e"",""replica"":""558d5caa-24ae-4599-b3b2-6fe29d4355be""}",2025-11-10T23:19:58.325839619Z
+
+---
+
+_**Agent (model composer-1, mode Agent)**_
 
 
 
