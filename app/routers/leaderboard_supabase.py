@@ -138,7 +138,7 @@ async def get_leaderboard(
 
         # Base query - select only necessary fields for better performance
         query = client.table("players").select(
-            "id, gamertag, avatar_url, player_rp, player_rank_score, "
+            "id, gamertag, player_rp, player_rank_score, "
             "wins, losses, win_rate, tier, region, created_at, total_games"
         )
         
@@ -284,7 +284,7 @@ async def get_tier_leaderboard(
         result = (
             client.table("players")
             .select(
-                "id, gamertag, avatar_url, player_rp, player_rank_score, "
+                "id, gamertag, player_rp, player_rank_score, "
                 "wins, losses, win_rate, tier, region, created_at"
             )
             .eq("tier", tier.value)
@@ -362,7 +362,7 @@ async def get_peak_rp_leaderboard(
         query = (
             client.table("players")
             .select(
-                "id, gamertag, avatar_url, player_rp, player_rank_score, "
+                "id, gamertag, player_rp, player_rank_score, "
                 "wins, losses, win_rate, tier, region, created_at, "
                 "(wins + losses) as games_played"
             )
@@ -495,7 +495,7 @@ async def get_region_leaderboard(
         query = (
             client.table("players")
             .select(
-                "id, gamertag, avatar_url, player_rp, player_rank_score, "
+                "id, gamertag, player_rp, player_rank_score, "
                 "wins, losses, win_rate, tier, region, created_at"
             )
             .eq("region", region_upper)

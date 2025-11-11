@@ -2,10 +2,12 @@
 Structured logging configuration for the NBA 2K Global Rankings backend
 """
 
-import logging
 import sys
 from typing import Any, Dict
 from datetime import datetime
+
+# Import standard library logging first to avoid circular import
+import logging as stdlib_logging
 
 import structlog
 from structlog.stdlib import LoggerFactory
@@ -34,20 +36,20 @@ def configure_logging() -> None:
     )
     
     # Configure standard library logging
-    logging.basicConfig(
+    stdlib_logging.basicConfig(
         format="%(message)s",
         stream=sys.stdout,
-        level=getattr(logging, settings.LOG_LEVEL.upper()),
+        level=getattr(stdlib_logging, settings.LOG_LEVEL.upper()),
     )
     
     # Set specific logger levels
-    logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
-    logging.getLogger("uvicorn.error").setLevel(logging.INFO)
-    logging.getLogger("fastapi").setLevel(logging.INFO)
+    stdlib_logging.getLogger("uvicorn.access").setLevel(stdlib_logging.WARNING)
+    stdlib_logging.getLogger("uvicorn.error").setLevel(stdlib_logging.INFO)
+    stdlib_logging.getLogger("fastapi").setLevel(stdlib_logging.INFO)
     
     # Reduce noise from third-party libraries
-    logging.getLogger("httpx").setLevel(logging.WARNING)
-    logging.getLogger("httpcore").setLevel(logging.WARNING)
+    stdlib_logging.getLogger("httpx").setLevel(stdlib_logging.WARNING)
+    stdlib_logging.getLogger("httpcore").setLevel(stdlib_logging.WARNING)
 
 def get_logger(name: str) -> structlog.stdlib.BoundLogger:
     """Get a structured logger instance"""
@@ -92,6 +94,7 @@ class RequestLogger:
 
 def log_request_info(request: Any, user_id: str = None, **kwargs) -> Dict[str, Any]:
     """Log request information with structured data"""
+    from app.core.config import settings
     logger = get_logger("api.request")
     
     request_info = {
@@ -126,5 +129,6 @@ def log_error(error: Exception, context: Dict[str, Any] = None) -> None:
     
     logger.error("Application error", **error_info)
 
-# Initialize logging on module import
-configure_logging()
+# Note: configure_logging() should be called explicitly in main.py or main_supabase.py
+# to avoid circular import issues. Do not auto-configure on module import.
+# configure_logging()

@@ -7,6 +7,7 @@ from typing import Optional, List, Dict, Any, Union
 from datetime import datetime
 from enum import Enum
 from uuid import UUID
+from app.schemas.enums import GameYear
 
 # Common Enums
 class LeagueStatus(str, Enum):
@@ -39,7 +40,7 @@ class LeagueCalendarResponse(BaseModel):
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
     is_active: Optional[bool] = None
-    game_year: Optional[int] = None
+    game_year: Optional[str] = None
     league_logo: Optional[str] = None
     league_website: Optional[str] = None
     discord_link: Optional[str] = None
@@ -105,7 +106,7 @@ class LeagueTeamRosterResponse(BaseModel):
     team_id: str
     player_id: str
     season_id: Optional[str] = None
-    game_year: Optional[int] = None
+    game_year: Optional[str] = None
 
 # Player Views Schemas
 class PlayerPerformanceResponse(BaseModel):
@@ -134,7 +135,7 @@ class PlayerPerformanceByGameYearResponse(BaseModel):
     player_id: str
     gamertag: str
     position: Optional[PlayerPosition] = None
-    game_year: Optional[int] = None
+    game_year: Optional[str] = None
     matches_played: Optional[int] = None
     avg_points: Optional[float] = None
     avg_rebounds: Optional[float] = None
@@ -158,7 +159,7 @@ class PlayerStatsByLeagueSeasonResponse(BaseModel):
     league_season_id: str
     league_id: str
     season_number: Optional[int] = None
-    game_year: Optional[int] = None
+    game_year: Optional[str] = None
     player_id: str
     player_gamertag: str
     games_played: Optional[int] = None
@@ -204,7 +205,7 @@ class PlayerRosterHistoryResponse(BaseModel):
     tournament_id: Optional[str] = None
     tournament_name: Optional[str] = None
     season_number: Optional[int] = None
-    game_year: Optional[int] = None
+    game_year: Optional[str] = None
 
 class TopTournamentPerformerResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -237,7 +238,7 @@ class TournamentMVPResponse(BaseModel):
     position: Optional[PlayerPosition] = None
     tournament_id: str
     tournament_name: str
-    game_year: Optional[int] = None
+    game_year: Optional[str] = None
     team_id: str
     team_name: str
     games_played: Optional[int] = None
@@ -290,7 +291,7 @@ class TeamPerformanceByGameYearResponse(BaseModel):
     
     team_id: str
     team_name: str
-    game_year: Optional[int] = None
+    game_year: Optional[str] = None
     total_matches: Optional[int] = None
     matches_won: Optional[int] = None
     matches_lost: Optional[int] = None
@@ -339,7 +340,7 @@ class TeamRosterHistoryResponse(BaseModel):
     tournament_id: Optional[str] = None
     tournament_name: Optional[str] = None
     season_number: Optional[int] = None
-    game_year: Optional[int] = None
+    game_year: Optional[str] = None
 
 # Tournament Views Schemas
 class TournamentCalendarResponse(BaseModel):
@@ -349,7 +350,7 @@ class TournamentCalendarResponse(BaseModel):
     tournament_name: str
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
-    game_year: Optional[int] = None
+    game_year: Optional[str] = None
     prize_pool: Optional[float] = None
     status: Optional[str] = None
     tier: Optional[str] = None
@@ -379,7 +380,7 @@ class TournamentResultsResponse(BaseModel):
     tournament_name: str
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
-    game_year: Optional[int] = None
+    game_year: Optional[str] = None
     tournament_tier: Optional[str] = None
     prize_pool: Optional[float] = None
     tournament_status: Optional[str] = None
@@ -418,7 +419,7 @@ class TournamentChampionsByYearResponse(BaseModel):
     
     tournament_id: str
     tournament_name: str
-    game_year: Optional[int] = None
+    game_year: Optional[str] = None
     tournament_tier: Optional[str] = None
     prize_pool: Optional[float] = None
     champion_team_id: str
@@ -438,7 +439,7 @@ class TournamentPlayerStatsResponse(BaseModel):
     position: Optional[PlayerPosition] = None
     tournament_id: str
     tournament_name: str
-    game_year: Optional[int] = None
+    game_year: Optional[str] = None
     tournament_tier: Optional[str] = None
     team_id: str
     team_name: str
@@ -478,7 +479,7 @@ class TournamentTeamStatsResponse(BaseModel):
     team_name: str
     tournament_id: str
     tournament_name: str
-    game_year: Optional[int] = None
+    game_year: Optional[str] = None
     tournament_tier: Optional[str] = None
     games_played: Optional[int] = None
     games_won: Optional[int] = None
@@ -551,7 +552,7 @@ class PlayerMonthlyPERResponse(BaseModel):
 class PlayerYearlyPERResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     
-    game_year: Optional[int] = None
+    game_year: Optional[str] = None
     league_id: Optional[str] = None
     season_id: Optional[str] = None
     tournament_id: Optional[str] = None
