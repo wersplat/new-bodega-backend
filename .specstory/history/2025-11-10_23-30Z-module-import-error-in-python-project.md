@@ -1820,3 +1820,269 @@ Should I verify anything else or make additional changes?
 
 ---
 
+_**User (2025-11-11 00:38Z)**_
+
+  File "/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+
+---
+
+_**Agent (model composer-1, mode Agent)**_
+
+
+
+---
+
+
+Investigating the uvicorn import error. Checking the main application files and import issues:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/main_supabase.py</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="grep" data-tool-name="grep">
+<details>
+<summary>Tool use: **grep** • Grep for "from app.core.logging|import.*logging" in "/Volumes/870SSD/Active GH Projects/new-bodega-backend" • 32 matches</summary>
+
+Output mode: content
+
+
+| File | Content | Line |
+|------|------|------|
+| `./app/routers/leaderboard_supabase.py` | `import logging` | L14 |
+| `./app/core/structured_logging.py` | `# Import standard library logging first to avoid circular import` | L9 |
+| `./app/core/structured_logging.py` | `import logging as stdlib_logging` | L10 |
+| `./app/routers/views.py` | `import logging` | L29 |
+| `./app/routers/events.py` | `import logging` | L7 |
+| `./app/routers/leagues.py` | `import logging` | L9 |
+| `./app/routers/achievements.py` | `import logging` | L7 |
+| `./main_supabase.py` | `import logging` | L6 |
+| `./app/routers/teams.py` | `import logging` | L8 |
+| `./app/routers/player_stats.py` | `import logging` | L5 |
+| `./app/routers/match_queue.py` | `import logging` | L8 |
+| `./app/routers/notifications.py` | `import logging` | L7 |
+| `./main.py` | `import logging` | L6 |
+| `./app/routers/players.py` | `import logging` | L53 |
+| `./app/core/auth.py` | `import logging` | L5 |
+| `./app/core/supabase.py` | `import logging` | L232 |
+| `./app/routers/admin_matches.py` | `import logging` | L8 |
+| `./app/routers/team_roster_current.py` | `import logging` | L13 |
+| `./app/routers/tournament_groups.py` | `import logging` | L7 |
+| `./app/routers/team_rosters.py` | `import logging` | L7 |
+| `./app/routers/player_badges.py` | `import logging` | L7 |
+| `./app/routers/awards_race.py` | `import logging` | L7 |
+| `./app/routers/legacy_routers/legacy_matches.py` | `import logging` | L21 |
+| `./app/routers/admin_actions.py` | `import logging` | L7 |
+| `./app/routers/payments.py` | `import logging` | L6 |
+| `./app/routers/matches.py` | `import logging` | L28 |
+| `./app/routers/discord.py` | `import logging` | L10 |
+| `./app/core/rate_limiter.py` | `import logging` | L11 |
+| `./app/routers/auth.py` | `import logging` | L8 |
+| `./app/routers/auth.py` | `import logging` | L28 |
+| `./scripts/apply_migration.py` | `import logging` | L7 |
+| `./app/routers/archive/players_supabase.py.bak` | `import logging` | L16 |
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="search" data-tool-name="codebase_search">
+<details>
+                <summary>Tool use: **codebase_search** • Searched codebase "Where is uvicorn trying to import the application module?" • **6** results</summary>
+            
+| File | Lines |
+|------|-------|
+| `main.py` | L87-105 |
+| `main_supabase.py` | L97-115 |
+| `scripts/dev-setup.sh` | L123-155 |
+| `main.py` | L57 |
+| `main_supabase.py` | L60 |
+| `alembic/env.py` | L56 |
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Checking for remaining imports of the old logging module and verifying imports:
+
+
+---
+
+<tool-use data-tool-type="grep" data-tool-name="grep">
+<details>
+<summary>Tool use: **grep** • Grep for "from app.core.logging|import app.core.logging" in "/Volumes/870SSD/Active GH Projects/new-bodega-backend" • 0 matches</summary>
+
+Output mode: content
+
+
+_No matches found_
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/app/core/rate_limiter.py</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/app/core/config.py</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Checking for cached bytecode from the old logging module and verifying imports:
+
+
+---
+
+<tool-use data-tool-type="bash" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **command** • Run command: cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && find . -name "*.pyc" -path "*/core/logging*" 2>/dev/null | head -5</summary>
+
+```bash
+cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && find . -name "*.pyc" -path "*/core/logging*" 2>/dev/null | head -5
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="bash" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **command** • Run command: cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && find . -type d -name "__pycache__" -exec find {} -name "*logging*" \; 2>/dev/null | head -10</summary>
+
+```bash
+cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && find . -type d -name "__pycache__" -exec find {} -name "*logging*" \; 2>/dev/null | head -10
+```
+
+```
+./app/core/__pycache__/logging.cpython-311.pyc
+./venv/lib/python3.11/site-packages/sentry_sdk/integrations/__pycache__/logging.cpython-311.pyc
+./venv/lib/python3.11/site-packages/pip/_internal/utils/__pycache__/logging.cpython-311.pyc
+./venv/lib/python3.11/site-packages/pip/_vendor/rich/__pycache__/logging.cpython-311.pyc
+./venv/lib/python3.11/site-packages/tqdm/contrib/__pycache__/logging.cpython-311.pyc
+./venv/lib/python3.11/site-packages/rich/__pycache__/logging.cpython-311.pyc
+./venv/lib/python3.11/site-packages/uvicorn/__pycache__/logging.cpython-311.pyc
+./venv/lib/python3.11/site-packages/setuptools/_vendor/wheel/__pycache__/_setuptools_logging.cpython-311.pyc
+./venv/lib/python3.11/site-packages/setuptools/tests/__pycache__/test_logging.cpython-311.pyc
+./venv/lib/python3.11/site-packages/setuptools/__pycache__/logging.cpython-311.pyc
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="bash" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **command** • Run command: cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && source venv/bin/activate && python3 -c "import sys; sys.path.insert(0, '.'); from main_supabase import app; print('✅ Import successful')" 2>&1 | head -30</summary>
+
+```bash
+cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && source venv/bin/activate && python3 -c "import sys; sys.path.insert(0, '.'); from main_supabase import app; print('✅ Import successful')" 2>&1 | head -30
+```
+
+```
+✅ Import successful
+
+```
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Removing cached bytecode from the old logging module:
+
+
+---
+
+<tool-use data-tool-type="bash" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **command** • Run command: cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && rm -f app/core/__pycache__/logging.cpython-311.pyc && find app -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null; echo "✅ Removed cached bytecode files"</summary>
+
+```bash
+cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && rm -f app/core/__pycache__/logging.cpython-311.pyc && find app -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null; echo "✅ Removed cached bytecode files"
+```
+
+```
+✅ Removed cached bytecode files
+
+```
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="bash" data-tool-name="run_terminal_cmd">
+<details><summary>Tool use: **command** • Run command: cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && source venv/bin/activate && python3 -c "import sys; sys.path.insert(0, '.'); from main_supabase import app; print('✅ Application imports successfully')" 2>&1</summary>
+
+```bash
+cd /Volumes/870SSD/Active\ GH\ Projects/new-bodega-backend && source venv/bin/activate && python3 -c "import sys; sys.path.insert(0, '.'); from main_supabase import app; print('✅ Application imports successfully')" 2>&1
+```
+
+```
+✅ Application imports successfully
+
+```
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Removed cached bytecode files. The application imports successfully.
+
+The error you saw (`/app/.venv/lib/python3.11/site-packages/uvicorn/importer.py`) suggests it's running in a Docker container. If the error persists there, try:
+
+1. **Rebuild the Docker image** to clear cached bytecode:
+   ```bash
+   docker-compose build --no-cache
+   ```
+
+2. **Or remove Python cache in Docker**:
+   ```bash
+   docker-compose exec <service_name> find /app -type d -name "__pycache__" -exec rm -rf {} +
+   ```
+
+## Summary of All Fixes
+
+1. Fixed circular import: Renamed `app/core/logging.py` → `app/core/structured_logging.py`
+2. Removed `avatar_url`: Removed from leaderboard queries (column doesn't exist)
+3. Fixed `game_year` validation: Changed from `Optional[int]` to `Optional[str]` to match database enum
+4. Cleaned up cached bytecode: Removed old `.pyc` files that referenced the deleted logging module
+
+The application should now work correctly. If you see the full error traceback, share it and I can help debug further.
+
+---
+
