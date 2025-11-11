@@ -976,3 +976,847 @@ Lines added: 7, lines removed: 7
 
 ---
 
+
+Removing the auto-configuration call and fixing the other issues:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/app/core/structured_logging.py</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Fixing remaining issues in the file:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **code_edit** • Edit file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/app/core/structured_logging.py</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: undefined
+
+```diff
+@@ -95,4 +95,5 @@
+  def log_request_info(request: Any, user_id: str = None, **kwargs) -&gt; Dict[str, Any]:
+      &quot;&quot;&quot;Log request information with structured data&quot;&quot;&quot;
++     from app.core.config import settings
+      logger = get_logger(&quot;api.request&quot;)
+      
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **code_edit** • Edit file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/app/core/structured_logging.py</summary>
+
+**Chunk 1**
+Lines added: 3, lines removed: 2
+
+```diff
+@@ -130,4 +130,5 @@
+      logger.error(&quot;Application error&quot;, **error_info)
+  
+- # Initialize logging on module import
+- configure_logging()
++ # Note: configure_logging() should be called explicitly in main.py or main_supabase.py
++ # to avoid circular import issues. Do not auto-configure on module import.
++ # configure_logging()
+```
+
+</details>
+
+</tool-use>
+
+---
+
+
+
+---
+
+
+Fixing the leaderboard queries to remove `avatar_url`:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **code_edit** • Edit file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/app/routers/leaderboard_supabase.py</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -139,5 +139,5 @@
+          # Base query - select only necessary fields for better performance
+          query = client.table(&quot;players&quot;).select(
+-             &quot;id, gamertag, avatar_url, player_rp, player_rank_score, &quot;
++             &quot;id, gamertag, player_rp, player_rank_score, &quot;
+              &quot;wins, losses, win_rate, tier, region, created_at, total_games&quot;
+          )
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **code_edit** • Edit file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/app/routers/leaderboard_supabase.py</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -285,5 +285,5 @@
+              client.table(&quot;players&quot;)
+              .select(
+-                 &quot;id, gamertag, avatar_url, player_rp, player_rank_score, &quot;
++                 &quot;id, gamertag, player_rp, player_rank_score, &quot;
+                  &quot;wins, losses, win_rate, tier, region, created_at&quot;
+              )
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **code_edit** • Edit file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/app/routers/leaderboard_supabase.py</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -363,5 +363,5 @@
+              client.table(&quot;players&quot;)
+              .select(
+-                 &quot;id, gamertag, avatar_url, player_rp, player_rank_score, &quot;
++                 &quot;id, gamertag, player_rp, player_rank_score, &quot;
+                  &quot;wins, losses, win_rate, tier, region, created_at, &quot;
+                  &quot;(wins + losses) as games_played&quot;
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **code_edit** • Edit file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/app/routers/leaderboard_supabase.py</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -496,5 +496,5 @@
+              client.table(&quot;players&quot;)
+              .select(
+-                 &quot;id, gamertag, avatar_url, player_rp, player_rank_score, &quot;
++                 &quot;id, gamertag, player_rp, player_rank_score, &quot;
+                  &quot;wins, losses, win_rate, tier, region, created_at&quot;
+              )
+```
+
+</details>
+
+</tool-use>
+
+---
+
+
+
+---
+
+
+Checking the GameYear enum and fixing the game_year validation:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/app/schemas/enums.py</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Updating the views schema to accept strings for `game_year`:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **code_edit** • Edit file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/app/schemas/views.py</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: undefined
+
+```diff
+@@ -8,4 +8,5 @@
+  from enum import Enum
+  from uuid import UUID
++ from app.schemas.enums import GameYear
+  
+  # Common Enums
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="grep" data-tool-name="grep">
+<details>
+<summary>Tool use: **grep** • Grep for "game_year: Optional\[int\]" in "/Volumes/870SSD/Active GH Projects/new-bodega-backend/app/schemas/views.py" • 14 matches</summary>
+
+Output mode: content
+
+
+| File | Content | Line |
+|------|------|------|
+| `app/schemas/views.py` | `game_year: Optional[int] = None` | L43 |
+| `app/schemas/views.py` | `game_year: Optional[int] = None` | L109 |
+| `app/schemas/views.py` | `game_year: Optional[int] = None` | L138 |
+| `app/schemas/views.py` | `game_year: Optional[int] = None` | L162 |
+| `app/schemas/views.py` | `game_year: Optional[int] = None` | L208 |
+| `app/schemas/views.py` | `game_year: Optional[int] = None` | L241 |
+| `app/schemas/views.py` | `game_year: Optional[int] = None` | L294 |
+| `app/schemas/views.py` | `game_year: Optional[int] = None` | L343 |
+| `app/schemas/views.py` | `game_year: Optional[int] = None` | L353 |
+| `app/schemas/views.py` | `game_year: Optional[int] = None` | L383 |
+| `app/schemas/views.py` | `game_year: Optional[int] = None` | L422 |
+| `app/schemas/views.py` | `game_year: Optional[int] = None` | L442 |
+| `app/schemas/views.py` | `game_year: Optional[int] = None` | L482 |
+| `app/schemas/views.py` | `game_year: Optional[int] = None` | L555 |
+
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Replacing all `game_year: Optional[int]` with `game_year: Optional[str]`:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **code_edit** • Edit file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/app/schemas/views.py</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -41,5 +41,5 @@
+      end_date: Optional[datetime] = None
+      is_active: Optional[bool] = None
+-     game_year: Optional[int] = None
++     game_year: Optional[str] = None
+      league_logo: Optional[str] = None
+      league_website: Optional[str] = None
+```
+
+**Chunk 2**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -107,5 +107,5 @@
+      player_id: str
+      season_id: Optional[str] = None
+-     game_year: Optional[int] = None
++     game_year: Optional[str] = None
+  
+  # Player Views Schemas
+```
+
+**Chunk 3**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -136,5 +136,5 @@
+      gamertag: str
+      position: Optional[PlayerPosition] = None
+-     game_year: Optional[int] = None
++     game_year: Optional[str] = None
+      matches_played: Optional[int] = None
+      avg_points: Optional[float] = None
+```
+
+**Chunk 4**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -160,5 +160,5 @@
+      league_id: str
+      season_number: Optional[int] = None
+-     game_year: Optional[int] = None
++     game_year: Optional[str] = None
+      player_id: str
+      player_gamertag: str
+```
+
+**Chunk 5**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -206,5 +206,5 @@
+      tournament_name: Optional[str] = None
+      season_number: Optional[int] = None
+-     game_year: Optional[int] = None
++     game_year: Optional[str] = None
+  
+  class TopTournamentPerformerResponse(BaseModel):
+```
+
+**Chunk 6**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -239,5 +239,5 @@
+      tournament_id: str
+      tournament_name: str
+-     game_year: Optional[int] = None
++     game_year: Optional[str] = None
+      team_id: str
+      team_name: str
+```
+
+**Chunk 7**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -292,5 +292,5 @@
+      team_id: str
+      team_name: str
+-     game_year: Optional[int] = None
++     game_year: Optional[str] = None
+      total_matches: Optional[int] = None
+      matches_won: Optional[int] = None
+```
+
+**Chunk 8**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -341,5 +341,5 @@
+      tournament_name: Optional[str] = None
+      season_number: Optional[int] = None
+-     game_year: Optional[int] = None
++     game_year: Optional[str] = None
+  
+  # Tournament Views Schemas
+```
+
+**Chunk 9**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -351,5 +351,5 @@
+      start_date: Optional[datetime] = None
+      end_date: Optional[datetime] = None
+-     game_year: Optional[int] = None
++     game_year: Optional[str] = None
+      prize_pool: Optional[float] = None
+      status: Optional[str] = None
+```
+
+**Chunk 10**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -381,5 +381,5 @@
+      start_date: Optional[datetime] = None
+      end_date: Optional[datetime] = None
+-     game_year: Optional[int] = None
++     game_year: Optional[str] = None
+      tournament_tier: Optional[str] = None
+      prize_pool: Optional[float] = None
+```
+
+**Chunk 11**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -420,5 +420,5 @@
+      tournament_id: str
+      tournament_name: str
+-     game_year: Optional[int] = None
++     game_year: Optional[str] = None
+      tournament_tier: Optional[str] = None
+      prize_pool: Optional[float] = None
+```
+
+**Chunk 12**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -440,5 +440,5 @@
+      tournament_id: str
+      tournament_name: str
+-     game_year: Optional[int] = None
++     game_year: Optional[str] = None
+      tournament_tier: Optional[str] = None
+      team_id: str
+```
+
+**Chunk 13**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -480,5 +480,5 @@
+      tournament_id: str
+      tournament_name: str
+-     game_year: Optional[int] = None
++     game_year: Optional[str] = None
+      tournament_tier: Optional[str] = None
+      games_played: Optional[int] = None
+```
+
+**Chunk 14**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -553,5 +553,5 @@
+      model_config = ConfigDict(from_attributes=True)
+      
+-     game_year: Optional[int] = None
++     game_year: Optional[str] = None
+      league_id: Optional[str] = None
+      season_id: Optional[str] = None
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="generic" data-tool-name="todo_write">
+<details><summary>Tool use: **todo_write** • Todo List</summary>
+
+- [x] Fix circular import issue with app/core/logging.py conflicting with Python logging module
+- [x] Remove avatar_url column from leaderboard queries (column doesn't exist in database)
+- [x] Fix game_year validation - schema expects int but database returns strings like '2K26'
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Verifying the fixes:
+
+
+---
+
+Cancelled
+
+---
+
+_**User (2025-11-11 00:38Z)**_
+
+@supabase.ts 
+
+---
+
+_**Agent (model composer-1, mode Agent)**_
+
+
+
+---
+
+
+Reviewing `app/types/supabase.ts`:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/app/types/supabase.ts</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="grep" data-tool-name="grep">
+<details>
+<summary>Tool use: **grep** • Grep for "game_year|avatar_url" in "/Volumes/870SSD/Active GH Projects/new-bodega-backend/app/types/supabase.ts" • 174 matches</summary>
+
+Output mode: content
+
+
+| File | Content | Line |
+|------|------|------|
+| `app/types/supabase.ts` | `game_year: string \| null` | L21 |
+| `app/types/supabase.ts` | `game_year?: string \| null` | L38 |
+| `app/types/supabase.ts` | `game_year?: string \| null` | L55 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L364 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L490 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L697 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L889 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L1131 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L1313 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L1500 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L1939 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L2335 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L2643 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L3145 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L3430 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L3445 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L3460 |
+| `app/types/supabase.ts` | `year: Database["public"]["Enums"]["game_year"] \| null` | L3528 |
+| `app/types/supabase.ts` | `year?: Database["public"]["Enums"]["game_year"] \| null` | L3543 |
+| `app/types/supabase.ts` | `year?: Database["public"]["Enums"]["game_year"] \| null` | L3558 |
+| `app/types/supabase.ts` | `gm_yr: Database["public"]["Enums"]["game_year"] \| null` | L3762 |
+| `app/types/supabase.ts` | `gm_yr?: Database["public"]["Enums"]["game_year"] \| null` | L3772 |
+| `app/types/supabase.ts` | `gm_yr?: Database["public"]["Enums"]["game_year"] \| null` | L3782 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L4371 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L4559 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L4749 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L4980 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L5201 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L5327 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L5439 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L5565 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L5859 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L6076 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L6258 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L6475 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L6734 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L6907 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L6965 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L6984 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L7003 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L7206 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L7325 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L7500 |
+| `app/types/supabase.ts` | `game_year: string \| null` | L7591 |
+| `app/types/supabase.ts` | `game_year?: string \| null` | L7603 |
+| `app/types/supabase.ts` | `game_year?: string \| null` | L7615 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L7791 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L8007 |
+| `app/types/supabase.ts` | `year: Database["public"]["Enums"]["game_year"] \| null` | L8186 |
+| `app/types/supabase.ts` | `year?: Database["public"]["Enums"]["game_year"] \| null` | L8204 |
+| `app/types/supabase.ts` | `year?: Database["public"]["Enums"]["game_year"] \| null` | L8222 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L8558 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L8775 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"]` | L8953 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"]` | L8976 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"]` | L8999 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L9135 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L9583 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L9704 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L9717 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L9730 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L9794 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L10151 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L10514 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L10640 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L10921 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L11138 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L11259 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L11273 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L11287 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L11464 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L11583 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L11758 |
+| `app/types/supabase.ts` | `game_yr: Database["public"]["Enums"]["game_year"]` | L11846 |
+| `app/types/supabase.ts` | `game_yr?: Database["public"]["Enums"]["game_year"]` | L11857 |
+| `app/types/supabase.ts` | `game_yr?: Database["public"]["Enums"]["game_year"]` | L11868 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L12076 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L12224 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L12240 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L12256 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L12434 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L12707 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L12920 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L13053 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L13260 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L13377 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L13391 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L13405 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L13520 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L13702 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L14090 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L14297 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L14515 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L14540 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L14565 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L14650 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L14853 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L14972 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L15268 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L15387 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L15688 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L15751 |
+| `app/types/supabase.ts` | `game_years: Database["public"]["Enums"]["game_year"][] \| null` | L15777 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L15807 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L16020 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L16237 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L16365 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L16513 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L16580 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L16750 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L16920 |
+| `app/types/supabase.ts` | `year: Database["public"]["Enums"]["game_year"] \| null` | L17106 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L17117 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L17319 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L17599 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L17760 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L17857 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L17953 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L18079 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L18198 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L18317 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L18434 |
+| `app/types/supabase.ts` | `years: Database["public"]["Enums"]["game_year"][] \| null` | L18513 |
+| `app/types/supabase.ts` | `year: Database["public"]["Enums"]["game_year"] \| null` | L18567 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L18672 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L18736 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L18929 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L19055 |
+| `app/types/supabase.ts` | `player_performance_by_game_year: \{` | L19109 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L19119 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L19236 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L19377 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L19519 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L19575 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L19689 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L19815 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L19941 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L20053 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L20237 |
+| `app/types/supabase.ts` | `team_performance_by_game_year: \{` | L20476 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L20483 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L20599 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L20725 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L20781 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L20896 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L21022 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L21222 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L21284 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L21373 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L21534 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L21653 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L21714 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L21734 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L21757 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L21812 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L21855 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L22003 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L22129 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L22247 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L22268 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L22606 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L22725 |
+| `app/types/supabase.ts` | `referencedRelation: "team_performance_by_game_year"` | L22900 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L23197 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L23329 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L23397 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L23646 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L23926 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L23989 |
+| `app/types/supabase.ts` | `referencedRelation: "player_performance_by_game_year"` | L24206 |
+| `app/types/supabase.ts` | `p_game_year: Database["public"]["Enums"]["game_year"]` | L24501 |
+| `app/types/supabase.ts` | `p_game_year: Database["public"]["Enums"]["game_year"]` | L24511 |
+| `app/types/supabase.ts` | `game_year:` | L24635 |
+| `app/types/supabase.ts` | `game_year: [` | L24901 |
+
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Checking the players table definition and the game_year enum:
+
+
+---
+
+<tool-use data-tool-type="grep" data-tool-name="grep">
+<details>
+<summary>Tool use: **grep** • Grep for "players:.*\{" in "/Volumes/870SSD/Active GH Projects/new-bodega-backend/app/types/supabase.ts" • 4 matches</summary>
+
+Output mode: content
+
+
+| File | Content | Line |
+|------|------|------|
+| `app/types/supabase.ts` | `match_team_lineup_players: \{` | L6648 |
+| `app/types/supabase.ts` | `players: \{` | L10775 |
+| `app/types/supabase.ts` | `team_match_queue_lineup_players: \{` | L12625 |
+| `app/types/supabase.ts` | `add_event_placement_bonus_rp_to_players: \{` | L24270 |
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="grep" data-tool-name="grep">
+<details>
+<summary>Tool use: **grep** • Grep for "Enums.*game_year" in "/Volumes/870SSD/Active GH Projects/new-bodega-backend/app/types/supabase.ts" • 67 matches</summary>
+
+Output mode: content
+
+
+| File | Content | Line |
+|------|------|------|
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L3430 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L3445 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L3460 |
+| `app/types/supabase.ts` | `year: Database["public"]["Enums"]["game_year"] \| null` | L3528 |
+| `app/types/supabase.ts` | `year?: Database["public"]["Enums"]["game_year"] \| null` | L3543 |
+| `app/types/supabase.ts` | `year?: Database["public"]["Enums"]["game_year"] \| null` | L3558 |
+| `app/types/supabase.ts` | `gm_yr: Database["public"]["Enums"]["game_year"] \| null` | L3762 |
+| `app/types/supabase.ts` | `gm_yr?: Database["public"]["Enums"]["game_year"] \| null` | L3772 |
+| `app/types/supabase.ts` | `gm_yr?: Database["public"]["Enums"]["game_year"] \| null` | L3782 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L6965 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L6984 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L7003 |
+| `app/types/supabase.ts` | `year: Database["public"]["Enums"]["game_year"] \| null` | L8186 |
+| `app/types/supabase.ts` | `year?: Database["public"]["Enums"]["game_year"] \| null` | L8204 |
+| `app/types/supabase.ts` | `year?: Database["public"]["Enums"]["game_year"] \| null` | L8222 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"]` | L8953 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"]` | L8976 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"]` | L8999 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L9704 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L9717 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L9730 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L11259 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L11273 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L11287 |
+| `app/types/supabase.ts` | `game_yr: Database["public"]["Enums"]["game_year"]` | L11846 |
+| `app/types/supabase.ts` | `game_yr?: Database["public"]["Enums"]["game_year"]` | L11857 |
+| `app/types/supabase.ts` | `game_yr?: Database["public"]["Enums"]["game_year"]` | L11868 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L12224 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L12240 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L12256 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L13377 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L13391 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L13405 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L14515 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L14540 |
+| `app/types/supabase.ts` | `game_year?: Database["public"]["Enums"]["game_year"] \| null` | L14565 |
+| `app/types/supabase.ts` | `game_year: Database["public"]["Enums"]["game_year"] \| null` | L15751 |
+| `app/types/supabase.ts` | `game_years: Database["public"]["Enums"]["game_year"][] \| null` | L15777 |
+
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Checking the game_year enum definition:
+
+
+---
+
+<tool-use data-tool-type="grep" data-tool-name="grep">
+<details>
+<summary>Tool use: **grep** • Grep for "Enums:.*\{" in "/Volumes/870SSD/Active GH Projects/new-bodega-backend/app/types/supabase.ts" • 2 matches</summary>
+
+Output mode: content
+
+
+| File | Content | Line |
+|------|------|------|
+| `app/types/supabase.ts` | `Enums: \{` | L24589 |
+| `app/types/supabase.ts` | `Enums: \{` | L24851 |
+
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: /Volumes/870SSD/Active GH Projects/new-bodega-backend/app/types/supabase.ts</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+## Summary
+
+1. **`game_year` enum**: Defined as string values `["2K16", "2K17", ..., "2K26"]` in the TypeScript types, matching our Python schema change from `Optional[int]` to `Optional[str]`.
+
+2. **`players` table**: No `avatar_url` field, confirming removal from leaderboard queries.
+
+3. **Players table fields** (from TypeScript types):
+   - `gamertag`, `id`, `current_team_id`, `player_rp`, `player_rank_score`
+   - `wins`, `losses`, `win_rate`, `tier`, `region` (likely from views)
+   - No `avatar_url`
+
+## Fixes Applied
+
+1. Fixed circular import: Renamed `app/core/logging.py` → `app/core/structured_logging.py` to avoid conflict with Python's `logging` module
+2. Removed `avatar_url`: Removed from all leaderboard queries in `leaderboard_supabase.py`
+3. Fixed `game_year` validation: Changed schema from `Optional[int]` to `Optional[str]` to match database enum values
+
+These changes align with the TypeScript types. The Python backend should now work correctly with the Supabase database schema.
+
+Should I verify anything else or make additional changes?
+
+---
+
